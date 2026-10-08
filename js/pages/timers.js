@@ -9,7 +9,7 @@ import { escapeHtml } from "../app.js";
 import { countdown } from "../engine/planner.js";
 
 const FEED_BASE = "https://raw.githubusercontent.com/AdrianoAE/aion2-armory-web/data/";
-const RANGES = [12, 24, 48];
+const RANGES = [1, 2, 4, 6, 8, 12, 24, 48];
 
 let root = null;
 let tick = null;
@@ -18,7 +18,7 @@ let bosses = [];          // bundled boss table
 let bossFeed = null;      // kill feed for the chosen server
 let bossFeedAt = null;
 let bossFeedFailed = false;
-let hours = 24;
+let hours = (() => { try { return Number(localStorage.getItem("aion2-armory-timeline-hours")) || 24; } catch (e) { return 24; } })();
 let showAll = false;
 let lastMinute = -1;
 
@@ -111,7 +111,7 @@ function drawTimeline(canvas, rows, now) {
   const color = (name) => css.getPropertyValue(name).trim();
   const x = (date) => LABEL + ((date - now) / (hours * 3600000)) * (width - LABEL - RIGHT);
   ctx.font = "11px " + color("--font");
-  const step = hours >= 48 ? 6 : hours >= 24 ? 3 : 1;
+  const step = hours >= 48 ? 6 : hours >= 24 ? 3 : hours >= 12 ? 2 : 1;
   const first = new Date(now); first.setMinutes(0, 0, 0); first.setHours(first.getHours() + 1);
   for (let t = new Date(first); t <= new Date(now.getTime() + hours * 3600000); t.setHours(t.getHours() + 1)) {
     const px = x(t);
@@ -193,7 +193,7 @@ export function draw() {
       <label class="small muted">Region <select id="region">${feed.regions.map((r) => `<option value="${r.id}" ${r.id === reg.id ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}</select></label>
       <label class="small muted">Server <select id="server">${SERVERS.map(([name, list]) => `<optgroup label="${name}">${list.map(([id, label]) => `<option value="${id}" ${id === p.fieldboss_server ? "selected" : ""}>${label}</option>`).join("")}</optgroup>`).join("")}</select></label>
       <label class="small muted row"><input type="checkbox" id="artwork-only" ${p.fieldboss_only_artwork ? "checked" : ""}> Only yellow Artwork bosses</label>
-      ${RANGES.map((h) => `<button data-hours="${h}" class="${h === hours ? "active" : ""}">${h}h</button>`).join("")}
+      <label class="small muted">Timeline <select id="hours">${RANGES.map((h) => `<option value="${h}" ${h === hours ? "selected" : ""}>${h}h</option>`).join("")}</select></label>
       <button id="refresh">Refresh</button></div>
     <div class="legend" style="margin-bottom:10px">Blocks: running in the accent colour, upcoming in grey, the Rift's portal window in purple; a dashed line is a reset. Times are your local time zone; hover a block for its times.</div>
     <div class="row" style="margin-bottom:6px"><h3>Tracked bosses</h3><button id="select-bosses">Select bosses…</button></div>
@@ -207,7 +207,7 @@ export function draw() {
   root.querySelector("#region").addEventListener("change", (e) => { p.timers_region = e.target.value; save(); draw(); });
   root.querySelector("#server").addEventListener("change", (e) => { p.fieldboss_server = e.target.value; save(); bossFeed = null; draw(); loadBossFeed(); });
   root.querySelector("#artwork-only").addEventListener("change", (e) => { p.fieldboss_only_artwork = e.target.checked; save(); draw(); });
-  root.querySelectorAll("[data-hours]").forEach((b) => b.addEventListener("click", () => { hours = Number(b.dataset.hours); draw(); }));
+  root.querySelector("#hours").addEventListener("change", (e) => { hours = Number(e.target.value); try { localStorage.setItem("aion2-armory-timeline-hours", String(hours)); } catch (err) { /* storage blocked */ } draw(); });
   root.querySelector("#refresh").addEventListener("click", loadBossFeed);
   root.querySelector("#show-all").addEventListener("click", () => { showAll = !showAll; draw(); });
   root.querySelector("#select-bosses").addEventListener("click", selectBosses);
