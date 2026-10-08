@@ -79,7 +79,7 @@ function bossCard(status, now, tracked) {
   const done = tracked && isMarkedDone(status);
   return `<div class="card boss${done ? " dim" : ""}">
     <img class="portrait" src="assets/field_bosses/${boss.image}" alt="">
-    <div class="grow"><div><b>${escapeHtml(boss.name)}</b></div><div class="muted small">${escapeHtml(boss.zone)} · Lv ${boss.level} · ${boss.faction === "asmo" ? "Asmo" : "Elyos"}</div></div>
+    <div class="grow text"><div class="name"><b>${escapeHtml(boss.name)}</b></div><div class="muted small">${escapeHtml(boss.zone)} · Lv ${boss.level} · ${boss.faction === "asmo" ? "Asmo" : "Elyos"}</div></div>
     ${art ? `<img class="artwork" src="assets/field_bosses/${art.image}" alt="" data-tip="${escapeHtml(artworkTooltip(art))}">` : ""}
     <div class="state${status.up ? " up" : ""}" data-boss="${boss.id}">${statusText(status, now)}</div>
     ${tracked ? `<label class="row small"><input type="checkbox" data-done="${boss.id}" ${done ? "checked" : ""}> Done</label>` : ""}
@@ -197,9 +197,9 @@ export function draw() {
       <button id="refresh">Refresh</button></div>
     <div class="legend" style="margin-bottom:10px">Blocks: running in the accent colour, upcoming in grey, the Rift's portal window in purple; a dashed line is a reset. Times are your local time zone; hover a block for its times.</div>
     <div class="row" style="margin-bottom:6px"><h3>Tracked bosses</h3><button id="select-bosses">Select bosses…</button></div>
-    ${tracked.length ? `<div class="grid cols-3" style="margin-bottom:12px">${tracked.map((s) => bossCard(s, now, true)).join("")}</div>` : '<div class="muted small" style="margin-bottom:12px">No bosses tracked yet.</div>'}
+    ${tracked.length ? `<div class="grid bosses" style="margin-bottom:12px">${tracked.map((s) => bossCard(s, now, true)).join("")}</div>` : '<div class="muted small" style="margin-bottom:12px">No bosses tracked yet.</div>'}
     <div class="row" style="margin-bottom:6px"><h3>Field bosses within 1 hour · ${escapeHtml(serverLabel(p.fieldboss_server))}</h3><button id="show-all" class="${showAll ? "active" : ""}">Show all (${every.length})</button><span class="grow"></span><span class="muted small">${feedStatus}</span></div>
-    ${shown.length ? `<div class="grid cols-3" style="margin-bottom:14px">${shown.map((s) => bossCard(s, now, false)).join("")}</div>` : `<div class="muted small" style="margin-bottom:14px">${bossFeed ? "Nothing spawned or spawning within the hour." : ""}</div>`}
+    ${shown.length ? `<div class="grid bosses" style="margin-bottom:14px">${shown.map((s) => bossCard(s, now, false)).join("")}</div>` : `<div class="muted small" style="margin-bottom:14px">${bossFeed ? "Nothing spawned or spawning within the hour." : ""}</div>`}
     <canvas id="timeline"></canvas>
     <div class="grid cols-3" style="margin-top:12px">${events.map((e) => eventCard(e, reg, now)).join("")}</div>
     <div id="tooltip" class="tooltip" hidden></div>`;

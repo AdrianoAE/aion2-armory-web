@@ -177,6 +177,16 @@ export function renameCharacter(entry, newName) {
   save();
 }
 
+// Drag-and-drop: put `fromKey` where `toKey` currently is.
+export function reorderCharacter(fromKey, toKey) {
+  const keys = characters().map((c) => c.key);
+  const from = keys.indexOf(fromKey), to = keys.indexOf(toKey);
+  if (from < 0 || to < 0 || from === to) return;
+  keys.splice(to, 0, keys.splice(from, 1)[0]);
+  bp().character_order = keys;
+  save();
+}
+
 export function moveCharacter(entry, delta) {
   const keys = characters().map((c) => c.key);
   const index = keys.indexOf(entry.key);
