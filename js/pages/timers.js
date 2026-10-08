@@ -111,19 +111,21 @@ function drawTimeline(canvas, rows, now) {
   const color = (name) => css.getPropertyValue(name).trim();
   const x = (date) => LABEL + ((date - now) / (hours * 3600000)) * (width - LABEL - RIGHT);
   ctx.font = "11px " + color("--font");
-  const step = hours >= 48 ? 6 : hours >= 24 ? 3 : hours >= 12 ? 2 : 1;
-  const first = new Date(now); first.setMinutes(0, 0, 0); first.setHours(first.getHours() + 1);
-  for (let t = new Date(first); t <= new Date(now.getTime() + hours * 3600000); t.setHours(t.getHours() + 1)) {
+  // Tick every 15/30/60 min on short ranges, label less often as the range grows.
+  const tickMin = hours <= 2 ? 15 : hours <= 6 ? 30 : 60;
+  const labelMin = hours <= 2 ? 30 : hours <= 8 ? 60 : hours <= 12 ? 120 : hours <= 24 ? 180 : 360;
+  const first = new Date(now); first.setSeconds(0, 0); first.setMinutes(Math.ceil((first.getMinutes() + 1) / tickMin) * tickMin);
+  for (let t = new Date(first); t <= new Date(now.getTime() + hours * 3600000); t = new Date(t.getTime() + tickMin * 60000)) {
     const px = x(t);
-    const labelled = t.getHours() % step === 0;
+    const labelled = (t.getHours() * 60 + t.getMinutes()) % labelMin === 0;
     ctx.strokeStyle = labelled ? color("--border") : "rgba(59,72,99,0.35)";
-    ctx.setLineDash(t.getHours() === 0 ? [4, 3] : []);
+    ctx.setLineDash(t.getHours() === 0 && t.getMinutes() === 0 ? [4, 3] : []);
     ctx.beginPath(); ctx.moveTo(px, TOP - 6); ctx.lineTo(px, height - BOTTOM); ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = color("--muted");
     ctx.textAlign = "center";
     if (labelled) ctx.fillText(localClock(t), px, 12);
-    if (t.getHours() === 0) { ctx.textAlign = "left"; ctx.fillText("Tomorrow", px + 4, TOP - 8); }
+    if (t.getHours() === 0 && t.getMinutes() === 0) { ctx.textAlign = "left"; ctx.fillText("Tomorrow", px + 4, TOP - 8); }
   }
   ctx.strokeStyle = color("--accent"); ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(LABEL, TOP - 6); ctx.lineTo(LABEL, height - BOTTOM); ctx.stroke();
