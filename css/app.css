@@ -89,3 +89,8 @@ dialog .list { max-height: 60vh; overflow-y: auto; display: flex; flex-direction
   body { flex-direction: column; }
   #sidebar { width: auto; border-right: 0; border-bottom: 1px solid var(--border); max-height: 40vh; }
 }
+
+/* characters */
+.char-section .section-body { min-height: 24px; }
+.boards-row { display: flex; flex-wrap: wrap; gap: 16px; }
+.boards-row > .stack { flex: 1 1 420px; max-width: 560px; }

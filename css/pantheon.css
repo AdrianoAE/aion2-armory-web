@@ -1,0 +1,36 @@
+/* pantheon — desktop _build_pantheon_tab / styles.template.qss #Pantheon* */
+.pantheon-page { display: flex; flex-direction: column; gap: 10px; }
+.pantheon-title { font-size: 18px; font-weight: 700; }
+.pantheon-hint { color: var(--muted); font-size: 11px; }
+.pantheon-content { display: flex; gap: 16px; align-items: flex-start; }
+.pantheon-panel { background: rgba(22, 32, 54, 0.6); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+.pantheon-panel.inventory { width: 300px; height: 660px; flex: none; padding: 12px; }
+.pantheon-panel.lords { width: 220px; flex: none; padding: 14px; }
+.pantheon-panel .panel-title { font-size: 14px; font-weight: 700; }
+.pantheon-panel .section-label { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.pantheon-panel .filter-btn { font-size: 12px; padding: 4px 10px; }
+.pantheon-panel .cat-row { gap: 4px; flex-wrap: nowrap; }
+.pantheon-panel .cat-row .filter-btn { flex: 1; padding: 4px 4px; }
+.pantheon-panel .search, .pantheon-panel .grade { width: 100%; }
+.pantheon-panel .lord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; font-size: 12px; }
+.pantheon-panel .lord-grid label { display: flex; align-items: center; gap: 4px; }
+.pantheon-panel .inv-table { flex: 1; min-height: 0; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
+.pantheon-panel .inv-table table { border-collapse: collapse; width: 100%; }
+.pantheon-panel .inv-table th { position: sticky; top: 0; background: var(--overlay); text-align: left; font-size: 12px; padding: 4px 6px; }
+.pantheon-panel .inv-table td { height: 40px; padding: 0 6px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+.pantheon-panel .inv-table td.icon-cell { width: 44px; text-align: center; }
+.pantheon-panel .inv-table td.icon-cell img { vertical-align: middle; }
+.pantheon-panel .inv-table tr { cursor: pointer; }
+.pantheon-panel .inv-table tbody tr:hover { background: rgba(34, 211, 238, 0.08); }
+.pantheon-panel .lord-row .lord-name { color: var(--warn); font-size: 11px; font-weight: 600; }
+.pantheon-panel .lord-row .lord-value { font-size: 13px; font-weight: 700; }
+.pantheon-canvas-wrap { flex: 1; display: flex; justify-content: center; }
+.pantheon-canvas { position: relative; background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; flex: none; }
+.pantheon-slot { position: absolute; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(22, 32, 54, 0.85); border: 1px solid #475569; color: var(--muted); }
+.pantheon-slot.artwork { border-radius: 12px; }
+.pantheon-slot.statue { border-radius: 33px; }
+.pantheon-slot.colossus { border-radius: 54px; border: 2px solid rgba(251, 191, 36, 0.55); }
+.pantheon-slot.artwork:hover, .pantheon-slot.statue:hover { border-color: rgba(34, 211, 238, 0.8); background: rgba(34, 211, 238, 0.1); }
+.pantheon-slot.colossus:hover { border-color: rgba(251, 191, 36, 0.9); background: rgba(251, 191, 36, 0.12); }
+.pantheon-slot.artwork.active, .pantheon-slot.statue.active { border: 2px solid var(--accent); background: rgba(34, 211, 238, 0.22); }
+.pantheon-slot.colossus.active { border: 2px solid var(--warn); background: rgba(251, 191, 36, 0.22); }

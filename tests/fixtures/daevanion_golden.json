@@ -1,0 +1,6755 @@
+{
+ "daevanion_dist_from_start": {
+  "n00": [
+   0,
+   0
+  ],
+  "n01": [
+   2,
+   1
+  ],
+  "n02": [
+   3,
+   1
+  ],
+  "n03": null,
+  "n04": [
+   16,
+   2
+  ],
+  "n10": [
+   2,
+   1
+  ],
+  "n11": [
+   6,
+   1
+  ],
+  "n12": null,
+  "n13": [
+   12,
+   2
+  ],
+  "n14": [
+   13,
+   2
+  ],
+  "n20": [
+   3,
+   1
+  ],
+  "n21": [
+   4,
+   2
+  ],
+  "n22": [
+   9,
+   2
+  ],
+  "n23": [
+   10,
+   2
+  ],
+  "n24": [
+   12,
+   2
+  ],
+  "n30": [
+   6,
+   1
+  ],
+  "n31": [
+   6,
+   2
+  ],
+  "n32": [
+   7,
+   2
+  ],
+  "n33": [
+   11,
+   2
+  ],
+  "n34": null,
+  "n40": [
+   8,
+   1
+  ],
+  "n41": [
+   11,
+   2
+  ],
+  "n42": [
+   10,
+   2
+  ],
+  "n43": null,
+  "n44": null
+ },
+ "daevanion_mp_counts": {
+  "n00": 0,
+  "n01": 1,
+  "n02": 0,
+  "n03": 0,
+  "n04": 0,
+  "n10": 1,
+  "n11": 0,
+  "n12": 0,
+  "n13": 0,
+  "n14": 0,
+  "n20": 0,
+  "n21": 1,
+  "n22": 0,
+  "n23": 0,
+  "n24": 0,
+  "n30": 0,
+  "n31": 0,
+  "n32": 0,
+  "n33": 0,
+  "n34": 0,
+  "n40": 0,
+  "n41": 0,
+  "n42": 0,
+  "n43": 0,
+  "n44": 0
+ },
+ "daevanion_prev_from_start": {
+  "n01": "n00",
+  "n02": "n01",
+  "n04": "n14",
+  "n10": "n00",
+  "n11": "n01",
+  "n13": "n23",
+  "n14": "n13",
+  "n20": "n10",
+  "n21": "n20",
+  "n22": "n21",
+  "n23": "n22",
+  "n24": "n23",
+  "n30": "n20",
+  "n31": "n21",
+  "n32": "n31",
+  "n33": "n32",
+  "n40": "n30",
+  "n41": "n31",
+  "n42": "n32"
+ },
+ "daevanion_random": [
+  {
+   "cap": 109,
+   "included": [
+    "r0c4",
+    "r1c3",
+    "r1c4",
+    "r4c4",
+    "r4c5"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 0,
+   "skipped": [],
+   "spent": 29,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r0c2",
+    "r0c3",
+    "r0c4",
+    "r1c3",
+    "r1c4",
+    "r2c4",
+    "r3c4",
+    "r4c4",
+    "r4c5"
+   ],
+   "wanted": [
+    "r0c4",
+    "r1c3",
+    "r1c4",
+    "r4c4",
+    "r4c5"
+   ]
+  },
+  {
+   "cap": 119,
+   "included": [
+    "r0c1",
+    "r2c3",
+    "r4c2",
+    "r5c0",
+    "r5c5"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 1,
+   "skipped": [],
+   "spent": 46,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r1c0",
+    "r2c0",
+    "r2c1",
+    "r2c2",
+    "r2c3",
+    "r3c0",
+    "r3c2",
+    "r4c0",
+    "r4c2",
+    "r4c3",
+    "r4c4",
+    "r4c5",
+    "r5c0",
+    "r5c5"
+   ],
+   "wanted": [
+    "r0c1",
+    "r2c3",
+    "r4c2",
+    "r5c0",
+    "r5c5"
+   ]
+  },
+  {
+   "cap": 113,
+   "included": [
+    "r0c3",
+    "r1c0",
+    "r1c1",
+    "r4c4"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 2,
+   "skipped": [
+    "r0c5"
+   ],
+   "spent": 22,
+   "tree": [
+    "r0c0",
+    "r0c3",
+    "r1c0",
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r1c4",
+    "r2c4",
+    "r3c4",
+    "r4c4"
+   ],
+   "wanted": [
+    "r0c3",
+    "r0c5",
+    "r1c0",
+    "r1c1",
+    "r4c4"
+   ]
+  },
+  {
+   "cap": 114,
+   "included": [
+    "r0c4",
+    "r3c3",
+    "r4c0",
+    "r4c3",
+    "r5c2"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 3,
+   "skipped": [],
+   "spent": 44,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r0c2",
+    "r0c3",
+    "r0c4",
+    "r1c3",
+    "r2c3",
+    "r3c0",
+    "r3c1",
+    "r3c2",
+    "r3c3",
+    "r4c0",
+    "r4c2",
+    "r4c3",
+    "r5c2"
+   ],
+   "wanted": [
+    "r0c4",
+    "r3c3",
+    "r4c0",
+    "r4c3",
+    "r5c2"
+   ]
+  },
+  {
+   "cap": 105,
+   "included": [
+    "r0c3",
+    "r0c5",
+    "r1c2",
+    "r3c0",
+    "r5c1"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 4,
+   "skipped": [],
+   "spent": 33,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r0c3",
+    "r0c4",
+    "r0c5",
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r2c1",
+    "r3c0",
+    "r3c1",
+    "r4c1",
+    "r5c1"
+   ],
+   "wanted": [
+    "r0c3",
+    "r0c5",
+    "r1c2",
+    "r3c0",
+    "r5c1"
+   ]
+  },
+  {
+   "cap": 102,
+   "included": [
+    "r0c2",
+    "r0c3",
+    "r2c5",
+    "r3c5",
+    "r4c1"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 5,
+   "skipped": [],
+   "spent": 31,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r0c2",
+    "r0c3",
+    "r1c1",
+    "r2c1",
+    "r2c2",
+    "r2c3",
+    "r2c4",
+    "r2c5",
+    "r3c1",
+    "r3c5",
+    "r4c1"
+   ],
+   "wanted": [
+    "r0c2",
+    "r0c3",
+    "r2c5",
+    "r3c5",
+    "r4c1"
+   ]
+  },
+  {
+   "cap": 110,
+   "included": [
+    "r2c0",
+    "r2c2",
+    "r3c0",
+    "r3c4",
+    "r5c5"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 6,
+   "skipped": [],
+   "spent": 30,
+   "tree": [
+    "r0c0",
+    "r1c0",
+    "r2c0",
+    "r2c1",
+    "r2c2",
+    "r3c0",
+    "r3c2",
+    "r3c3",
+    "r3c4",
+    "r4c4",
+    "r5c4",
+    "r5c5"
+   ],
+   "wanted": [
+    "r2c0",
+    "r2c2",
+    "r3c0",
+    "r3c4",
+    "r5c5"
+   ]
+  },
+  {
+   "cap": 110,
+   "included": [
+    "r1c4",
+    "r2c2",
+    "r2c4",
+    "r4c1",
+    "r4c2"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 7,
+   "skipped": [],
+   "spent": 40,
+   "tree": [
+    "r0c0",
+    "r1c0",
+    "r1c4",
+    "r2c0",
+    "r2c2",
+    "r2c3",
+    "r2c4",
+    "r3c0",
+    "r3c1",
+    "r3c3",
+    "r3c4",
+    "r4c1",
+    "r4c2",
+    "r4c3"
+   ],
+   "wanted": [
+    "r1c4",
+    "r2c2",
+    "r2c4",
+    "r4c1",
+    "r4c2"
+   ]
+  },
+  {
+   "cap": 104,
+   "included": [
+    "r1c0",
+    "r3c3",
+    "r3c4",
+    "r4c4",
+    "r5c3"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 8,
+   "skipped": [],
+   "spent": 24,
+   "tree": [
+    "r0c0",
+    "r1c0",
+    "r2c0",
+    "r3c0",
+    "r3c3",
+    "r3c4",
+    "r4c0",
+    "r4c1",
+    "r4c2",
+    "r4c3",
+    "r4c4",
+    "r5c3"
+   ],
+   "wanted": [
+    "r1c0",
+    "r3c3",
+    "r3c4",
+    "r4c4",
+    "r5c3"
+   ]
+  },
+  {
+   "cap": 111,
+   "included": [
+    "r0c2",
+    "r0c3",
+    "r0c5",
+    "r3c3",
+    "r5c4"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 9,
+   "skipped": [],
+   "spent": 37,
+   "tree": [
+    "r0c0",
+    "r0c2",
+    "r0c3",
+    "r0c4",
+    "r0c5",
+    "r1c0",
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r2c3",
+    "r3c3",
+    "r4c3",
+    "r5c3",
+    "r5c4"
+   ],
+   "wanted": [
+    "r0c2",
+    "r0c3",
+    "r0c5",
+    "r3c3",
+    "r5c4"
+   ]
+  },
+  {
+   "cap": 109,
+   "included": [
+    "r0c2",
+    "r2c4",
+    "r5c0",
+    "r5c1",
+    "r5c5"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 10,
+   "skipped": [],
+   "spent": 42,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r0c2",
+    "r1c2",
+    "r1c3",
+    "r2c2",
+    "r2c3",
+    "r2c4",
+    "r3c1",
+    "r3c2",
+    "r3c4",
+    "r4c1",
+    "r4c4",
+    "r4c5",
+    "r5c0",
+    "r5c1",
+    "r5c5"
+   ],
+   "wanted": [
+    "r0c2",
+    "r2c4",
+    "r5c0",
+    "r5c1",
+    "r5c5"
+   ]
+  },
+  {
+   "cap": 100,
+   "included": [
+    "r0c1",
+    "r1c2",
+    "r1c3",
+    "r3c3",
+    "r4c3"
+   ],
+   "nodes": [
+    {
+     "c": 0,
+     "cost": 0,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "start",
+     "id": "r0c0",
+     "r": 0
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c1",
+     "r": 0
+    },
+    {
+     "c": 2,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r0c2",
+     "r": 0
+    },
+    {
+     "c": 3,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c3",
+     "r": 0
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r0c4",
+     "r": 0
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r0c5",
+     "r": 0
+    },
+    {
+     "c": 0,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c0",
+     "r": 1
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c1",
+     "r": 1
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c2",
+     "r": 1
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c3",
+     "r": 1
+    },
+    {
+     "c": 4,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r1c4",
+     "r": 1
+    },
+    {
+     "c": 5,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r1c5",
+     "r": 1
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c0",
+     "r": 2
+    },
+    {
+     "c": 1,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c1",
+     "r": 2
+    },
+    {
+     "c": 2,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c2",
+     "r": 2
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c3",
+     "r": 2
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r2c4",
+     "r": 2
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r2c5",
+     "r": 2
+    },
+    {
+     "c": 0,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r3c0",
+     "r": 3
+    },
+    {
+     "c": 1,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c1",
+     "r": 3
+    },
+    {
+     "c": 2,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c2",
+     "r": 3
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c3",
+     "r": 3
+    },
+    {
+     "c": 4,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r3c4",
+     "r": 3
+    },
+    {
+     "c": 5,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r3c5",
+     "r": 3
+    },
+    {
+     "c": 0,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c0",
+     "r": 4
+    },
+    {
+     "c": 1,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "empty",
+     "id": "r4c1",
+     "r": 4
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r4c2",
+     "r": 4
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c3",
+     "r": 4
+    },
+    {
+     "c": 4,
+     "cost": 4,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c4",
+     "r": 4
+    },
+    {
+     "c": 5,
+     "cost": 3,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r4c5",
+     "r": 4
+    },
+    {
+     "c": 0,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c0",
+     "r": 5
+    },
+    {
+     "c": 1,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c1",
+     "r": 5
+    },
+    {
+     "c": 2,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c2",
+     "r": 5
+    },
+    {
+     "c": 3,
+     "cost": 2,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "empty",
+     "id": "r5c3",
+     "r": 5
+    },
+    {
+     "c": 4,
+     "cost": 5,
+     "e": [
+      {
+       "n": "Attack Bonus",
+       "t": "s",
+       "v": 5
+      }
+     ],
+     "g": "normal",
+     "id": "r5c4",
+     "r": 5
+    },
+    {
+     "c": 5,
+     "cost": 1,
+     "e": [
+      {
+       "n": "Max MP",
+       "t": "s",
+       "v": 40
+      }
+     ],
+     "g": "normal",
+     "id": "r5c5",
+     "r": 5
+    }
+   ],
+   "seed": 11,
+   "skipped": [],
+   "spent": 15,
+   "tree": [
+    "r0c0",
+    "r0c1",
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r2c3",
+    "r3c3",
+    "r4c3"
+   ],
+   "wanted": [
+    "r0c1",
+    "r1c2",
+    "r1c3",
+    "r3c3",
+    "r4c3"
+   ]
+  }
+ ],
+ "daevanion_reachable": {
+  "n00": true,
+  "n01": true,
+  "n02": false,
+  "n03": false,
+  "n04": false,
+  "n10": true,
+  "n11": true,
+  "n12": false,
+  "n13": false,
+  "n14": false,
+  "n20": true,
+  "n21": true,
+  "n22": true,
+  "n23": false,
+  "n24": false,
+  "n30": false,
+  "n31": true,
+  "n32": false,
+  "n33": false,
+  "n34": false,
+  "n40": false,
+  "n41": false,
+  "n42": false,
+  "n43": false,
+  "n44": false
+ },
+ "daevanion_routes": [
+  {
+   "cap": 51,
+   "included": [
+    "n22"
+   ],
+   "name": "single_target",
+   "skipped": [],
+   "spent": 9,
+   "tree": [
+    "n00",
+    "n10",
+    "n20",
+    "n21",
+    "n22"
+   ]
+  },
+  {
+   "cap": 51,
+   "included": [
+    "n04",
+    "n22",
+    "n40"
+   ],
+   "name": "spread",
+   "skipped": [],
+   "spent": 21,
+   "tree": [
+    "n00",
+    "n04",
+    "n10",
+    "n13",
+    "n14",
+    "n20",
+    "n21",
+    "n22",
+    "n23",
+    "n30",
+    "n40"
+   ]
+  },
+  {
+   "cap": 51,
+   "included": [
+    "n04",
+    "n22"
+   ],
+   "name": "unreachable",
+   "skipped": [
+    "n44"
+   ],
+   "spent": 16,
+   "tree": [
+    "n00",
+    "n04",
+    "n10",
+    "n13",
+    "n14",
+    "n20",
+    "n21",
+    "n22",
+    "n23"
+   ]
+  },
+  {
+   "cap": 51,
+   "included": [
+    "n04",
+    "n14",
+    "n22",
+    "n24",
+    "n33",
+    "n41",
+    "n42"
+   ],
+   "name": "many",
+   "skipped": [],
+   "spent": 29,
+   "tree": [
+    "n00",
+    "n04",
+    "n10",
+    "n14",
+    "n20",
+    "n21",
+    "n22",
+    "n23",
+    "n24",
+    "n32",
+    "n33",
+    "n41",
+    "n42"
+   ]
+  }
+ ],
+ "daevanion_spent_cost": 7,
+ "daevanion_total_cost": 51
+}

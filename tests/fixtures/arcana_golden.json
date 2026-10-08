@@ -1,0 +1,890 @@
+{
+ "arcana": [
+  {
+   "ceilings": {
+    "s_dark": 4,
+    "s_rush": 8
+   },
+   "combinations": [
+    {
+     "assignments": [
+      {
+       "need_based_ids": [
+        "s_dark",
+        "s_rush"
+       ],
+       "skill_ids": {
+        "s_dark": 4,
+        "s_focus": 1,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_dash": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 100.0,
+     "covered": {
+      "s_cleave": 1,
+      "s_dark": 4,
+      "s_dash": 1,
+      "s_endure": 4,
+      "s_focus": 9,
+      "s_guard": 3,
+      "s_impact": 4,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_rush": 6,
+      "s_spin": 2,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_focus": 3,
+        "s_guard": 1,
+        "s_spin": 4
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [
+        "s_rush"
+       ],
+       "skill_ids": {
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_dash": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 33.33333333333333,
+     "covered": {
+      "s_cleave": 1,
+      "s_dash": 1,
+      "s_endure": 4,
+      "s_focus": 11,
+      "s_guard": 4,
+      "s_impact": 4,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_rush": 3,
+      "s_spin": 5,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_focus": 3,
+        "s_guard": 1,
+        "s_spin": 4
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_spin": 3
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_dash": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 0.0,
+     "covered": {
+      "s_cleave": 2,
+      "s_dash": 1,
+      "s_endure": 4,
+      "s_focus": 11,
+      "s_guard": 4,
+      "s_impact": 4,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_spin": 7,
+      "s_vigor": 1
+     }
+    }
+   ],
+   "eligible_types": {
+    "s_dark": [
+     "Chalice"
+    ],
+    "s_rush": [
+     "Chalice",
+     "Parchment"
+    ]
+   },
+   "name": "easy",
+   "uncovered_reasons": {
+    "s_dark": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_rush": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ]
+   }
+  },
+  {
+   "ceilings": {
+    "s_dark": 4,
+    "s_impact": 8,
+    "s_onslaught": 8,
+    "s_rush": 8,
+    "s_spin": 8
+   },
+   "combinations": [
+    {
+     "assignments": [
+      {
+       "need_based_ids": [
+        "s_dark",
+        "s_rush",
+        "s_spin"
+       ],
+       "skill_ids": {
+        "s_dark": 3,
+        "s_focus": 1,
+        "s_rush": 3,
+        "s_spin": 2
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [
+        "s_impact",
+        "s_onslaught",
+        "s_rush",
+        "s_spin"
+       ],
+       "skill_ids": {
+        "s_impact": 2,
+        "s_onslaught": 4,
+        "s_rush": 1,
+        "s_spin": 2
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [
+        "s_impact"
+       ],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_dash": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 94.73684210526315,
+     "covered": {
+      "s_cleave": 1,
+      "s_dark": 3,
+      "s_dash": 1,
+      "s_endure": 4,
+      "s_focus": 9,
+      "s_guard": 3,
+      "s_impact": 5,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_rush": 4,
+      "s_spin": 4,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_focus": 4,
+        "s_guard": 3
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 4
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [
+        "s_onslaught"
+       ],
+       "skill_ids": {
+        "s_cleave": 3,
+        "s_dash": 1,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 21.052631578947366,
+     "covered": {
+      "s_cleave": 7,
+      "s_dash": 1,
+      "s_endure": 4,
+      "s_focus": 12,
+      "s_guard": 6,
+      "s_onslaught": 4,
+      "s_reflect": 1,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_focus": 4,
+        "s_guard": 3
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 4
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 4,
+        "s_dash": 3
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 0.0,
+     "covered": {
+      "s_cleave": 8,
+      "s_dash": 3,
+      "s_endure": 4,
+      "s_focus": 12,
+      "s_guard": 6,
+      "s_reflect": 1,
+      "s_vigor": 1
+     }
+    }
+   ],
+   "eligible_types": {
+    "s_dark": [
+     "Chalice"
+    ],
+    "s_impact": [
+     "Parchment",
+     "Compass"
+    ],
+    "s_onslaught": [
+     "Parchment",
+     "Compass"
+    ],
+    "s_rush": [
+     "Chalice",
+     "Parchment"
+    ],
+    "s_spin": [
+     "Chalice",
+     "Parchment"
+    ]
+   },
+   "name": "competing",
+   "uncovered_reasons": {
+    "s_dark": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_impact": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_onslaught": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_rush": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_spin": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ]
+   }
+  },
+  {
+   "ceilings": {
+    "s_dash": 4,
+    "s_focus": 12
+   },
+   "combinations": [
+    {
+     "assignments": [
+      {
+       "need_based_ids": [
+        "s_focus"
+       ],
+       "skill_ids": {
+        "s_dark": 4,
+        "s_focus": 2,
+        "s_rush": 2,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [
+        "s_dash"
+       ],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_dash": 4,
+        "s_impact": 1,
+        "s_onslaught": 3
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 100.0,
+     "covered": {
+      "s_cleave": 1,
+      "s_dark": 4,
+      "s_dash": 4,
+      "s_endure": 4,
+      "s_focus": 10,
+      "s_guard": 3,
+      "s_impact": 2,
+      "s_onslaught": 7,
+      "s_reflect": 1,
+      "s_rush": 5,
+      "s_spin": 2,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_dark": 4,
+        "s_guard": 1,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [
+        "s_focus"
+       ],
+       "skill_ids": {
+        "s_endure": 1,
+        "s_focus": 4,
+        "s_guard": 3,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 33.33333333333333,
+     "covered": {
+      "s_cleave": 1,
+      "s_dark": 4,
+      "s_endure": 4,
+      "s_focus": 8,
+      "s_guard": 4,
+      "s_impact": 4,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_rush": 6,
+      "s_spin": 2,
+      "s_vigor": 1
+     }
+    },
+    {
+     "assignments": [
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_dark": 4,
+        "s_guard": 1,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Chalice"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_impact": 1,
+        "s_onslaught": 4,
+        "s_rush": 3,
+        "s_spin": 1
+       },
+       "theme": "Vigor",
+       "type": "Parchment"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_cleave": 1,
+        "s_impact": 3,
+        "s_onslaught": 4
+       },
+       "theme": "Magic",
+       "type": "Compass"
+      },
+      {
+       "need_based_ids": [],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_guard": 4,
+        "s_vigor": 1
+       },
+       "theme": "Vigor",
+       "type": "Bell"
+      },
+      {
+       "need_based_ids": [
+        "s_focus"
+       ],
+       "skill_ids": {
+        "s_endure": 3,
+        "s_focus": 4,
+        "s_reflect": 1
+       },
+       "theme": "Magic",
+       "type": "Mirror"
+      }
+     ],
+     "coverage_percent": 33.33333333333333,
+     "covered": {
+      "s_cleave": 1,
+      "s_dark": 4,
+      "s_endure": 6,
+      "s_focus": 4,
+      "s_guard": 5,
+      "s_impact": 4,
+      "s_onslaught": 8,
+      "s_reflect": 1,
+      "s_rush": 6,
+      "s_spin": 2,
+      "s_vigor": 1
+     }
+    }
+   ],
+   "eligible_types": {
+    "s_dash": [
+     "Compass"
+    ],
+    "s_focus": [
+     "Chalice",
+     "Bell",
+     "Mirror"
+    ]
+   },
+   "name": "impossible",
+   "uncovered_reasons": {
+    "s_dash": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ],
+    "s_focus": [
+     "arm_arcana_reason_competing_wishes",
+     {}
+    ]
+   }
+  }
+ ],
+ "arcana_card_grade": [
+  "Unique",
+  "Unique",
+  "Rare"
+ ],
+ "arcana_card_level": [
+  0,
+  4,
+  3,
+  0
+ ],
+ "arcana_card_slots": [
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   {
+    "level": 4,
+    "skill_id": "s_dark"
+   },
+   {
+    "level": 2,
+    "skill_id": "s_rush"
+   },
+   null,
+   null
+  ],
+  [
+   {
+    "level": 4,
+    "skill_id": "s_dark"
+   },
+   null,
+   null,
+   null
+  ],
+  [
+   {
+    "level": 1,
+    "skill_id": "s_a"
+   },
+   {
+    "level": 1,
+    "skill_id": "s_a"
+   },
+   {
+    "level": 1,
+    "skill_id": "s_a"
+   },
+   {
+    "level": 1,
+    "skill_id": "s_a"
+   }
+  ]
+ ],
+ "arcana_eligible_skills": {
+  "Bell": [],
+  "Chalice": [
+   "s_dark",
+   "s_rush",
+   "s_spin"
+  ],
+  "Compass": [
+   "s_onslaught",
+   "s_impact"
+  ],
+  "Mirror": [],
+  "Parchment": [
+   "s_rush",
+   "s_spin",
+   "s_onslaught",
+   "s_impact"
+  ]
+ },
+ "arcana_full_pools": {
+  "Bell": [
+   "s_guard",
+   "s_focus",
+   "s_endure",
+   "s_vigor"
+  ],
+  "Chalice": [
+   "s_rush",
+   "s_spin",
+   "s_dark",
+   "s_guard",
+   "s_focus"
+  ],
+  "Compass": [
+   "s_onslaught",
+   "s_impact",
+   "s_dash",
+   "s_cleave"
+  ],
+  "Mirror": [
+   "s_focus",
+   "s_endure",
+   "s_reflect"
+  ],
+  "Parchment": [
+   "s_rush",
+   "s_onslaught",
+   "s_spin",
+   "s_cleave",
+   "s_impact"
+  ]
+ },
+ "arcana_usable_types": [
+  "Chalice",
+  "Parchment",
+  "Compass",
+  "Bell",
+  "Mirror"
+ ]
+}

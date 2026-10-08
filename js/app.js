@@ -3,17 +3,22 @@
 import { addCharacter, bp, characters, CLASSES, currentCharacter, exportProfile, importProfile, reorderCharacter,
   onChange, plannerCharacterNamed, renameCharacter, save, selectCharacter, syncPlannerCharacters } from "./state.js";
 import { ODYLE_MAX, isDone, odyleEnergy } from "./engine/planner.js";
-import * as timersPage from "./pages/timers.js";
-import * as plannerPage from "./pages/planner.js";
-import * as charactersPage from "./pages/characters.js";
-
+// Pages load on first use, so a page that fails to load only breaks itself.
 const PAGES = {
-  timers: { title: "Timers", desc: "Event timeline, field bosses and countdowns", module: timersPage },
-  planner: { title: "Planner", desc: "Daily, weekly and portal checklists, Odyle energy", module: plannerPage },
-  character: { title: "Character", desc: "", module: charactersPage },
+  character: { title: "Character", load: () => import("./pages/characters.js") },
+  timers: { title: "Timers", desc: "Event timeline, field bosses and countdowns", load: () => import("./pages/timers.js") },
+  planner: { title: "Planner", desc: "Daily, weekly and portal checklists, Odyle energy", load: () => import("./pages/planner.js") },
+  skills: { title: "Skill Planner", load: () => import("./pages/skills.js") },
+  layout: { title: "Skill Layout", load: () => import("./pages/layout.js") },
+  daevanion: { title: "Daevanion Board", load: () => import("./pages/daevanion.js") },
+  equipment: { title: "Equipment", load: () => import("./pages/equipment.js") },
+  arcana: { title: "Arcana", load: () => import("./pages/arcana.js") },
+  pantheon: { title: "Pantheon", load: () => import("./pages/pantheon.js") },
+  genius: { title: "Genius Insight", load: () => import("./pages/genius.js") },
 };
 
 let current = null;
+let renderSeq = 0;
 
 export function route() {
   const hash = location.hash.slice(1) || "character";
@@ -25,14 +30,32 @@ export function navigate(name) {
   if (location.hash.slice(1) === name) render(); else location.hash = name;
 }
 
-function render() {
+async function render() {
   const name = route();
-  if (current && current.module.unmount) current.module.unmount();
+  const seq = ++renderSeq;
+  if (current && current.module && current.module.unmount) current.module.unmount();
   current = PAGES[name];
   const main = document.getElementById("main");
   main.innerHTML = "";
-  current.module.mount(main);
   renderSidebar();
+  let module;
+  try {
+    module = await current.load();
+  } catch (err) {
+    console.error(err);
+    main.innerHTML = `<div class="card"><h2>${current.title}</h2><div class="muted">This page could not be loaded: ${escapeHtml(err.message)}</div></div>`;
+    return;
+  }
+  if (seq !== renderSeq) return;
+  current.module = module;
+  const back = name === "character" || name === "timers" || name === "planner" ? "" :
+    `<div class="row" style="margin-bottom:10px"><button id="back-home">Back to Characters</button><h1>${current.title}</h1></div>`;
+  main.innerHTML = back;
+  const host = document.createElement("div");
+  main.appendChild(host);
+  const backBtn = main.querySelector("#back-home");
+  if (backBtn) backBtn.addEventListener("click", () => navigate("character"));
+  await module.mount(host);
 }
 
 export function progressLine(name) {
@@ -132,6 +155,20 @@ export function askCharacter() {
 
 document.getElementById("add-character").addEventListener("click", askCharacter);
 document.getElementById("export-profile").addEventListener("click", exportProfile);
+document.getElementById("export-images").addEventListener("click", async (e) => {
+  const button = e.currentTarget;
+  if (!currentCharacter()) { alert("Add a character first."); return; }
+  button.disabled = true;
+  try {
+    const { exportImages } = await import("./export.js");
+    const count = await exportImages();
+    button.textContent = `Exported ${count} images`;
+    setTimeout(() => { button.textContent = "Export images"; }, 2500);
+  } catch (err) {
+    console.error(err);
+    alert("Could not export the images: " + err.message);
+  } finally { button.disabled = false; }
+});
 document.getElementById("import-profile").addEventListener("click", () => document.getElementById("import-file").click());
 document.getElementById("import-file").addEventListener("change", async (e) => {
   const file = e.target.files[0];

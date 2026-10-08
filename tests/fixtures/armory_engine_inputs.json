@@ -1,0 +1,572 @@
+{
+ "golden_inputs": {
+  "DETAILS": {
+   "900001": {
+    "level": 120,
+    "gradeName": "Unique",
+    "categoryName": "Greatsword",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "WeaponFixingDamage",
+      "name": "Attack",
+      "value": "396 ~ 545"
+     },
+     {
+      "id": "Accuracy",
+      "name": "Accuracy",
+      "value": "210"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "CriticalHit",
+      "name": "Critical Hit",
+      "value": "44"
+     },
+     {
+      "id": "CombatSpeed",
+      "name": "Combat Speed",
+      "value": "3%"
+     },
+     {
+      "id": "BackAttackDamage",
+      "name": "Back Attack",
+      "value": "12"
+     },
+     {
+      "id": "Might",
+      "name": "Might",
+      "value": "18"
+     }
+    ]
+   },
+   "900002": {
+    "level": 140,
+    "gradeName": "Heroic",
+    "categoryName": "Guard",
+    "maxEnchantLevel": 20,
+    "mainStats": [
+     {
+      "id": "WeaponFixingDamage",
+      "name": "Attack",
+      "value": "136"
+     },
+     {
+      "id": "Block",
+      "name": "Block",
+      "value": "88"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "Perfect",
+      "name": "Perfect Chance",
+      "value": "5"
+     },
+     {
+      "id": "Defense",
+      "name": "Defense increase",
+      "value": "2%"
+     },
+     {
+      "id": "Attack",
+      "name": "Attack",
+      "value": "30"
+     }
+    ]
+   },
+   "900003": {
+    "level": 95,
+    "gradeName": "Unique",
+    "categoryName": "Ring",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "WeaponFixingDamage",
+      "name": "Attack",
+      "value": "60"
+     },
+     {
+      "id": "Time",
+      "name": "Time",
+      "value": "4"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "Accuracy",
+      "name": "Accuracy",
+      "value": "19"
+     },
+     {
+      "id": "CriticalHit",
+      "name": "Critical Hit",
+      "value": "21"
+     },
+     {
+      "id": "Attack",
+      "name": "Attack",
+      "value": "11"
+     }
+    ]
+   },
+   "900004": {
+    "level": 110,
+    "gradeName": "Heroic",
+    "categoryName": "Top",
+    "maxEnchantLevel": 20,
+    "mainStats": [
+     {
+      "id": "ArmorDefense",
+      "name": "Defense",
+      "value": "410"
+     },
+     {
+      "id": "HPMax",
+      "name": "Max HP",
+      "value": "1800"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "DamageBoost",
+      "name": "Damage Boost",
+      "value": "1.5%"
+     },
+     {
+      "id": "Endurance",
+      "name": "Endurance",
+      "value": "26"
+     },
+     {
+      "id": "Accuracy",
+      "name": "Accuracy",
+      "value": "14"
+     }
+    ]
+   },
+   "900005": {
+    "level": 70,
+    "gradeName": "Unique",
+    "categoryName": "Belt",
+    "maxEnchantLevel": 10,
+    "mainStats": [
+     {
+      "id": "ArmorDefense",
+      "name": "Defense",
+      "value": "150"
+     },
+     {
+      "id": "HPMax",
+      "name": "Max HP",
+      "value": "900"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "Evasion",
+      "name": "Evasion",
+      "value": "17"
+     },
+     {
+      "id": "DecreaseDamage",
+      "name": "Damage Tolerance",
+      "value": "0.8%"
+     }
+    ]
+   },
+   "310900001": {
+    "level": 40,
+    "gradeName": "Unique",
+    "categoryName": "Rune",
+    "maxEnchantLevel": 10,
+    "mainStats": [
+     {
+      "id": "CombatSpeed",
+      "name": "Combat Speed",
+      "value": "1%"
+     },
+     {
+      "id": "DefensePierce",
+      "name": "Penetration",
+      "value": "100"
+     }
+    ],
+    "subStats": []
+   }
+  },
+  "EQUIPPED": {
+   "MainHand": {
+    "id": 900001,
+    "name": "QA Greatsword"
+   },
+   "SubHand": {
+    "id": 900002,
+    "name": "QA Guard"
+   },
+   "Ring1": {
+    "id": 900003,
+    "name": "QA Ring"
+   },
+   "Torso": {
+    "id": 900004,
+    "name": "QA Top"
+   },
+   "Belt": {
+    "id": 900005,
+    "name": "QA Belt"
+   },
+   "Rune": {
+    "id": 310900001,
+    "name": "Clash Rune"
+   },
+   "Cloak": {
+    "id": 900999,
+    "name": "QA Unknown"
+   }
+  },
+  "SUBSTATS": {
+   "MainHand": [
+    0,
+    2
+   ],
+   "SubHand": [
+    1
+   ],
+   "Ring1": [
+    0,
+    9
+   ],
+   "Torso": [
+    0,
+    1
+   ],
+   "Belt": []
+  },
+  "ENCHANT": {
+   "MainHand": 12,
+   "SubHand": 23,
+   "Ring1": 15,
+   "Torso": 20,
+   "Belt": 0,
+   "Rune": 11
+  },
+  "SUBSTAT_CASES": [
+   {
+    "name": "exact_order",
+    "sub_stats": [
+     {
+      "name": "Critical Hit"
+     },
+     {
+      "name": "Attack"
+     },
+     {
+      "name": "Accuracy"
+     }
+    ],
+    "count": 2,
+    "priority": [
+     "Attack",
+     "Accuracy",
+     "Critical Hit"
+    ]
+   },
+   {
+    "name": "case_insensitive",
+    "sub_stats": [
+     {
+      "name": "defense INCREASE"
+     },
+     {
+      "name": "Attack"
+     }
+    ],
+    "count": 1,
+    "priority": [
+     "Defense Increase"
+    ]
+   },
+   {
+    "name": "alias_movement_speed",
+    "sub_stats": [
+     {
+      "name": "Move Speed"
+     },
+     {
+      "name": "Attack"
+     }
+    ],
+    "count": 1,
+    "priority": [
+     "Movement Speed"
+    ]
+   },
+   {
+    "name": "falls_through_whole_list",
+    "sub_stats": [
+     {
+      "name": "Endurance"
+     },
+     {
+      "name": "Block"
+     }
+    ],
+    "count": 3,
+    "priority": [
+     "Attack",
+     "Accuracy",
+     "Block",
+     "Endurance"
+    ]
+   },
+   {
+    "name": "no_match",
+    "sub_stats": [
+     {
+      "name": "Endurance"
+     }
+    ],
+    "count": 2,
+    "priority": [
+     "Attack"
+    ]
+   },
+   {
+    "name": "duplicate_names",
+    "sub_stats": [
+     {
+      "name": "Attack"
+     },
+     {
+      "name": "Attack"
+     },
+     {
+      "name": "Accuracy"
+     }
+    ],
+    "count": 2,
+    "priority": [
+     "Attack",
+     "Accuracy"
+    ]
+   }
+  ]
+ },
+ "reco_inputs": {
+  "ITEMS": {
+   "101": {
+    "id": 101,
+    "name": "Abyssal Helm",
+    "grade": "Unique"
+   },
+   "102": {
+    "id": 102,
+    "name": "Abyssal Gloves",
+    "grade": "Unique"
+   },
+   "103": {
+    "id": 103,
+    "name": "Abyssal Boots",
+    "grade": "Unique"
+   },
+   "104": {
+    "id": 104,
+    "name": "Abyssal Ring",
+    "grade": "Unique"
+   },
+   "105": {
+    "id": 105,
+    "name": "Abyssal Ring",
+    "grade": "Unique"
+   },
+   "201": {
+    "id": 201,
+    "name": "Corrupted Helm",
+    "grade": "Legend"
+   },
+   "202": {
+    "id": 202,
+    "name": "Corrupted Boots",
+    "grade": "Legend"
+   },
+   "203": {
+    "id": 203,
+    "name": "Corrupted Ring",
+    "grade": "Legend"
+   },
+   "300": {
+    "id": 300,
+    "name": "Fierce Battle Amulet",
+    "grade": "Unique"
+   }
+  },
+  "DUNGEON_SETS": {
+   "Expedition": {
+    "Abyssal": {
+     "grade": "Unique",
+     "gearscore": 120
+    }
+   },
+   "Sanctuary": {
+    "Abyssal": {
+     "grade": "Unique",
+     "gearscore": 120
+    },
+    "Corrupted": {
+     "grade": "Legend",
+     "gearscore": 95
+    }
+   }
+  },
+  "DUNGEON_SETS_FLAT": {
+   "Expedition": {
+    "Abyssal": "Unique"
+   }
+  },
+  "DETAILS": {
+   "101": {
+    "level": 100,
+    "gradeName": "Unique",
+    "categoryName": "Helmet",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "Attack",
+      "name": "Attack",
+      "value": "100"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "CriticalHit",
+      "name": "Critical Hit",
+      "value": "10"
+     },
+     {
+      "id": "Smite",
+      "name": "Smite",
+      "value": "5"
+     },
+     {
+      "id": "Block",
+      "name": "Block",
+      "value": "7"
+     }
+    ]
+   },
+   "102": {
+    "level": 90,
+    "gradeName": "Unique",
+    "categoryName": "Gloves",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "Attack",
+      "name": "Attack",
+      "value": "50"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "CombatSpeed",
+      "name": "Combat Speed",
+      "value": "2"
+     }
+    ]
+   },
+   "103": {
+    "level": 80,
+    "gradeName": "Unique",
+    "categoryName": "Boots",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "Defense",
+      "name": "Defense increase",
+      "value": "40"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "MoveSpeed",
+      "name": "Move Speed",
+      "value": "3"
+     }
+    ]
+   },
+   "203": {
+    "level": 70,
+    "gradeName": "Legend",
+    "categoryName": "Ring",
+    "maxEnchantLevel": 15,
+    "mainStats": [
+     {
+      "id": "Attack",
+      "name": "Attack",
+      "value": "20"
+     }
+    ],
+    "subStats": [
+     {
+      "id": "Accuracy",
+      "name": "Accuracy",
+      "value": "8"
+     }
+    ]
+   }
+  },
+  "EQUIPPED": {
+   "Helmet": 101,
+   "Gloves": 102,
+   "Boots": 103,
+   "Ring1": 203
+  },
+  "EQUIPPED_AS_ITEMS": {
+   "Helmet": {
+    "id": 101,
+    "name": "Abyssal Helm",
+    "grade": "Unique"
+   },
+   "Gloves": {
+    "id": 102,
+    "name": "Abyssal Gloves",
+    "grade": "Unique"
+   },
+   "Boots": {
+    "id": 103,
+    "name": "Abyssal Boots",
+    "grade": "Unique"
+   },
+   "Ring1": {
+    "id": 203,
+    "name": "Corrupted Ring",
+    "grade": "Legend"
+   }
+  },
+  "SUBSTATS": {
+   "Helmet": [
+    0,
+    1
+   ],
+   "Gloves": [
+    0
+   ],
+   "Boots": [
+    0
+   ],
+   "Ring1": [
+    0
+   ]
+  },
+  "PROFILE_CATEGORIES": {
+   "helmet": [
+    "Attack",
+    "Critical Hit",
+    "Smite",
+    "Movement Speed"
+   ]
+  }
+ }
+}
