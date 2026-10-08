@@ -1,0 +1,941 @@
+{
+ "generated": "2026-10-08",
+ "sources": {
+  "bosses": "https://raw.githubusercontent.com/MythosOfs/aion2-tracker/main/index.html",
+  "pages": "https://wikily.gg/aion-2/bosses/<slug>"
+ },
+ "bosses": [
+  {
+   "id": "elyos01",
+   "faction": "elyos",
+   "name": "Kernon of the West",
+   "zone": "Cantas Valley",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "elyos01.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos02",
+   "faction": "elyos",
+   "name": "Neikel of the East",
+   "zone": "Cantas Valley",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "elyos02.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos03",
+   "faction": "elyos",
+   "name": "Rotten Kutar",
+   "zone": "Elun River Swamp",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "elyos03.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos04",
+   "faction": "elyos",
+   "name": "Blooming Korin",
+   "zone": "Elun River Midstream",
+   "cycle_minutes": 120,
+   "grade": "Rare",
+   "level": 35,
+   "image": "elyos04.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos05",
+   "faction": "elyos",
+   "name": "Bodyguard Teegant",
+   "zone": "Fortress Ruins",
+   "cycle_minutes": 180,
+   "grade": "Rare",
+   "level": 35,
+   "image": "elyos05.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos06",
+   "faction": "elyos",
+   "name": "Kusan the Mad Gladiator",
+   "zone": "Fortress Ruins",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos06.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos07",
+   "faction": "elyos",
+   "name": "Ritualist Garshim",
+   "zone": "Fortress Ruins",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos07.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos08",
+   "faction": "elyos",
+   "name": "Bloodfang Pnyn",
+   "zone": "Tolbas Forest",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos08.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos09",
+   "faction": "elyos",
+   "name": "Furious Saursus",
+   "zone": "Tolbas Forest",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos09.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos10",
+   "faction": "elyos",
+   "name": "Scholar Aulla",
+   "zone": "Aulau Village",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos10.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos12",
+   "faction": "elyos",
+   "name": "Forest Warrior Aullamu",
+   "zone": "Aulau Village",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos12.png",
+   "artwork": {
+    "name": "Artwork: Forest Warrior Aullamu",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos12.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos13",
+   "faction": "elyos",
+   "name": "Heretic Layla",
+   "zone": "Artamia Plateau",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos13.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos14",
+   "faction": "elyos",
+   "name": "Black Tentacle Lawa",
+   "zone": "Artamia Gorge",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos14.png",
+   "artwork": {
+    "name": "Artwork: Black Tentacle Lawa",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos14.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos15",
+   "faction": "elyos",
+   "name": "Centurion Demiros",
+   "zone": "Artamia Plateau",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos15.png",
+   "artwork": {
+    "name": "Artwork: Centurion Demiros",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos15.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos16",
+   "faction": "elyos",
+   "name": "Divine Ansas",
+   "zone": "Artamia Plateau",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos16.png",
+   "artwork": {
+    "name": "Artwork: Divine Ansas",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos16.png",
+    "effects": [
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos17",
+   "faction": "elyos",
+   "name": "Harvest Manager Moshav",
+   "zone": "Drana Plantation",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos17.png",
+   "artwork": null
+  },
+  {
+   "id": "elyos18",
+   "faction": "elyos",
+   "name": "Sentinel K'nash",
+   "zone": "Drana Plantation",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos18.png",
+   "artwork": {
+    "name": "Artwork: Sentinel K'nash",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos18.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos19",
+   "faction": "elyos",
+   "name": "Researcher Setram",
+   "zone": "Nahid Legion Fortress",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos19.png",
+   "artwork": {
+    "name": "Artwork: Researcher Setram",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos19.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos20",
+   "faction": "elyos",
+   "name": "Phantasm Kasia",
+   "zone": "Garden of the Illusion God",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "elyos20.png",
+   "artwork": {
+    "name": "Artwork: Phantasm Kasia",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos20.png",
+    "effects": [
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos21",
+   "faction": "elyos",
+   "name": "Silent Dartan",
+   "zone": "Artamia Plateau South",
+   "cycle_minutes": 720,
+   "grade": "Legend",
+   "level": 46,
+   "image": "elyos21.png",
+   "artwork": {
+    "name": "Artwork: Silent Dartan",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos21.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos22",
+   "faction": "elyos",
+   "name": "Soul Ruler Kashapa",
+   "zone": "Artamia Plateau East",
+   "cycle_minutes": 720,
+   "grade": "Legend",
+   "level": 46,
+   "image": "elyos22.png",
+   "artwork": {
+    "name": "Artwork: Soul Ruler Kashapa",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos22.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos23",
+   "faction": "elyos",
+   "name": "High Commander Lagta",
+   "zone": "Red Forest",
+   "cycle_minutes": 1440,
+   "grade": "Legend",
+   "level": 46,
+   "image": "elyos23.png",
+   "artwork": {
+    "name": "Artwork: High Commander Lagta",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_elyos23.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "elyos24",
+   "faction": "elyos",
+   "name": "Eternal Gartua",
+   "zone": "Isle of Eternity",
+   "cycle_minutes": 1440,
+   "grade": "x",
+   "level": 70,
+   "image": "elyos24.png",
+   "artwork": {
+    "name": "Artwork: Eternal Gartua",
+    "grade": "Heroic",
+    "chance": 25.0,
+    "image": "artwork_elyos24.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "5"
+     ],
+     [
+      "Life [Yustiel]",
+      "5"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "5"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "5"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo01",
+   "faction": "asmo",
+   "name": "Melted Danar",
+   "zone": "Dredgion Crash Site",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "asmo01.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo02",
+   "faction": "asmo",
+   "name": "Black Warrior Aed",
+   "zone": "Nameless Graveyard",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "asmo02.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo03",
+   "faction": "asmo",
+   "name": "Faithful Rajit",
+   "zone": "Sanctuary Watch Post",
+   "cycle_minutes": 60,
+   "grade": "Rare",
+   "level": 35,
+   "image": "asmo03.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo04",
+   "faction": "asmo",
+   "name": "Berserker Vargor",
+   "zone": "Sanctuary Watch Post",
+   "cycle_minutes": 120,
+   "grade": "Rare",
+   "level": 35,
+   "image": "asmo04.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo05",
+   "faction": "asmo",
+   "name": "Blood Warrior Lannar",
+   "zone": "Moslan Forest",
+   "cycle_minutes": 180,
+   "grade": "Rare",
+   "level": 35,
+   "image": "asmo05.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo06",
+   "faction": "asmo",
+   "name": "Predator Garsan",
+   "zone": "Moslan Forest",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo06.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo07",
+   "faction": "asmo",
+   "name": "Deceiver Trid",
+   "zone": "Urtumheim",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo07.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo08",
+   "faction": "asmo",
+   "name": "Blue Wave Kelpina",
+   "zone": "Forest of Purification",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo08.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo09",
+   "faction": "asmo",
+   "name": "Advisor Resana",
+   "zone": "Dranactus",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo09.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo10",
+   "faction": "asmo",
+   "name": "High Overseer Nutah",
+   "zone": "Dranactus",
+   "cycle_minutes": 240,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo10.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo12",
+   "faction": "asmo",
+   "name": "Desecrator Newbold",
+   "zone": "Basfelt Ruins",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo12.png",
+   "artwork": {
+    "name": "Artwork: Desecrator Newbold",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo12.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo13",
+   "faction": "asmo",
+   "name": "Specter Archon Axios",
+   "zone": "Basfelt Ruins",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo13.png",
+   "artwork": {
+    "name": "Artwork: Specter Archon Axios",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo13.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo14",
+   "faction": "asmo",
+   "name": "Addicted Hardirun",
+   "zone": "Pafnite Burial Ground",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo14.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo15",
+   "faction": "asmo",
+   "name": "Executioner Barthien",
+   "zone": "Gribade Canyon West",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo15.png",
+   "artwork": {
+    "name": "Artwork: Executioner Barthien",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo15.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo16",
+   "faction": "asmo",
+   "name": "Drakan Battalion Weapon Guruta",
+   "zone": "Gribade Canyon East",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo16.png",
+   "artwork": {
+    "name": "Artwork: Drakan Battalion Weapon Guruta",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo16.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo17",
+   "faction": "asmo",
+   "name": "Veteran Shujakan",
+   "zone": "Black Claw Village",
+   "cycle_minutes": 360,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo17.png",
+   "artwork": null
+  },
+  {
+   "id": "asmo18",
+   "faction": "asmo",
+   "name": "Visionary Karuka",
+   "zone": "Black Claw Village",
+   "cycle_minutes": 480,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo18.png",
+   "artwork": {
+    "name": "Artwork: Visionary Karuka",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo18.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo19",
+   "faction": "asmo",
+   "name": "Dark Shadow Vishwada",
+   "zone": "Ragta Fortress",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo19.png",
+   "artwork": {
+    "name": "Artwork: Dark Shadow Vishwada",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo19.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo20",
+   "faction": "asmo",
+   "name": "Sharp Shylak",
+   "zone": "Impetusium Plaza",
+   "cycle_minutes": 720,
+   "grade": "Unique",
+   "level": 40,
+   "image": "asmo20.png",
+   "artwork": {
+    "name": "Artwork: Sharp Shylak",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo20.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Illusion [Kaisinel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo21",
+   "faction": "asmo",
+   "name": "Silent Dartan",
+   "zone": "Forest of Purification",
+   "cycle_minutes": 720,
+   "grade": "Legend",
+   "level": 46,
+   "image": "asmo21.png",
+   "artwork": {
+    "name": "Artwork: Silent Dartan",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo21.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo22",
+   "faction": "asmo",
+   "name": "Soul Ruler Kashapa",
+   "zone": "Pafnite Burial Ground",
+   "cycle_minutes": 720,
+   "grade": "Legend",
+   "level": 46,
+   "image": "asmo22.png",
+   "artwork": {
+    "name": "Artwork: Soul Ruler Kashapa",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo22.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo23",
+   "faction": "asmo",
+   "name": "High Commander Lagta",
+   "zone": "Ragta Fortress",
+   "cycle_minutes": 1440,
+   "grade": "Legend",
+   "level": 46,
+   "image": "asmo23.png",
+   "artwork": {
+    "name": "Artwork: High Commander Lagta",
+    "grade": "Unique",
+    "chance": 25.0,
+    "image": "artwork_asmo23.png",
+    "effects": [
+     [
+      "Destiny [Marchutan]",
+      "4"
+     ],
+     [
+      "Life [Yustiel]",
+      "4"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "4"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "asmo24",
+   "faction": "asmo",
+   "name": "Immortal Gartua",
+   "zone": "Isle of Immortality",
+   "cycle_minutes": 1440,
+   "grade": "x",
+   "level": 70,
+   "image": "asmo24.png",
+   "artwork": {
+    "name": "Artwork: Immortal Gartua",
+    "grade": "Heroic",
+    "chance": 25.0,
+    "image": "artwork_asmo24.png",
+    "effects": [
+     [
+      "Illusion [Kaisinel]",
+      "5"
+     ],
+     [
+      "Life [Yustiel]",
+      "5"
+     ],
+     [
+      "Wisdom [Lumiel]",
+      "5"
+     ],
+     [
+      "Destiny [Marchutan]",
+      "5"
+     ]
+    ]
+   }
+  }
+ ]
+}

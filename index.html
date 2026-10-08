@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aion 2 Armory</title>
+  <link rel="icon" href="assets/class_icons/gladiator.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <nav id="sidebar">
+    <h1>Tools</h1>
+    <div id="tools" class="stack"></div>
+    <h1 style="margin-top:6px">Characters</h1>
+    <div class="muted small">Click a character to switch the Armory to it.</div>
+    <div id="roster"></div>
+    <div class="row" style="margin-top:4px">
+      <button id="add-character" class="grow">Add character</button>
+    </div>
+    <div class="row">
+      <button id="export-profile" class="grow">Export profile</button>
+      <button id="import-profile" class="grow">Import profile</button>
+      <input id="import-file" type="file" accept="application/json" hidden>
+    </div>
+    <div class="muted small" style="margin-top:auto">Profiles are stored in this browser. Export to keep a copy or move it to the desktop app.</div>
+  </nav>
+  <main id="main"></main>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

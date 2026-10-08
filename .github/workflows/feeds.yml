@@ -1,0 +1,62 @@
+name: Mirror the live feeds
+
+# The site cannot read shugo.gg's schedule or aion2timers.com's per-server
+# kill feed from the browser (no CORS), so this job fetches them with a
+# browser User-Agent and publishes the JSON on the `data` branch, which
+# raw.githubusercontent.com serves with CORS. The branch is rewritten each
+# run so its history stays one commit deep.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch feeds
+        shell: python
+        run: |
+          import json, os, time, urllib.request
+          UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          servers = ["eu-siel", "eu-israphel", "eu-nezekan", "eu-zikel", "eu-vaizel", "eu-triniel", "eu-kaisinel",
+                     "eu-lumiel", "eu-yustiel", "eu-marchutan", "eu-ariel", "eu-azphel", "eu-fregion", "eu-ereshkigal",
+                     "eu-beritra", "nae-siel", "nae-israphel", "nae-nezekan", "nae-zikel", "nae-triniel",
+                     "naw-siel", "naw-israphel", "naw-nezekan", "naw-zikel", "sa-siel", "sa-israphel", "sa-nezekan", "sa-zikel"]
+          os.makedirs("out/feeds", exist_ok=True)
+          def get(url):
+              req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return r.read()
+          ok = 0
+          for server in servers:
+              try:
+                  data = json.loads(get(f"https://www.aion2timers.com/api/fieldboss.php?action=feed&server={server}"))
+                  if data.get("ok"):
+                      data["mirroredAt"] = int(time.time())
+                      open(f"out/feeds/{server}.json", "w").write(json.dumps(data, separators=(",", ":")))
+                      ok += 1
+              except Exception as exc:
+                  print(server, "failed:", exc)
+              time.sleep(0.3)
+          try:
+              open("out/shugo_timers.json", "wb").write(get("https://shugo.gg/timers.json"))
+          except Exception as exc:
+              print("shugo timers failed:", exc)
+          print(f"{ok}/{len(servers)} servers mirrored")
+          if ok == 0:
+              raise SystemExit("no feed fetched")
+
+      - name: Publish to the data branch
+        run: |
+          cd out
+          git init -q -b data
+          git config user.name "feeds-bot"
+          git config user.email "feeds-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Feeds $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" data
