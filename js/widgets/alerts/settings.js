@@ -1,11 +1,26 @@
 // The Alerts card on the Settings page; every change saves at once.
 
 import { onPrefs } from "../../ui.js";
+import { NO_PUSH_RELAY, disablePush, enablePush, onPushStatus, pushStatus, relayOrigin, sendTestPush } from "../../push.js";
 import { ODYLE_MAX, SHOP_SPECIAL_TASK } from "../../engine/planner.js";
 import { REPEATS, customOccurrence, odyleTarget, relativeText } from "./core.js";
 import { SOUNDS, alertSettings, eventList, newCustomEvent, notificationState, playSound, requestNotifications, saveAlertSettings, trackedBossCount } from "../../notify.js";
 
 const esc = (text) => String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function pushState(st) {
+  if (!st.supported) return ["warn", "Not supported in this browser", ""];
+  if (st.relayPush === "missing") return ["warn", "Needs the Armory relay Worker", NO_PUSH_RELAY];
+  if (st.permission === "denied") return ["danger", "Blocked by the browser: allow notifications for this site in its settings", ""];
+  if (!st.enabled) return st.relayPush === "ok" ? ["info", "Off", ""] : ["warn", "The relay is not answering", ""];
+  if (!st.subscribed) return ["danger", "Subscription lost", "The browser dropped the push subscription; turn push notifications off and on again."];
+  const sync = st.lastSync || {};
+  const note = st.relayChanged ? "The relay URL changed since push was turned on; turn it off and on to move to the new relay." : "";
+  if (sync.error) return ["danger", "Upload failed", sync.error];
+  if (!sync.at) return ["info", "On · waiting for the alert sources", note];
+  const time = new Date(sync.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  return ["success", `On · ${sync.count} alert${sync.count === 1 ? "" : "s"} uploaded at ${time}`, note];
+}
 
 const PERMISSION = {
   granted: ["success", "Allowed"],
@@ -65,6 +80,14 @@ export function renderAlertSettings(el) {
       <div class="al-field"><span class="al-label">Browser notifications</span><div class="stack al-tight">
         <div class="row"><label class="row"><input type="checkbox" data-k="browser" ${s.browser ? "checked" : ""}> System notifications</label><span class="tag" data-permission></span></div>
         <label class="row small muted"><input type="checkbox" data-k="browserAlways" ${s.browserAlways ? "checked" : ""}> Also while this tab is in front (otherwise only when it is hidden)</label></div></div>
+      <h3>While the site is closed</h3>
+      <div class="al-push stack al-tight">
+        <div class="row"><label class="al-switch row"><input type="checkbox" role="switch" data-push-toggle>
+          <span>Push notifications (works with the browser running, even with the Armory closed)</span></label><span class="tag" data-push-state></span></div>
+        <div class="small muted al-push-note" data-push-note hidden></div>
+        <div class="row"><button type="button" data-push-test disabled>Send test</button><span class="small muted al-push-msg" data-push-msg></span></div>
+        <div class="muted small">Alert times are uploaded to your relay Worker; it sends the notification at the right minute.</div>
+      </div>
       <h3>Sources</h3>
       <div class="al-sources">
         <div class="al-source" style="--al-accent: var(--warn)"><label class="row"><input type="checkbox" data-k="timers" ${s.timers ? "checked" : ""}><b>Event timers</b></label>
@@ -208,7 +231,59 @@ export function renderAlertSettings(el) {
     });
   }, 30000);
 
+  const pushBox = el.querySelector(".al-push");
+  const pushToggle = pushBox.querySelector("[data-push-toggle]");
+  const pushTest = pushBox.querySelector("[data-push-test]");
+  const pushMsg = pushBox.querySelector("[data-push-msg]");
+  let pushBusy = false;
+  const say = (text, bad = false) => { pushMsg.textContent = text; pushMsg.classList.toggle("bad", bad); };
+  const drawPush = async () => {
+    const st = await pushStatus();
+    if (!el.isConnected) return;
+    const [tone, text, note] = pushState(st);
+    const tag = pushBox.querySelector("[data-push-state]");
+    tag.className = `tag ${tone}`;
+    tag.textContent = text;
+    const noteEl = pushBox.querySelector("[data-push-note]");
+    noteEl.textContent = note;
+    noteEl.hidden = !note;
+    pushToggle.checked = st.enabled;
+    pushToggle.disabled = pushBusy || (!st.enabled && (!st.supported || st.relayPush !== "ok" || st.permission === "denied"));
+    pushTest.disabled = pushBusy || !st.enabled || !st.subscribed;
+  };
+  pushToggle.addEventListener("change", async () => {
+    pushBusy = true;
+    const on = pushToggle.checked;
+    say(on ? "Turning on…" : "Turning off…");
+    try {
+      if (on) await enablePush(); else await disablePush();
+      say(on ? "Push notifications are on." : "");
+    } catch (err) {
+      say(err.message, true);
+    } finally {
+      pushBusy = false;
+      drawPush();
+    }
+  });
+  pushTest.addEventListener("click", async () => {
+    pushTest.disabled = true;
+    say("Sending…");
+    try {
+      await sendTestPush();
+      say("Sent: it should appear within a few seconds.");
+    } catch (err) {
+      say(err.message, true);
+    } finally { drawPush(); }
+  });
+  const stopPush = onPushStatus(() => { if (!el.isConnected) stopPush(); else drawPush(); });
+  let relaySeen = relayOrigin();
+  const stopRelay = onPrefs(() => {
+    if (!el.isConnected) { stopRelay(); return; }
+    if (relayOrigin() !== relaySeen) { relaySeen = relayOrigin(); drawPush(); }
+  });
+
   drawPermission();
   drawTracked();
   drawEvents();
+  drawPush();
 }

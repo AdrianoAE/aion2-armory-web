@@ -313,3 +313,8 @@ works. Deploying it takes about two minutes on the free plan:
 
 Then paste `https://aion2-relay.<account>.workers.dev/?url=` into
 Settings → Official site → Relay URL and press Test.
+
+## Push notifications (alerts while the site is closed)
+
+`sw.js` (site root) shows pushes and opens the right page on click. `js/push.js` registers it, subscribes with the relay Worker's VAPID key (`GET /push/key`) and uploads the next 24 h of alert times (`POST /push/subscribe`, at most 200 entries, re-sent when something within 3 h changes, hourly when anything changed, and every 6 h regardless). The Worker (`docs/relay-worker.js`, deployed from `../aion2-armory-relay`) keeps subscribers in the KV namespace `PUSH`, runs a cron every minute that sends the entries due in the last two minutes (RFC 8291 encryption and RFC 8292 VAPID with WebCrypto, tested in `tests/webpush.test.mjs`), drops a subscriber on 404/410, and expires records 30 days after the last upload. Deploying it needs the KV binding, the cron trigger and the secrets `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`wrangler secret put`); the private key lives only there. Users turn it on in Settings → Alerts → "While the site is closed"; the browser must be running for a push to arrive.
+

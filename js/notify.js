@@ -13,6 +13,7 @@ import {
 } from "./widgets/alerts/core.js";
 import "./widgets/alerts/upcoming.js";
 import "./widgets/alerts/custom.js";
+import "./push.js";
 
 export { ALERT_DEFAULTS };
 
@@ -35,7 +36,7 @@ export function alertSettings() {
 }
 
 export function saveAlertSettings(patch) {
-  setPref("alerts", { ...alertSettings(), ...patch });
+  setPref("alerts", { ...alertSettings(), ...patch, push: (prefs().alerts || {}).push });
   changed();
 }
 
