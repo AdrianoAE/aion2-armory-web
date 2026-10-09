@@ -32,7 +32,7 @@ characterWidget({
       const resetText = reset ? `<span class="cw-kind-reset" title="Resets ${reset.toLocaleString()}">resets in ${durationText(reset - now)}</span>` : "";
       return `<div class="cw-kind cw-kind-${kind}"><div class="cw-kind-head"><span class="cw-kind-name">${KIND_TITLES[kind]}</span>${count}${resetText}</div>${rows}</div>`;
     }).join("");
-    box.innerHTML = `${groups || '<div class="muted small">No character tasks.</div>'}<div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
+    box.innerHTML = `<div class="cw-kinds">${groups || '<div class="muted small">No character tasks.</div>'}</div><div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
     box.querySelector("[data-choose]").addEventListener("click", async () => {
       const page = await loadPage("checklist");
       await page.openCharacterTasksDialog(character.id, character.name);

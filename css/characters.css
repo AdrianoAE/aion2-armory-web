@@ -76,8 +76,9 @@
 .wa-body:has(> .cw-summary) { padding-top: 8px; padding-bottom: 6px; }
 
 /* checklist widget */
-.cw-kind { margin-bottom: 8px; }
-.cw-kind:last-child { margin-bottom: 0; }
+/* kinds flow into columns when the card is wide enough */
+.cw-kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px 20px; align-items: start; }
+.cw-kind { min-width: 0; }
 .cw-kind-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; font-size: 11.5px; }
 .cw-kind-name { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .cw-kind-daily .cw-kind-name { color: var(--daily); }
