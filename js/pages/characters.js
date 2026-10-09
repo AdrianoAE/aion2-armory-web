@@ -36,7 +36,7 @@ function widgetsWithData(entry) {
   const genius = (p.genius_builds_data || {})[linkedGeniusBuild(p, cls, entry.preset)] || {};
   const boards = ((p.daevanion_builds_data || {})[cls] || {})[equip.linked_daevanion_build] || {};
   const layout = skillBuild.layout || {};
-  const has = new Set(["summary", "checklist", "skills"]);
+  const has = new Set(["checklist", "skills"]);
   if (Object.values(equip.equipped || {}).some(Boolean)) has.add("equipment");
   if (Object.values(skillBuild.arcana_cards || {}).some((card) => card && (card.theme || (card.slots || []).some(Boolean)))) has.add("arcana");
   if (Object.values(genius).some((lines) => Object.values(lines || {}).some((line) => line && Number(line.value) > 0))) has.add("genius");
@@ -48,11 +48,11 @@ function widgetsWithData(entry) {
 function defaultLayout(width, entry) {
   const item = (name, cols, rows = "auto") => ({ id: `character.${name}`, cols, rows });
   const plan = width >= WIDE
-    ? [item("summary", 1, 1), item("checklist", 1), item("equipment", 2), item("arcana", 1), item("genius", 1),
-      item("layout", 2), item("daevanion", 2),
-      item("skills", 4)]
-    : [item("summary", 2, 1), item("checklist", 2),
-      item("equipment", 2), item("arcana", 1), item("genius", 1),
+    ? [item("checklist", 1), item("equipment", 2), item("arcana", 1),
+      item("genius", 1), item("layout", 3),
+      item("daevanion", 2), item("skills", 2)]
+    : [item("checklist", 2), item("equipment", 2),
+      item("arcana", 1), item("genius", 1),
       item("layout", 4),
       item("daevanion", 2),
       item("skills", 4)];
