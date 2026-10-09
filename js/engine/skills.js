@@ -103,8 +103,28 @@ export function ready() {
   return dataPromise;
 }
 
+// The game's skill window orders Stigmas by a key no data source exposes;
+// this is the Sorcerer's order read off the window.
+const STIGMA_ORDER = {
+  sorcerer: ["15360000", "15160000", "15400000", "15140000", "15200000", "15130000", "15230000", "15390000", "15300000", "15320000", "15120000", "15700000", "15410000"],
+};
+
+export function skillOrder(a, b, classKey) {
+  const fixed = STIGMA_ORDER[classKey];
+  if (fixed && a.type === "stigma" && b.type === "stigma") {
+    const ia = fixed.indexOf(String(a.id)), ib = fixed.indexOf(String(b.id));
+    if (ia >= 0 && ib >= 0) return ia - ib;
+    if (ia >= 0 || ib >= 0) return ia >= 0 ? -1 : 1;
+  }
+  const la = a.learnLevel ?? 999, lb = b.learnLevel ?? 999;
+  if (la !== lb) return la - lb;
+  if (!!a.isBasicSkill !== !!b.isBasicSkill) return a.isBasicSkill ? -1 : 1;
+  return Number(b.id) - Number(a.id);
+}
+
 export function classSkills(classNameOrKey) {
-  return [...(data.byClass[classDataKey(classNameOrKey)] || [])].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  const key = classDataKey(classNameOrKey);
+  return [...(data.byClass[key] || [])].sort((a, b) => skillOrder(a, b, key));
 }
 
 // ── levels and specializations ──────────────────────────────────────────────

@@ -140,7 +140,7 @@ h3 { font-size: 13px; color: var(--accent); letter-spacing: 0.05em; text-transfo
 .tag[class*="class-"] { --tag: var(--class-color); }
 
 /* layout */
-#sidebar { width: 300px; flex: none; background: var(--surface); border-right: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+#sidebar { width: 370px; flex: none; background: var(--surface); border-right: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 #main { --main-pad-y: 14px; --main-pad-x: 18px; flex: 1; min-width: 0; padding: var(--main-pad-y) var(--main-pad-x); overflow-y: auto; scrollbar-gutter: stable; }
 .side-row { padding: 8px 10px; }
 .side-row .name { font-weight: 700; }

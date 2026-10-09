@@ -4,13 +4,14 @@
 // js/widgets/character/ and are shared with the Dashboard.
 
 import { mountArea } from "../widgets.js";
+import { linkedGeniusBuild, linkedSkillBuild } from "../builds.js";
 import { bp, CLASSES, currentCharacter, onChange, renameCharacter, selectCharacter } from "../state.js";
 import { currentBuild, deleteBuild, deletePreset, duplicateBuild, duplicatePreset, newBuild, newPreset, renameBuild, renamePreset, selectBuild } from "../builds.js";
 import { askConfirm, askText, defaultDiffPair, diffHash } from "../roster.js";
 import { askCharacter, escapeHtml, navigate, pickProfile } from "../app.js";
 import { className, kindChipsHtml, ODYLE_MAX, odyleLevel, progressOf } from "../widgets/character/common.js";
 
-const WIDGETS = ["summary", "layout", "skills", "daevanion", "equipment", "arcana", "genius"];
+const WIDGETS = ["summary", "checklist", "layout", "skills", "daevanion", "equipment", "arcana", "genius"];
 await Promise.all(WIDGETS.map((name) => import(`../widgets/character/${name}.js`).catch((err) => console.warn(`Character widget ${name} unavailable:`, err))));
 
 const PAGE_BUTTONS = [["equipment", "Equipment"], ["arcana", "Arcana"], ["pantheon", "Pantheon"], ["genius", "Genius Insight"]];
@@ -25,21 +26,38 @@ let openMenu = null;
 
 // The first-run layout for the width the page opens at; once the player
 // moves or resizes anything the stored layout wins.
-function defaultLayout(width) {
+// Widgets that would only show "nothing yet" for this preset stay out of the
+// first-run layout; the Add widget menu still offers them.
+function widgetsWithData(entry) {
+  const p = bp();
+  const cls = entry.class;
+  const equip = ((p.equip_builds_data || {})[cls] || {})[entry.preset] || {};
+  const skillBuild = ((p.skill_builds_data || {})[cls] || {})[linkedSkillBuild(p, cls, entry.preset)] || {};
+  const genius = (p.genius_builds_data || {})[linkedGeniusBuild(p, cls, entry.preset)] || {};
+  const boards = ((p.daevanion_builds_data || {})[cls] || {})[equip.linked_daevanion_build] || {};
+  const layout = skillBuild.layout || {};
+  const has = new Set(["summary", "checklist", "skills"]);
+  if (Object.values(equip.equipped || {}).some(Boolean)) has.add("equipment");
+  if (Object.values(skillBuild.arcana_cards || {}).some((card) => card && (card.theme || (card.slots || []).some(Boolean)))) has.add("arcana");
+  if (Object.values(genius).some((lines) => Object.values(lines || {}).some((line) => line && Number(line.value) > 0))) has.add("genius");
+  if (Object.values(boards).some((ids) => Array.isArray(ids) && ids.length > 1)) has.add("daevanion");
+  if (Object.values(layout.slots || {}).some(Boolean) || (layout.macro || []).length) has.add("layout");
+  return has;
+}
+
+function defaultLayout(width, entry) {
   const item = (name, cols, rows = "auto") => ({ id: `character.${name}`, cols, rows });
-  if (width >= WIDE) {
-    return [
-      item("summary", 1, 1), item("equipment", 2, 1), item("arcana", 1),
-      item("layout", 2), item("daevanion", 1), item("genius", 1),
-      item("skills", 4),
-    ];
-  }
-  return [
-    item("summary", 2, 1), item("equipment", 2),
-    item("layout", 4),
-    item("daevanion", 2), item("arcana", 2), item("genius", 2),
-    item("skills", 4),
-  ];
+  const plan = width >= WIDE
+    ? [item("summary", 1, 1), item("checklist", 1), item("equipment", 2), item("arcana", 1), item("genius", 1),
+      item("layout", 2), item("daevanion", 2),
+      item("skills", 4)]
+    : [item("summary", 2, 1), item("checklist", 2),
+      item("equipment", 2), item("arcana", 1), item("genius", 1),
+      item("layout", 4),
+      item("daevanion", 2),
+      item("skills", 4)];
+  const has = widgetsWithData(entry);
+  return plan.filter((w) => has.has(w.id.slice("character.".length)));
 }
 
 const identity = (entry) => (entry ? `${entry.key}|${bp().current_build_name}` : "");
@@ -166,7 +184,17 @@ function progressHtml(entry) {
   return odyle + kindChipsHtml(progress.kinds);
 }
 
+const BUILD_BUTTONS = `<button type="button" class="char-diff" title="Compare two presets side by side">Diff…</button>
+    <button type="button" class="char-menu-btn" title="New, duplicate, rename or delete Builds and presets" aria-haspopup="menu">&#8943;</button>`;
+
+function singleBuild(entry) {
+  return entry.builds2.length <= 1 && entry.builds2.every((b) => b.presets.length <= 1);
+}
+
+// The Build row only exists when there is something to switch between;
+// with one Build and one preset its buttons sit in the header row instead.
 function buildsHtml(entry) {
+  if (singleBuild(entry)) return "";
   const buildName = currentBuild(entry.class, entry.name);
   const current = entry.builds2.find((b) => b.name === buildName);
   const tabs = entry.builds2.map((b) => `<button type="button" role="tab" class="char-build-tab${b.name === buildName ? " active" : ""}" aria-selected="${b.name === buildName}"
@@ -175,9 +203,7 @@ function buildsHtml(entry) {
       data-preset="${escapeHtml(name)}" title="Preset: ${escapeHtml(name)}">${escapeHtml(name)}</button>`).join("");
   return `<span class="char-label">Build</span><div class="char-build-tabs" role="tablist">${tabs}</div>
     <span class="char-label">Preset</span><div class="char-preset-chips">${chips}</div>
-    <span class="grow"></span>
-    <button type="button" class="char-diff" title="Compare two presets side by side">Diff…</button>
-    <button type="button" class="char-menu-btn" title="New, duplicate, rename or delete Builds and presets" aria-haspopup="menu">&#8943;</button>`;
+    <span class="grow"></span>${BUILD_BUTTONS}`;
 }
 
 function renderHeader(head, entry) {
@@ -189,9 +215,9 @@ function renderHeader(head, entry) {
       <input class="char-name" type="text" placeholder="Character name" aria-label="Character name" maxlength="40" value="${escapeHtml(entry.name)}">
       <div class="char-progress">${progressHtml(entry)}</div>
       <span class="grow"></span>
-      <div class="char-pages">${PAGE_BUTTONS.map(([page, title]) => `<button type="button" data-open="${page}">${title}</button>`).join("")}</div>
+      <div class="char-pages">${PAGE_BUTTONS.map(([page, title]) => `<button type="button" data-open="${page}">${title}</button>`).join("")}${singleBuild(entry) ? BUILD_BUTTONS : ""}</div>
     </div>
-    <div class="char-builds">${buildsHtml(entry)}</div>`;
+    ${singleBuild(entry) ? "" : `<div class="char-builds">${buildsHtml(entry)}</div>`}`;
   head.querySelector(".char-name").addEventListener("change", (e) => renameCharacter(entry, e.target.value.trim()));
   head.querySelector(".char-class").addEventListener("change", (e) => {
     const key = e.target.value.toLowerCase();
@@ -236,7 +262,7 @@ function build(main) {
   renderHeader(main.querySelector(".char-head"), entry);
   const container = main.querySelector(".char-area");
   area = mountArea(container, "character", {
-    defaults: defaultLayout(container.clientWidth || main.clientWidth),
+    defaults: defaultLayout(container.clientWidth || main.clientWidth, entry),
     allowed: (id) => id.startsWith("character."),
     empty: "<b>No character widgets.</b><div>Add the skill layout, skills, Daevanion boards, equipment, Arcana, Genius Insight or the summary card back with the button below.</div>",
   });

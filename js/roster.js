@@ -4,7 +4,8 @@
 
 import { addCharacter, bp, characters, CLASSES, currentCharacter, moveCharacter, renameCharacter, reorderCharacter, selectCharacter, syncPlannerCharacters } from "./state.js";
 import { currentBuild, deleteBuild, deletePreset, duplicateBuild, duplicatePreset, newBuild, newPreset, renameBuild, renamePreset, selectBuild } from "./builds.js";
-import { escapeHtml, navigate, progressLine } from "./app.js";
+import { escapeHtml, navigate } from "./app.js";
+import { kindChipsHtml, odyleLevel, progressOf, ODYLE_MAX } from "./widgets/character/common.js";
 
 let openMenu = null;
 
@@ -188,15 +189,6 @@ function showMenu(button, entry, index, count) {
 
 // ── rows ────────────────────────────────────────────────────────────────────
 
-function tabsHtml(entry, buildName, expanded) {
-  const single = entry.builds2.length <= 1 && entry.builds2.every((b) => b.presets.length <= 1);
-  if (single && !expanded) return "";
-  const tabs = entry.builds2.map((b) => `<button type="button" class="build-tab${b.name === buildName ? " active" : ""}" data-build="${escapeHtml(b.name)}" title="Build: ${escapeHtml(b.name)}">${escapeHtml(b.name)}</button>`).join("");
-  const current = entry.builds2.find((b) => b.name === buildName);
-  const chips = (current ? current.presets : []).map((name) => `<button type="button" class="preset-chip${name === entry.preset ? " active" : ""}" data-preset="${escapeHtml(name)}" title="Preset: ${escapeHtml(name)}">${escapeHtml(name)}</button>`).join("");
-  return `<div class="build-tabs" role="tablist">${tabs}</div>${chips ? `<div class="preset-chips">${chips}</div>` : ""}`;
-}
-
 export function renderRoster(page) {
   closeMenu();
   syncPlannerCharacters();
@@ -210,17 +202,18 @@ export function renderRoster(page) {
     row.className = "card clickable side-row roster-row" + (isCurrent ? " current" : "");
     row.dataset.class = entry.class;
     row.draggable = true;
-    const [odyle, progress] = progressLine(entry.name);
+    const progress = progressOf(entry.name);
+    const odyleTag = progress && progress.odyle != null
+      ? `<span class="tag ${{ full: "danger", high: "warn" }[odyleLevel(progress.odyle)] || "info"}" title="Odyle energy">Odyle ${progress.odyle}/${ODYLE_MAX}</span>` : "";
+    const chips = odyleTag + (progress ? kindChipsHtml(progress.kinds) : "");
     const cls = entry.class[0].toUpperCase() + entry.class.slice(1);
-    const buildName = currentBuild(entry.class, entry.name);
     row.innerHTML = `
       <div class="row" style="gap:8px"><img class="class-icon" src="assets/class_icons/${entry.class}.png" alt="">
         <div class="grow"><div class="name">${entry.name ? escapeHtml(entry.name) : "Unnamed"}</div>
         <div class="lines">${cls}</div>
-        ${odyle ? `<div class="lines accent">${odyle}</div>` : ""}${progress ? `<div class="lines">${progress}</div>` : ""}</div>
+        ${chips ? `<div class="roster-chips">${chips}</div>` : ""}</div>
         <button type="button" class="roster-menu-btn" title="Builds, presets and character" aria-haspopup="menu">&#8943;</button>
-        <span class="grip" title="Drag to reorder">&#8942;&#8942;</span></div>
-      ${tabsHtml(entry, buildName, active && active.key === entry.key)}`;
+        <span class="grip" title="Drag to reorder">&#8942;&#8942;</span></div>`;
     row.querySelectorAll("[data-build]").forEach((b) => b.addEventListener("click", (e) => {
       e.stopPropagation();
       selectBuild(entry.class, b.dataset.build, entry.name);

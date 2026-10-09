@@ -84,3 +84,6 @@
   .diff-table th:first-child { width: 34%; }
   .diff-side select { min-width: 0; max-width: 60vw; }
 }
+
+.roster-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.roster-chips .tag { font-size: 11px; }
