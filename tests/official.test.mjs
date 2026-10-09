@@ -89,7 +89,18 @@ test("equipment maps slots (Cape is the Cloak), skips the Belt and unknown items
   assert.equal(mapped.equipped.Cloak.id, 210750027);
   assert.equal(mapped.equipped.Wings1.name, "Intermediate Daeva Wings (Elyos)");
   assert.deepEqual(mapped.enchant, { MainHand: 3, Ring1: 12, Wings1: 1 });
+  assert.deepEqual(mapped.skipped, ["Noble Belt (Belt)"]);
+  assert.deepEqual(mapped.missing.map((m) => [m.slotId, m.entry.name]), [["Ring2", "Mystery Ring"]]);
+  O.placeMissing(mapped, mapped.missing[0], null);
   assert.deepEqual(mapped.skipped, ["Noble Belt (Belt)", "Mystery Ring (not in the Armory's item list)"]);
+  const sheet = { id: 5, name: "Mystery Ring", grade: "Unique", icon: "x.png", categoryName: "Ring", classNames: [], mainStats: [{ id: "Attack", name: "Attack", value: "16" }], subStats: [{ id: "STR", name: "Might", value: "10" }] };
+  const built = O.itemFromDetail(sheet);
+  assert.deepEqual([built.id, built.name, built.image, built.options], [5, "Mystery Ring", "x.png", ["Attack 16", "Might 10"]]);
+  const again = O.mapEquipment(EQUIPMENT, ITEMS);
+  O.placeMissing(again, again.missing[0], built);
+  assert.equal(again.equipped.Ring2.id, 5);
+  assert.ok(again.rolls.some((r) => r.slotId === "Ring2"));
+  assert.ok(O.gameconstItemUrl(5).includes("/en-us/api/gameconst/item?id=5&enchantLevel=0"));
   assert.deepEqual(mapped.rolls.map((r) => [r.slotId, r.itemId, r.slotPos, r.enchantLevel]),
     [["MainHand", 110150026, 1, 3], ["Cloak", 210750027, 19, 0], ["Ring1", 310360005, 13, 10]]);
   assert.equal(O.mapEquipment(EQUIPMENT, {}, {}, { "Mystery Ring": { id: 5, name: "Mystery Ring" } }).equipped.Ring2.id, 5);

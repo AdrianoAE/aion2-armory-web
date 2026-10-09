@@ -2,10 +2,10 @@
 // the search / pick / progress / summary dialog and the profile writes.
 
 import { prefs } from "./ui.js";
-import { addCharacter, bp, characters, save } from "./state.js";
+import { addCharacter, bp, characters, currentCharacter, save, selectCharacter } from "./state.js";
 import { daevanionSetsOf, equipSetsOf, linkedSkillBuild, buildOfPreset, renamePresetIn, selectPresetIn, skillBuildsOf, uniqueName } from "./builds.js";
 import { data as skillsData, emptyBuildState, emptyLayout, ready as skillsReady, skillBonusFromBoards, skillBuild } from "./engine/skills.js";
-import { data as equipmentData, detailCache, loadData } from "./pages/equipment_data.js";
+import { data as equipmentData, detailCache, loadData, rememberItem, rememberSheet } from "./pages/equipment_data.js";
 import * as O from "./engine/official.js";
 import { escapeHtml, navigate } from "./app.js";
 
@@ -100,6 +100,17 @@ async function collect(who, info, progress, isCancelled) {
   if (!info) info = await ask("Fetching profile…", O.infoUrl(who));
   const equipment = await ask("Fetching equipment…", O.equipmentUrl(who));
   const mapped = O.mapEquipment(equipment, equipmentData.itemsById, {}, equipmentData.nameToItem);
+  for (const miss of mapped.missing) {
+    let item = null;
+    try {
+      const sheet = await ask(`Item sheet: ${miss.entry.name || miss.entry.id}`, O.gameconstItemUrl(miss.entry.id, who.region));
+      item = O.itemFromDetail(sheet);
+      if (item) { rememberSheet(item.id, sheet); rememberItem(item); }
+    } catch (err) {
+      if (isCancelled()) throw err;
+    }
+    O.placeMissing(mapped, miss, item);
+  }
   const plan = O.boardPlan(info);
   progress.total(2 + mapped.rolls.length + plan.length);
   const substats = {}, unread = [];
@@ -492,4 +503,69 @@ export function askSync(entry) {
   dialog.querySelector(".cancel").addEventListener("click", () => dialog.close());
   dialog.addEventListener("close", () => { dialog.remove(); if (preset) syncCharacter(entry, preset); });
   dialog.showModal();
+}
+
+// Syncs every roster character in one go: linked ones through their link,
+// the others by a name search on the default region and server, linked when
+// exactly one result has the same class. The current preset of each
+// character is the one updated.
+export function syncAllCharacters() {
+  const shell = openShell("Sync all characters from aion2.plaync.com");
+  const before = currentCharacter();
+  const list = characters().filter((e) => e.name);
+  const lines = [];
+  const render = (current) => {
+    if (shell.state.closed) return;
+    shell.body.innerHTML = `<div class="stack official-syncall">
+      ${current ? `<div class="official-status">${escapeHtml(current)}</div>` : ""}
+      <ul class="official-syncall-list">${lines.map((l) => `<li class="${l.ok ? "ok" : "skip"}">${escapeHtml(l.text)}</li>`).join("")}</ul>
+      ${current ? "" : `<div class="row"><span class="grow"></span><button type="button" class="primary official-done">Close</button></div>`}
+    </div>`;
+    const done = shell.body.querySelector(".official-done");
+    if (done) done.addEventListener("click", () => shell.dialog.close());
+  };
+  (async () => {
+    if (!list.length) { lines.push({ ok: false, text: "No characters in the roster." }); render(null); return; }
+    const first = list.map(officialLink).find(Boolean);
+    const region = (first && first.region) || O.DEFAULT_REGION;
+    const server = (first && first.serverName) || O.DEFAULT_SERVER;
+    for (const entry of list) {
+      if (shell.state.closed) return;
+      const label = `${entry.name} (${O.className(entry.class)})`;
+      render(`${label}: looking up…`);
+      try {
+        let who = null;
+        const link = officialLink(entry);
+        if (link) who = { region: link.region, serverId: link.serverId, serverName: link.serverName, characterId: link.characterId };
+        else {
+          await sleep(GAP_MS);
+          const found = O.parseSearch(await fetchViaRelay(O.searchUrl({ keyword: entry.name, region })));
+          const sameName = found.filter((f) => lower(f.name) === lower(entry.name) && lower(O.classOfPcId(f.pcId)) === entry.class);
+          const onServer = O.filterByServer(sameName, server);
+          const pick = onServer.length === 1 ? onServer[0] : sameName.length === 1 ? sameName[0] : null;
+          if (!pick) {
+            lines.push({ ok: false, text: `${label}: ${sameName.length ? `${sameName.length} matches, pick one with Import` : "not found on the site"}` });
+            continue;
+          }
+          who = whoOf(pick, region);
+        }
+        await sleep(GAP_MS);
+        const info = await fetchViaRelay(O.infoUrl(who));
+        const cls = O.className((info.profile || {}).className);
+        if (lower(cls) !== entry.class) { lines.push({ ok: false, text: `${label}: the site says ${cls || "another class"}, skipped` }); continue; }
+        const preset = entry.preset || (entry.builds2[0] && entry.builds2[0].presets[0]);
+        const progress = { total() {}, step: (text) => render(`${label}: ${text}`) };
+        const result = await collect(who, info, progress, () => shell.state.closed);
+        if (shell.state.closed) return;
+        const written = writeImport(bp(), { mode: "update", cls: entry.class, name: entry.name, preset, serverName: who.serverName }, who, result);
+        lines.push({ ok: true, text: `${label}: preset "${written.presetName}" updated, ${Object.keys(result.mapped.equipped || {}).length} items, ${Object.keys(written.skills).length} skill levels, ${written.updatedBoards.length} boards` });
+      } catch (err) {
+        if (shell.state.closed) return;
+        lines.push({ ok: false, text: `${label}: ${err instanceof NotFound ? "not found on the site" : err.message}` });
+      }
+    }
+    if (before) selectCharacter(before.class, before.preset || before.current, before.name);
+    render(null);
+  })();
+  return shell.dialog;
 }

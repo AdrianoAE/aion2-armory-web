@@ -27,7 +27,7 @@
 .wa-body { flex: 1; min-height: 0; min-width: 0; overflow: auto; padding: 10px 12px; }
 .wa-error { color: var(--danger); font-size: 12px; }
 
-.wa-resize { position: absolute; right: 1px; bottom: 1px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none; opacity: 0.45; border-radius: 0 0 var(--radius) 0;
+.wa-resize { position: absolute; right: 1px; bottom: 1px; width: 16px; height: 16px; cursor: ew-resize; touch-action: none; opacity: 0.45; border-radius: 0 0 var(--radius) 0;
   background: linear-gradient(135deg, transparent 52%, var(--muted) 52%, var(--muted) 60%, transparent 60%, transparent 70%, var(--muted) 70%, var(--muted) 78%, transparent 78%); }
 .wa-card:hover .wa-resize, .wa-resize:focus-visible { opacity: 1; outline: none; }
 .wa-collapsed .wa-resize { display: none; }

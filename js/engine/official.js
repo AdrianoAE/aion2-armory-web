@@ -64,6 +64,22 @@ export const equipmentUrl = (who) => `${SITE}/api/character/equipment?${characte
 export const itemUrl = (who, { itemId, enchantLevel = 0, slotPos }) =>
   `${SITE}/api/character/equipment/item?${characterQuery(who, { id: itemId, enchantLevel, slotPos })}`;
 export const daevanionUrl = (who, boardId) => `${SITE}/api/character/daevanion/detail?${characterQuery(who, { boardId })}`;
+// The site's own item sheet: the same shape as data/details/<id>.json.
+export const gameconstItemUrl = (itemId, region = DEFAULT_REGION) =>
+  `${SITE}/en-us/api/gameconst/item?${new URLSearchParams({ id: String(itemId), enchantLevel: "0", lang: LANG, region })}`;
+
+const statLine = (stat) => `${stat.name || stat.id || ""} ${stat.value || stat.minValue || ""}`.trim();
+
+// An item list entry built from the site's item sheet, for items the Armory's list lacks.
+export function itemFromDetail(detail) {
+  if (!detail || !detail.id) return null;
+  return {
+    id: Number(detail.id), name: detail.name || String(detail.id), image: detail.icon || "", grade: detail.grade || "",
+    options: [...(detail.mainStats || []), ...(detail.subStats || [])].map(statLine).filter(Boolean),
+    favorite: false, tradable: !!detail.tradable, categoryName: detail.categoryName || "", classNames: detail.classNames || [],
+    fromSite: true,
+  };
+}
 
 export function relayUrl(relay, url) {
   return `${String(relay || DEFAULT_RELAY).trim()}${encodeURIComponent(url)}`;
@@ -110,11 +126,11 @@ export function isNotFound(json) {
 // equipped/enchant in the equip set's shapes; `rolls` lists what to ask the
 // item endpoint for each slot's rolled substats.
 export function mapEquipment(json, itemsById, wingsById = {}, itemsByName = {}) {
-  const equipped = {}, enchant = {}, skipped = [], rolls = [];
+  const equipped = {}, enchant = {}, skipped = [], rolls = [], missing = [];
   const find = (id, name) => itemsById[id] || itemsById[String(id)] || wingsById[id] || wingsById[String(id)] || itemsByName[name] || null;
   const place = (slotId, entry, roll) => {
     const item = find(entry.id, entry.name);
-    if (!item) { skipped.push(`${entry.name || entry.id} (not in the Armory's item list)`); return; }
+    if (!item) { missing.push({ slotId, entry, roll }); return; }
     equipped[slotId] = item;
     const level = (Number(entry.enchantLevel) || 0) + (Number(entry.exceedLevel) || 0);
     if (level > 0) enchant[slotId] = level;
@@ -127,7 +143,16 @@ export function mapEquipment(json, itemsById, wingsById = {}, itemsByName = {}) 
   }
   const wing = ((json && json.petwing) || {}).wing;
   if (wing && wing.id) place("Wings1", wing, false);
-  return { equipped, enchant, skipped, rolls };
+  return { equipped, enchant, skipped, rolls, missing };
+}
+
+// Places an item the list lacked once its sheet arrived (or records the skip).
+export function placeMissing(mapped, miss, item) {
+  if (!item) { mapped.skipped.push(`${miss.entry.name || miss.entry.id} (not in the Armory's item list)`); return; }
+  mapped.equipped[miss.slotId] = item;
+  const level = (Number(miss.entry.enchantLevel) || 0) + (Number(miss.entry.exceedLevel) || 0);
+  if (level > 0) mapped.enchant[miss.slotId] = level;
+  if (miss.roll) mapped.rolls.push({ slotId: miss.slotId, itemId: miss.entry.id, slotPos: miss.entry.slotPos, enchantLevel: Number(miss.entry.enchantLevel) || 0, name: miss.entry.name || "" });
 }
 
 const norm = (text) => String(text || "").trim().toLowerCase();

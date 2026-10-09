@@ -348,14 +348,13 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
           <span class="wa-tools">${gear}${toolButton("pin-top", ICON.pinTop, "Pin to the top")}${toolButton("pin-bottom", ICON.pinBottom, "Pin to the bottom")}${toolButton("collapse", ICON.collapse, "Collapse")}${toolButton("remove", ICON.remove, "Remove")}</span>
         </header>
         <div class="wa-body"></div>
-        <span class="wa-resize" tabindex="0" role="button" title="Drag to resize, double-click for automatic height" aria-label="Resize ${title}"></span>`;
+        <span class="wa-resize" tabindex="0" role="button" title="Drag to change the width" aria-label="Resize ${title}"></span>`;
       const grip = el.querySelector(".wa-grip");
       grip.addEventListener("pointerdown", (e) => startDrag(inst, e));
       grip.addEventListener("keydown", (e) => keyMove(inst, e));
       cardObserver.observe(el);
       const handle = el.querySelector(".wa-resize");
       handle.addEventListener("pointerdown", (e) => startResize(inst, e));
-      handle.addEventListener("dblclick", () => commitSize(inst, null, "auto"));
       handle.addEventListener("keydown", (e) => keyResize(inst, e));
     } else {
       el.className = "wa-pin";
@@ -385,9 +384,8 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
   function applySize(inst, cols, rows) {
     const el = inst.el;
     for (let c = 1; c <= 4; c += 1) el.classList.toggle(`wa-c${c}`, c === cols);
-    const auto = rows === "auto" || inst.item.collapsed;
-    el.classList.toggle("wa-auto", auto);
-    el.style.maxHeight = auto ? "" : `${rows * UNIT + (rows - 1) * GAP}px`;
+    el.classList.add("wa-auto");
+    el.style.maxHeight = "";
     requestLayout();
   }
 
@@ -716,10 +714,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       e.preventDefault();
       const cols = clampInt(shownCols + (e.key === "ArrowRight" ? 1 : -1), 1, n);
       if (cols !== shownCols) commitSize(inst, cols, null);
-    } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      e.preventDefault();
-      const rows = clampInt(shownRows(inst) + (e.key === "ArrowDown" ? 1 : -1), 1, 4);
-      if (rows !== size.rows) commitSize(inst, null, rows);
     } else return;
     inst.el.querySelector(".wa-resize").focus();
   }
@@ -743,12 +737,11 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     const preview = () => {
       const rowsChanged = rows !== startRows;
       applySize(inst, cols !== startCols ? cols : size.cols, rowsChanged ? rows : size.rows);
-      badge.textContent = `${cols} × ${rowsChanged || size.rows !== "auto" ? rows : "auto"}`;
+      badge.textContent = `${cols} column${cols === 1 ? "" : "s"}`;
     };
     preview();
     const move = (ev) => {
       cols = clampInt((ev.clientX - rect.left + GAP) / (colWidth + GAP), 1, n);
-      rows = clampInt((ev.clientY - rect.top + GAP) / (UNIT + GAP), 1, 4);
       preview();
     };
     const finish = (commit) => {

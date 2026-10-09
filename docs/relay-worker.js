@@ -8,6 +8,8 @@
 
 const ALLOWED = [
   "https://aion2.plaync.com/api/character/",
+  "https://aion2.plaync.com/api/gameconst/item",
+  "https://aion2.plaync.com/en-us/api/gameconst/item",
   "https://api-search.plaync.com/aion2global/search/",
 ];
 

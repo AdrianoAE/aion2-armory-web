@@ -47,3 +47,8 @@
 .official-settings a { color: var(--accent); }
 .official-ok { color: var(--ok); }
 .official-bad { color: var(--danger); overflow-wrap: anywhere; }
+
+.official-syncall-list { margin: 0; padding-left: 18px; max-height: 50vh; overflow: auto; font-size: 13px; }
+.official-syncall-list li { padding: 2px 0; }
+.official-syncall-list li.ok { color: var(--success); }
+.official-syncall-list li.skip { color: var(--warn); }

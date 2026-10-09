@@ -270,3 +270,5 @@ export function openOfficialImport(options) {
 
 const officialButton = document.getElementById("import-official");
 if (officialButton) officialButton.addEventListener("click", () => openOfficialImport());
+const syncAllButton = document.getElementById("sync-official");
+if (syncAllButton) syncAllButton.addEventListener("click", () => import("./official.js").then((m) => m.syncAllCharacters()).catch((err) => { console.error(err); alert(`The sync could not start: ${err.message}`); }));
