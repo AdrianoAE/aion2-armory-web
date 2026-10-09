@@ -45,19 +45,25 @@ function widgetsWithData(entry) {
   return has;
 }
 
+// Preferred widths, then each grid row is filled: a widget that does not fit
+// widens the one before it, so hidden widgets never leave a hole.
 function defaultLayout(width, entry) {
   const item = (name, cols, rows = "auto") => ({ id: `character.${name}`, cols, rows });
   const plan = width >= WIDE
-    ? [item("checklist", 1), item("equipment", 2), item("arcana", 1),
-      item("genius", 1), item("layout", 3),
-      item("daevanion", 2), item("skills", 2)]
-    : [item("checklist", 2), item("equipment", 2),
-      item("arcana", 1), item("genius", 1),
-      item("layout", 4),
-      item("daevanion", 2),
-      item("skills", 4)];
+    ? [item("checklist", 1), item("equipment", 2), item("arcana", 1), item("genius", 1), item("layout", 2), item("daevanion", 2), item("skills", 2)]
+    : [item("checklist", 2), item("equipment", 2), item("arcana", 1), item("genius", 1), item("layout", 4), item("daevanion", 2), item("skills", 4)];
   const has = widgetsWithData(entry);
-  return plan.filter((w) => has.has(w.id.slice("character.".length)));
+  const items = plan.filter((w) => has.has(w.id.slice("character.".length)));
+  let used = 0, rowStart = 0;
+  items.forEach((w, i) => {
+    if (used + w.cols > 4) {
+      if (used < 4) items[i - 1].cols += 4 - used;
+      used = 0; rowStart = i;
+    }
+    used += w.cols;
+  });
+  if (items.length && used < 4) items[items.length - 1].cols += 4 - used;
+  return items;
 }
 
 const identity = (entry) => (entry ? `${entry.key}|${bp().current_build_name}` : "");
