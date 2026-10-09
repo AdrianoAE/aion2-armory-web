@@ -357,7 +357,7 @@ export function arcanaCardSkillBonus(build) {
 
 // ── Daevanion board bonus ───────────────────────────────────────────────────
 // Bonus skill levels from the class's active Daevanion nodes, via the
-// Daevanion engine (the desktop's _compute_daevanion_skill_bonus).
+// Daevanion engine.
 const variantCache = new WeakMap();
 export function skillBonusFromBoards(classKey, activeSets, boards) {
   if (!boards) return {};
@@ -398,9 +398,19 @@ export function setCurrentSkillBuild(p, classLower, name) {
   if (equip) equip.linked_skill_build = name;
 }
 
+function copySpecs(specs) {
+  return Object.fromEntries(Object.entries(specs || {}).map(([sid, ids]) => [sid, Array.isArray(ids) ? [...ids] : []]));
+}
+
+const isMap = (value) => !!value && typeof value === "object" && !Array.isArray(value);
+
+// Levels and specializations belong to the skill build; one without its own
+// starts from the profile-wide keys.
 export function skillBuild(p, classLower, name) {
   const builds = ensureClassBuilds(p, classLower);
   const build = builds[name] = builds[name] || emptyBuildState();
+  if (!isMap(build.levels)) build.levels = { ...(p.skill_levels || {}) };
+  if (!isMap(build.specs)) build.specs = copySpecs(p.skill_active_specs);
   build.priority = build.priority || {};
   for (const type of SKILL_TYPES) if (!Array.isArray(build.priority[type]) || !build.priority[type].length) build.priority[type] = [null];
   build.arcana_cards = build.arcana_cards || {};
@@ -428,6 +438,11 @@ export function skillContext(p, classLower, buildName) {
   p.skill_active_specs = p.skill_active_specs || {};
   p.skill_hidden_ids = p.skill_hidden_ids || [];
   const build = skillBuild(p, classLower, buildName);
+  if (classLower === String(p.character_class || "").toLowerCase() && buildName === currentSkillBuildName(p, classLower)) {
+    p.skill_levels = build.levels;
+    p.skill_active_specs = build.specs;
+  }
+  const { levels, specs } = build;
   const setName = daevanionSetName(p, classLower);
   const activeSets = setName ? ((p.daevanion_builds_data || {})[classLower] || {})[setName] || {} : {};
   const daevanion = skillBonusFromBoards(classLower, activeSets, data.boards);
@@ -439,14 +454,14 @@ export function skillContext(p, classLower, buildName) {
   for (const ids of Object.values(build.priority)) for (const id of ids) if (id !== null && id !== undefined) priorityIds.add(id);
   return {
     classLower, dataKey: classDataKey(classLower), buildName, build, skills, byId: data.byId, typeById: data.typeById,
-    levels: p.skill_levels, wish: p.skill_arcana_wish, hidden: new Set(p.skill_hidden_ids), priorityIds,
+    levels, specs, wish: p.skill_arcana_wish, hidden: new Set(p.skill_hidden_ids), priorityIds,
     bonus: { total, gear: {}, daevanion, arcana },
-    chosen: (sid) => chosenSpecs(p, sid),
-    manual: (sid) => p.skill_levels[sid] || 0,
+    chosen: (sid) => new Set((specs[sid] || []).map(String)),
+    manual: (sid) => levels[sid] || 0,
     bonusOf: (sid) => total[sid] || 0,
     wishOf: (sid) => p.skill_arcana_wish[sid] || 0,
-    effective: (sid) => effectiveLevel(p.skill_levels[sid] || 0, total[sid] || 0, p.skill_arcana_wish[sid] || 0),
-    layoutLevel: (sid) => layoutLevel(p.skill_levels[sid] || 0, total[sid] || 0, p.skill_arcana_wish[sid] || 0),
+    effective: (sid) => effectiveLevel(levels[sid] || 0, total[sid] || 0, p.skill_arcana_wish[sid] || 0),
+    layoutLevel: (sid) => layoutLevel(levels[sid] || 0, total[sid] || 0, p.skill_arcana_wish[sid] || 0),
   };
 }
 
@@ -456,7 +471,7 @@ export function passiveSkillStatTotals(p, classLower, buildName) {
   const context = skillContext(p, classLower, buildName);
   const totals = {};
   for (const [skillId, entries] of Object.entries(LEVEL_SCALING)) {
-    const level = (p.skill_levels[skillId] || 0) + (context.bonus.total[skillId] || 0);
+    const level = (context.levels[skillId] || 0) + (context.bonus.total[skillId] || 0);
     if (level <= 0) continue;
     for (const [statId, lv1, lv10] of entries) totals[statId] = (totals[statId] || 0) + lv1 + (lv10 - lv1) / 9 * (level - 1);
   }

@@ -231,7 +231,7 @@ function changeLevel(id, delta) {
   const isStigma = context.typeById[id] === "stigma";
   if (delta > 0 && !isStigma && pointsExhausted()) return;
   const cap = isStigma ? STIGMA_LEVEL_BASE_CAP : SKILL_LEVEL_BASE_CAP;
-  commit(() => { p.skill_levels[id] = Math.max(0, Math.min(cap, (p.skill_levels[id] || 0) + delta)); });
+  commit(() => { context.levels[id] = Math.max(0, Math.min(cap, (context.levels[id] || 0) + delta)); });
   afterSkillChange(id);
 }
 
@@ -350,7 +350,7 @@ function toggleSpec(specId) {
   else if (chosen.size < cap) chosen.add(specId);
   else return;
   commit(() => {
-    if (chosen.size) p.skill_active_specs[id] = [...chosen].sort(); else delete p.skill_active_specs[id];
+    if (chosen.size) context.specs[id] = [...chosen].sort(); else delete context.specs[id];
   });
   refreshDescriptionSpecs(skill);
   if (cards[id]) refreshCard(cards[id]);

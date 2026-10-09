@@ -1,7 +1,6 @@
-// Planner resets, ported from ItemDatabase/armory_engine/planner.py.
-// The game's schedule is CEST (UTC+2, a fixed offset): daily 09:00, weekly
-// Wednesday 11:00, Abyss portals Mon/Thu/Sat 21:00, Odyle energy +15 every
-// 3 hours from 09:00. Moments are JS Dates (UTC inside); the UI formats
+// Checklist resets. The game's schedule is CEST (UTC+2, a fixed offset):
+// daily 09:00, weekly Wednesday 11:00, Abyss portals Mon/Thu/Sat 21:00,
+// Odyle energy +15 every 3 hours from 09:00. Moments are JS Dates (UTC inside); the UI formats
 // them in the browser's zone.
 
 export const PLANNER_KINDS = ["daily", "weekly", "portals", "available"];
@@ -84,12 +83,17 @@ export function nextOdyleTick(now) {
   return fromScheduleTime(nextOdyleTickLocal(scheduleTime(now)));
 }
 
+export const SHOP_SPECIAL_TASK = "Buy Shop(H) → Special";
+export const KIND_TITLES = { daily: "Daily", weekly: "Weekly", portals: "Abyss portals", available: "Info" };
+
+const RENAMED_TASKS = { "buy shop odyle": SHOP_SPECIAL_TASK };
+
 export function defaultPlannerTasks() {
   const tasks = (prefix, entries) => entries.map(([name, kind], i) => ({ id: `${prefix}${i + 1}`, name, kind }));
   return {
     server: tasks("s", [
       ["Duty", "daily"],
-      ["Buy shop Odyle", "weekly"],
+      [SHOP_SPECIAL_TASK, "weekly"],
       ["Craft Odyle (morph)", "weekly"],
       ["Daily dungeon", "weekly"],
       ["Command scrolls (Verteron and Abyss)", "weekly"],
@@ -99,7 +103,7 @@ export function defaultPlannerTasks() {
     character: tasks("c", [
       ["Farm 1M Kinah", "daily"],
       ["Supply request", "daily"],
-      ["Buy shop Odyle", "weekly"],
+      [SHOP_SPECIAL_TASK, "weekly"],
       ["Craft Odyle (morph)", "weekly"],
       ["Ascension trial", "weekly"],
       ["Battlefield", "weekly"],
@@ -116,4 +120,61 @@ export function countdown(ms) {
   const hours = Math.floor((minutes % 1440) / 60);
   const mins = minutes % 60;
   return days ? `${days}d ${hours}h` : `${hours}h ${String(mins).padStart(2, "0")}m`;
+}
+
+export function durationText(ms) {
+  const minutes = Math.max(0, Math.ceil(ms / 60000));
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  const mins = minutes % 60;
+  if (days) return hours ? `${days} d ${hours} h` : `${days} d`;
+  if (hours) return mins ? `${hours} h ${mins} min` : `${hours} h`;
+  return `${mins} min`;
+}
+
+export function taskDoneAt(planner, scopeId, taskId) {
+  const stamp = planner.done[`${scopeId}:${taskId}`];
+  return stamp ? new Date(stamp) : null;
+}
+
+export function isTaskDone(planner, scopeId, task, now) {
+  return isDone(task.kind, taskDoneAt(planner, scopeId, task.id), now);
+}
+
+export function taskProgress(planner, scopeId, tasks, now) {
+  const tracked = tasks.filter((t) => RESETS[t.kind]);
+  return { done: tracked.filter((t) => isTaskDone(planner, scopeId, t, now)).length, total: tracked.length };
+}
+
+// Ids stay so ticks survive. The default merge matches by name, so it may
+// already have added the new label as a second task: fold that copy back.
+export function migratePlannerTasks(planner) {
+  let changed = false;
+  planner.defaults_seen = planner.defaults_seen || [];
+  planner.done = planner.done || {};
+  for (const [scope, tasks] of Object.entries(planner.tasks || {})) {
+    for (const task of [...tasks]) {
+      const label = RENAMED_TASKS[(task.name || "").trim().toLowerCase()];
+      if (!label) continue;
+      task.name = label;
+      changed = true;
+      for (const copy of tasks.filter((t) => t !== task && t.name === label && t.kind === task.kind)) {
+        for (const key of Object.keys(planner.done)) {
+          if (!key.endsWith(":" + copy.id)) continue;
+          const own = key.slice(0, -copy.id.length) + task.id;
+          if (!planner.done[own] || new Date(planner.done[own]) < new Date(planner.done[key])) planner.done[own] = planner.done[key];
+          delete planner.done[key];
+        }
+        tasks.splice(tasks.indexOf(copy), 1);
+      }
+    }
+    for (const label of new Set(Object.values(RENAMED_TASKS))) {
+      const key = `${scope}:${label}`;
+      if (tasks.some((t) => t.name === label) && !planner.defaults_seen.includes(key)) {
+        planner.defaults_seen.push(key);
+        changed = true;
+      }
+    }
+  }
+  return changed;
 }

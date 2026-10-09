@@ -40,6 +40,66 @@ test("done until the next reset of its kind", () => {
   assert.equal(planner.isDone("daily", null, ticked), false);
 });
 
+test("nextReset is the first reset strictly after now, per kind", () => {
+  assert.deepEqual(planner.nextReset("daily", utc(2026, 9, 9, 6, 59)), utc(2026, 9, 9, 7, 0));
+  assert.deepEqual(planner.nextReset("daily", utc(2026, 9, 9, 7, 0)), utc(2026, 9, 10, 7, 0));
+  assert.deepEqual(planner.nextReset("weekly", utc(2026, 9, 14, 8, 59)), utc(2026, 9, 14, 9, 0));
+  assert.deepEqual(planner.nextReset("weekly", utc(2026, 9, 14, 9, 0)), utc(2026, 9, 21, 9, 0));
+  assert.deepEqual(planner.nextReset("portals", utc(2026, 9, 10, 19, 0)), utc(2026, 9, 12, 19, 0));
+  assert.deepEqual(planner.nextReset("portals", utc(2026, 9, 12, 19, 0)), utc(2026, 9, 15, 19, 0));
+  assert.deepEqual(planner.nextReset("daily", utc(2026, 11, 31, 22, 0)), utc(2027, 0, 1, 7, 0));
+  assert.equal(planner.nextReset("available", utc(2026, 9, 9)), null);
+  for (const kind of ["daily", "weekly", "portals"]) {
+    const now = utc(2026, 9, 9, 12, 34);
+    assert.ok(planner.nextReset(kind, now) > now);
+    assert.deepEqual(planner.lastReset(kind, planner.nextReset(kind, now)), planner.nextReset(kind, now));
+  }
+});
+
+test("durations read as days, hours and minutes", () => {
+  assert.equal(planner.durationText(3 * 3600000 + 12 * 60000), "3 h 12 min");
+  assert.equal(planner.durationText(2 * 3600000), "2 h");
+  assert.equal(planner.durationText(59 * 1000), "1 min");
+  assert.equal(planner.durationText(-5000), "0 min");
+  assert.equal(planner.durationText((2 * 24 + 4) * 3600000 + 5 * 60000), "2 d 4 h");
+});
+
+test("default tasks use the Buy Shop(H) → Special label on both scopes", () => {
+  const tasks = planner.defaultPlannerTasks();
+  assert.equal(planner.SHOP_SPECIAL_TASK, "Buy Shop(H) → Special");
+  assert.deepEqual(tasks.server.find((t) => t.id === "s2"), { id: "s2", name: "Buy Shop(H) → Special", kind: "weekly" });
+  assert.deepEqual(tasks.character.find((t) => t.id === "c3"), { id: "c3", name: "Buy Shop(H) → Special", kind: "weekly" });
+  assert.ok(!JSON.stringify(tasks).includes("Buy shop Odyle"));
+});
+
+test("the old shop label is renamed in place, ticks kept, merge copies folded in", () => {
+  const saved = () => ({
+    tasks: {
+      server: [{ id: "s1", name: "Duty", kind: "daily" }, { id: "s2", name: "Buy shop Odyle", kind: "weekly" }],
+      character: [{ id: "c2", name: "Buy shop Odyle", kind: "weekly" }, { id: "t13", name: "Buy Shop(H) → Special", kind: "weekly" }],
+    },
+    done: { "sv1:s2": "2026-10-08T22:31:45Z", "ch1:c2": "2026-10-08T10:00:00Z", "ch1:t13": "2026-10-09T10:00:00Z", "ch2:t13": "2026-10-09T11:00:00Z" },
+    defaults_seen: ["server:Buy shop Odyle", "character:Buy shop Odyle"],
+  });
+  const p = saved();
+  assert.equal(planner.migratePlannerTasks(p), true);
+  assert.deepEqual(p.tasks.server[1], { id: "s2", name: "Buy Shop(H) → Special", kind: "weekly" });
+  assert.deepEqual(p.tasks.character, [{ id: "c2", name: "Buy Shop(H) → Special", kind: "weekly" }]);
+  assert.deepEqual(p.done, { "sv1:s2": "2026-10-08T22:31:45Z", "ch1:c2": "2026-10-09T10:00:00Z", "ch2:c2": "2026-10-09T11:00:00Z" });
+  assert.ok(p.defaults_seen.includes("server:Buy Shop(H) → Special") && p.defaults_seen.includes("character:Buy Shop(H) → Special"));
+  assert.equal(planner.migratePlannerTasks(p), false);
+  const fresh = { tasks: planner.defaultPlannerTasks(), done: {}, defaults_seen: [] };
+  planner.migratePlannerTasks(fresh);
+  assert.deepEqual(fresh.tasks, planner.defaultPlannerTasks());
+});
+
+test("task progress counts tracked kinds only", () => {
+  const p = { done: { "ch1:a": "2026-10-09T08:00:00Z", "ch1:b": "2026-10-01T08:00:00Z", "ch1:c": "2026-10-09T08:00:00Z" } };
+  const tasks = [{ id: "a", kind: "daily" }, { id: "b", kind: "weekly" }, { id: "c", kind: "available" }];
+  assert.deepEqual(planner.taskProgress(p, "ch1", tasks, utc(2026, 9, 9, 12, 0)), { done: 1, total: 2 });
+  assert.equal(planner.isTaskDone(p, "ch1", tasks[1], utc(2026, 9, 9, 12, 0)), false);
+});
+
 test("odyle charges 15 every 3 hours on the CEST grid, capped at 840", () => {
   const entered = utc(2026, 9, 7, 10, 0);
   assert.equal(planner.odyleEnergy(100, entered, utc(2026, 9, 7, 12, 59)), 100);

@@ -4,9 +4,9 @@
 // the wanted-values sidebar and the multi-board route planner.
 //
 // Reusable by other pages: prepare(), renderBoard(), hitTest(), boardsInUse(),
-// showTooltip()/hideTooltip().
+// showTooltip()/hideTooltip(), boardTabsWidget().
 
-import { bp, save } from "../state.js";
+import { bp, onChange as onProfileChange, save } from "../state.js";
 import * as D from "../engine/daevanion.js";
 
 const VARIANT = "s";
@@ -16,6 +16,9 @@ const INACTIVE_OPACITY = 0.25;
 const SPRITE_DIR = "assets/daevanion_nodes/";
 const SPRITE_GRADE_FILE = { common: "Common", rare: "Rare", legend: "Legend", unique: "Unique" };
 const BUILDS_CLASS_BY_DATA_KEY = { elementalist: "spiritmaster" };
+const SIZE_STORE = "aion2-armory-daevanion-size";
+const BOARD_STORE = "aion2-armory-daevanion-board";
+const SIDE_MIN = 320, SIDE_MAX = 1600, SIDE_KEY_STEP = 16;
 
 const T = {
   hide_borders: "Hide borders",
@@ -56,6 +59,11 @@ const T = {
   name_colon: "Name:",
   duplicate_default_name: (name) => `${name} (Copy)`,
   delete_confirm: (name) => `Really delete "${name}"? This cannot be undone.`,
+  loading: "Loading the Daevanion boards…",
+  tab_tooltip: (name, spent) => `${name}: ${spent} point${spent === 1 ? "" : "s"} spent`,
+  resize_tooltip: "Drag to resize the board (arrow keys work too)",
+  zoom: "Zoom",
+  zoom_tooltip: "Zoom inside the board frame (mouse wheel works too). 100% fits the frame; drag the corner to resize the frame.",
 };
 
 const ICONS = {
@@ -299,7 +307,8 @@ let order = null;
 function currentBoard() {
   const key = classKey();
   if (!variant.class_ids.includes(key)) return null;
-  if (!variant.deity_orders.includes(order)) order = variant.deity_orders[0] ?? null;
+  const boards = D.classBoards(variant, key);
+  if (!boards.some((b) => b.order === order)) order = initialOrder(key, boards, currentSet());
   if (order === null) return null;
   return variant.board_by_class_order.get(`${key}:${order}`) || null;
 }
@@ -392,6 +401,8 @@ export function renderBoard(canvas, variant, board, activeSet, options = {}) {
   const { icons, labels } = boardOverlays(grid, skillsById);
   const showLabels = options.showLabels !== false;
   const highlighted = options.highlighted || new Set();
+  const added = options.added || new Set(), removed = options.removed || new Set();
+  const success = cssVar("--success", "#34d399"), danger = cssVar("--danger", "#f87171");
   const byId = new Map();
   for (const n of grid.values()) byId.set(n.id, n);
 
@@ -484,6 +495,12 @@ export function renderBoard(canvas, variant, board, activeSet, options = {}) {
       ctx.lineWidth = 2.2;
       ctx.stroke();
     }
+    if (added.has(n.id) || removed.has(n.id)) {
+      roundRect(ctx, rect.x - 2.5, rect.y - 2.5, rect.w + 5, rect.h + 5, 10);
+      ctx.strokeStyle = added.has(n.id) ? success : danger;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
     if (options.hovered === D.gridKey(n.r, n.c)) {
       roundRect(ctx, rect.x - 1.5, rect.y - 1.5, rect.w + 3, rect.h + 3, 9);
       ctx.strokeStyle = accentHover;
@@ -517,11 +534,28 @@ function tipElement() {
     tip.className = "daev-tip";
     tip.hidden = true;
     document.body.appendChild(tip);
+    installTooltipGuards();
   }
   return tip;
 }
 
 export function hideTooltip() { if (tip) tip.hidden = true; }
+
+let tooltipGuardsInstalled = false;
+
+function installTooltipGuards() {
+  if (tooltipGuardsInstalled) return;
+  tooltipGuardsInstalled = true;
+  window.addEventListener("blur", hideTooltip);
+  window.addEventListener("mouseout", (e) => { if (!e.relatedTarget) hideTooltip(); });
+  window.addEventListener("scroll", hideTooltip, { capture: true, passive: true });
+  document.addEventListener("mouseleave", hideTooltip);
+  document.documentElement.addEventListener("mouseleave", hideTooltip);
+  document.addEventListener("visibilitychange", hideTooltip);
+  document.addEventListener("pointermove", (e) => {
+    if (tip && !tip.hidden && !(e.target && e.target._daevanion)) hideTooltip();
+  }, { passive: true });
+}
 
 // options: {board, activeSet, pointsLeft (default Infinity), x, y, skillsById}
 export function showTooltip(node, options) {
@@ -557,10 +591,182 @@ export function showTooltip(node, options) {
   el.style.top = `${Math.max(0, y)}px`;
 }
 
+// ── board tabs, sizes (shared by the page and boardTabsWidget) ──────────────
+
+function readStore(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch { return {}; }
+}
+
+function writeStore(key, values) {
+  try { localStorage.setItem(key, JSON.stringify({ ...readStore(key), ...values })); } catch { }
+}
+
+function clampSide(side) { return Math.round(Math.max(SIDE_MIN, Math.min(SIDE_MAX, side))); }
+
+function storedSide(which) {
+  const side = Number(readStore(SIZE_STORE)[which]);
+  return side > 0 ? clampSide(side) : null;
+}
+
+function rememberOrder(dataKey, boardOrder) { writeStore(BOARD_STORE, { [dataKey]: boardOrder }); }
+
+// The remembered board of the class, else the first one with nodes taken, else the first.
+function initialOrder(dataKey, boards, set) {
+  const remembered = readStore(BOARD_STORE)[dataKey];
+  if (boards.some((b) => b.order === remembered)) return remembered;
+  const used = boards.find((b) => D.spentCost(activeOf(set, b), variant.node_by_id) > 0);
+  return (used || boards[0] || { order: null }).order;
+}
+
+function boardTabsHtml(boards, set, current, disabledKeys = []) {
+  return boards.map((b) => {
+    const spent = D.spentCost(activeOf(set, b), variant.node_by_id);
+    const off = disabledKeys.includes(boardKey(b));
+    const selected = b.order === current;
+    return `<button type="button" role="tab" class="daev-tab${selected ? " active" : ""}${off ? " off" : ""}" aria-selected="${selected}" data-order="${b.order}" title="${esc(T.tab_tooltip(b.name, spent))}">`
+      + `<span class="dot${spent ? " on" : ""}"></span><span class="name">${esc(off ? T.board_off(b.name) : b.name)}</span><span class="pts">${spent}</span></button>`;
+  }).join("");
+}
+
+function resizeHandleHtml() {
+  return `<div class="daev-resize" tabindex="0" role="separator" aria-orientation="horizontal" title="${esc(T.resize_tooltip)}"></div>`;
+}
+
+function wireResize(handle, getSide, setSide, done) {
+  handle.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    hideTooltip();
+    const start = getSide(), x0 = e.clientX, y0 = e.clientY;
+    handle.setPointerCapture(e.pointerId);
+    handle.classList.add("dragging");
+    const move = (ev) => {
+      const dx = ev.clientX - x0, dy = ev.clientY - y0;
+      setSide(clampSide(start + (Math.abs(dx) > Math.abs(dy) ? dx : dy)));
+    };
+    const end = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", end);
+      handle.removeEventListener("pointercancel", end);
+      handle.classList.remove("dragging");
+      done(getSide());
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", end);
+    handle.addEventListener("pointercancel", end);
+  });
+  handle.addEventListener("keydown", (e) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    setSide(clampSide(getSide() + step * SIDE_KEY_STEP));
+    done(getSide());
+  });
+}
+
+function linkedSetOf(classKeyAny) {
+  const lower = String(classKeyAny || "").trim().toLowerCase();
+  const className = BUILDS_CLASS_BY_DATA_KEY[lower] || lower;
+  const builds = (bp().daevanion_builds_data || {})[className] || {};
+  return builds[linkedSetName(equipBuildOf(className), className)] || {};
+}
+
+// One deity board of `classKey` at a time behind a tab bar, in a resizable
+// frame, with the node tooltip on hover. Shows the set the class's current
+// equip build links to and follows profile changes. `side` is the initial
+// frame size in CSS px (a size the user dragged to wins); `onChange` gets
+// {board, key, spent, activeSet} when another tab is picked. Call
+// `el.destroy()` when the host unmounts.
+export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {}) {
+  const el = document.createElement("div");
+  el.className = "daev-widget";
+  el.innerHTML = `<div class="muted small">${T.loading}</div>`;
+  const dataKey = D.skillsDataClassKey(String(classKeyAny || "").trim().toLowerCase());
+  let size = storedSide("widget") || clampSide(side);
+  let current = null, hoveredKey = null, alive = true, unsubscribe = null;
+  let tabs = null, box = null, canvasEl = null;
+  const boards = () => D.classBoards(variant, dataKey);
+  const boardNow = () => boards().find((b) => b.order === current) || null;
+  const viewNow = () => bp().daevanion_view || {};
+
+  function paint() {
+    const board = boardNow();
+    if (!board || !canvasEl) return;
+    const v = viewNow();
+    renderBoard(canvasEl, variant, board, activeOf(linkedSetOf(classKeyAny), board), {
+      side: size - 2, hovered: hoveredKey, showLabels: v.show_labels !== false, hideBorders: !!v.hide_borders,
+    });
+  }
+
+  function render() {
+    const list = boards();
+    if (!list.length) { el.innerHTML = `<div class="muted small">${T.no_board_for_class}</div>`; tabs = box = canvasEl = null; return; }
+    const set = linkedSetOf(classKeyAny);
+    if (!list.some((b) => b.order === current)) current = initialOrder(dataKey, list, set);
+    tabs.innerHTML = boardTabsHtml(list, set, current);
+    paint();
+  }
+
+  function build() {
+    el.innerHTML = `<div class="daev-tabs" role="tablist"></div>
+      <div class="daev-board-box" style="--daev-side: ${size}px"><div class="daev-canvas-frame"><canvas></canvas></div>${resizeHandleHtml()}</div>`;
+    tabs = el.querySelector(".daev-tabs");
+    box = el.querySelector(".daev-board-box");
+    canvasEl = el.querySelector("canvas");
+    tabs.addEventListener("click", (e) => {
+      const button = e.target.closest("[data-order]");
+      if (!button) return;
+      const picked = Number(button.dataset.order);
+      if (picked === current) return;
+      current = picked;
+      hoveredKey = null;
+      rememberOrder(dataKey, picked);
+      hideTooltip();
+      render();
+      const board = boardNow();
+      if (onChange && board) {
+        const active = activeOf(linkedSetOf(classKeyAny), board);
+        onChange({ board, key: boardKey(board), spent: D.spentCost(active, variant.node_by_id), activeSet: active });
+      }
+    });
+    canvasEl.addEventListener("mousemove", (e) => {
+      const board = boardNow();
+      if (!board) return;
+      const rect = canvasEl.getBoundingClientRect();
+      const node = hitTest(canvasEl, e.clientX - rect.left, e.clientY - rect.top);
+      const rc = node && node.g !== "empty" ? D.gridKey(node.r, node.c) : null;
+      if (rc !== hoveredKey) { hoveredKey = rc; paint(); }
+      if (!rc) { hideTooltip(); return; }
+      showTooltip(node, { board, activeSet: activeOf(linkedSetOf(classKeyAny), board), x: e.clientX, y: e.clientY });
+    });
+    const leave = () => {
+      if (hoveredKey) { hoveredKey = null; paint(); }
+      hideTooltip();
+    };
+    canvasEl.addEventListener("mouseleave", leave);
+    canvasEl.addEventListener("pointerleave", leave);
+    wireResize(el.querySelector(".daev-resize"), () => size, (next) => {
+      size = next;
+      box.style.setProperty("--daev-side", `${next}px`);
+      paint();
+    }, (final) => writeStore(SIZE_STORE, { widget: final }));
+    unsubscribe = onProfileChange(() => { if (tabs) render(); });
+    render();
+  }
+
+  prepare(classKeyAny).then(() => { if (alive) build(); });
+  el.destroy = () => {
+    alive = false;
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    hideTooltip();
+  };
+  return el;
+}
+
 // ── page ────────────────────────────────────────────────────────────────────
 
 let root = null;
-let resizeObserver = null;
+let pageSide = null;
 let canvas = null;
 let fitZoom = 1, userZoom = 1;
 let hovered = null;
@@ -574,12 +780,41 @@ function statusSet(text) {
   if (el) el.textContent = text;
 }
 
-function refit() {
+function fitFor(board) {
+  return Math.max(FIT_ZOOM_MIN, (pageSide - 4) / baseSide(gridOf(board)));
+}
+
+function defaultPageSide() {
+  const top = root ? root.getBoundingClientRect().top : 0;
+  const width = (root ? root.clientWidth : window.innerWidth) - 380 - 16 - 8;
+  const height = window.innerHeight - top - 150;
+  return clampSide(Math.min(width, height));
+}
+
+function setPageSide(side) {
+  pageSide = side;
+  const body = root && root.querySelector(".daev-body");
+  if (body) body.style.setProperty("--daev-side", `${side}px`);
+  const board = currentBoard();
+  if (!board) return;
+  fitZoom = fitFor(board);
+  drawCanvas();
+}
+
+function zoomTo(zoom) {
   const frame = root && root.querySelector(".daev-canvas-frame");
-  if (!frame || !canvas || !canvas._daevanion) return;
-  const base = baseSide(canvas._daevanion.grid);
-  const fit = Math.max(FIT_ZOOM_MIN, (Math.min(frame.clientWidth, frame.clientHeight) - 2) / base);
-  if (Math.abs(fit - fitZoom) > 1e-3) { fitZoom = fit; drawCanvas(); }
+  if (!frame || !canvas) return;
+  const oldW = Math.max(1, canvas.offsetWidth), oldH = Math.max(1, canvas.offsetHeight);
+  const anchorX = (frame.scrollLeft + frame.clientWidth / 2) / oldW;
+  const anchorY = (frame.scrollTop + frame.clientHeight / 2) / oldH;
+  userZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom));
+  drawCanvas();
+  frame.scrollLeft = Math.round(anchorX * canvas.offsetWidth - frame.clientWidth / 2);
+  frame.scrollTop = Math.round(anchorY * canvas.offsetHeight - frame.clientHeight / 2);
+  const slider = root.querySelector("#daev-zoom");
+  if (slider) slider.value = String(Math.round(userZoom * 100));
+  const label = root.querySelector(".daev-zoom .val");
+  if (label) label.textContent = `${Math.round(userZoom * 100)}%`;
 }
 
 function drawCanvas() {
@@ -596,15 +831,7 @@ function drawCanvas() {
 
 function onWheel(e) {
   e.preventDefault();
-  const frame = e.currentTarget;
-  const oldW = Math.max(1, canvas.offsetWidth), oldH = Math.max(1, canvas.offsetHeight);
-  const anchorX = (frame.scrollLeft + frame.clientWidth / 2) / oldW;
-  const anchorY = (frame.scrollTop + frame.clientHeight / 2) / oldH;
-  const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
-  userZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, userZoom * factor));
-  drawCanvas();
-  frame.scrollLeft = Math.round(anchorX * canvas.offsetWidth - frame.clientWidth / 2);
-  frame.scrollTop = Math.round(anchorY * canvas.offsetHeight - frame.clientHeight / 2);
+  zoomTo(userZoom * (e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP));
 }
 
 function canvasPoint(e) {
@@ -621,8 +848,7 @@ function onCanvasMove(e) {
 }
 
 function onCanvasLeave() {
-  hovered = null;
-  drawCanvas();
+  if (hovered !== null) { hovered = null; drawCanvas(); }
   hideTooltip();
 }
 
@@ -896,10 +1122,9 @@ export function draw() {
   const settings = board ? routeSettings() : null;
   const budget = settings ? settings.budget ?? null : null;
   const boards = board ? classBoardsHere() : [];
-  const deityTabs = boards.map((b) => {
-    const off = settings.disabled_boards.includes(boardKey(b));
-    return `<button class="${b.order === order ? "active" : ""}" data-order="${b.order}">${esc(off ? T.board_off(b.name) : b.name)}</button>`;
-  }).join("");
+  const deityTabs = board ? boardTabsHtml(boards, currentSet(), order, settings.disabled_boards) : "";
+  if (!pageSide) pageSide = storedSide("page") || defaultPageSide();
+  const zoomPercent = Math.round(userZoom * 100);
   const pointsLabel = board
     ? T.points_total_label({ total: totalSpent(), budget: budget === null ? "∞" : budget, board: D.spentCost(activeSet(board), variant.node_by_id) })
     : T.no_board_for_class;
@@ -907,15 +1132,16 @@ export function draw() {
   root.innerHTML = `<div class="daev">
     <div class="row daev-sets">${setButtonsHtml()}</div>
     <div class="row daev-header">
-      <div class="row daev-deities">${deityTabs}</div>
-      <span class="grow"></span>
       <span class="section-label daev-points">${esc(pointsLabel)}</span>
+      <span class="grow"></span>
+      <label class="daev-zoom" title="${esc(T.zoom_tooltip)}">${T.zoom}<input type="range" id="daev-zoom" min="${ZOOM_MIN * 100}" max="${ZOOM_MAX * 100}" step="1" value="${zoomPercent}"><span class="val">${zoomPercent}%</span></label>
       <button data-view="hide_borders" aria-pressed="${!!v.hide_borders}">${T.hide_borders}</button>
       <button data-view="show_labels" aria-pressed="${!!v.show_labels}">${T.show_labels}</button>
       <button id="daev-reset">${T.reset_board}</button>
     </div>
-    <div class="daev-body">
-      <div class="daev-canvas-frame"><canvas></canvas></div>
+    <div class="daev-tabs" role="tablist">${deityTabs}</div>
+    <div class="daev-body" style="--daev-side: ${pageSide}px">
+      <div class="daev-board-box"><div class="daev-canvas-frame"><canvas></canvas></div>${board ? resizeHandleHtml() : ""}</div>
       <aside class="daev-side">
         <div class="row daev-budget"><span class="section-label">${T.budget_label}</span>
           <input type="number" id="daev-budget" min="0" max="9999" value="${budget ?? ""}" placeholder="∞" title="${esc(T.budget_tooltip)}"></div>
@@ -931,8 +1157,13 @@ export function draw() {
   root.querySelectorAll("[data-set]").forEach((b) => b.addEventListener("click", () => onSetAction(b.dataset.set)));
   root.querySelectorAll("[data-order]").forEach((b) => b.addEventListener("click", () => {
     const o = Number(b.dataset.order);
-    if (o !== order) { order = o; draw(); }
+    if (o === order) return;
+    order = o;
+    hovered = null;
+    rememberOrder(classKey(), o);
+    draw();
   }));
+  root.querySelector("#daev-zoom").addEventListener("input", (e) => zoomTo(Number(e.target.value) / 100));
   root.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", () => {
     const key = b.dataset.view;
     view()[key] = !view()[key];
@@ -976,31 +1207,29 @@ export function draw() {
   if (board) {
     canvas.addEventListener("mousemove", onCanvasMove);
     canvas.addEventListener("mouseleave", onCanvasLeave);
+    canvas.addEventListener("pointerleave", onCanvasLeave);
     canvas.addEventListener("click", onCanvasClick);
     frame.addEventListener("wheel", onWheel, { passive: false });
-    fitZoom = Math.max(FIT_ZOOM_MIN, (Math.min(frame.clientWidth, frame.clientHeight) - 2) / baseSide(gridOf(board)));
+    wireResize(root.querySelector(".daev-resize"), () => pageSide, setPageSide, (final) => writeStore(SIZE_STORE, { page: final }));
+    fitZoom = fitFor(board);
     drawCanvas();
-    if (resizeObserver) resizeObserver.disconnect();
-    resizeObserver = new ResizeObserver(refit);
-    resizeObserver.observe(frame);
   }
 }
 
 export function mount(main) {
   root = main;
-  root.innerHTML = `<div class="muted">Loading the Daevanion boards…</div>`;
+  root.innerHTML = `<div class="muted">${T.loading}</div>`;
   prepare(classDisplay()).then(() => { if (root === main) { order = null; draw(); } });
 }
 
 export function unmount() {
-  if (resizeObserver) { resizeObserver.disconnect(); resizeObserver = null; }
   if (redrawRequested) { cancelAnimationFrame(redrawRequested); redrawRequested = null; }
   hideTooltip();
   closeMenu();
   canvas = null;
   root = null;
   hovered = null;
-  userZoom = 1;
+  pageSide = null;
 }
 
 // [{board, key, spent, activeSet}] for the boards with nodes taken in the
@@ -1009,11 +1238,8 @@ export function unmount() {
 // the data key ("elementalist").
 export function boardsInUse(classKey = classDisplay()) {
   if (!variant) return [];
-  const lower = String(classKey || "").trim().toLowerCase();
-  const dataKey = D.skillsDataClassKey(lower);
-  const className = BUILDS_CLASS_BY_DATA_KEY[lower] || lower;
-  const builds = (bp().daevanion_builds_data || {})[className] || {};
-  const set = builds[linkedSetName(equipBuildOf(className), className)] || {};
+  const dataKey = D.skillsDataClassKey(String(classKey || "").trim().toLowerCase());
+  const set = linkedSetOf(classKey);
   const out = [];
   for (const board of D.classBoards(variant, dataKey)) {
     const active = activeOf(set, board);

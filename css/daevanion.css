@@ -1,17 +1,36 @@
 /* daevanion */
-.daev { display: flex; flex-direction: column; gap: 10px; height: calc(100vh - 28px); min-height: 560px; }
+.daev { display: flex; flex-direction: column; gap: 10px; }
 .daev .section-label { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 .daev-sets { gap: 6px; }
 .daev-sets select { min-width: 160px; min-height: 32px; }
 .daev-sets .icon-btn { width: 40px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .daev-sets .icon-btn:disabled { opacity: 0.4; cursor: default; }
-.daev-header { gap: 6px; flex-wrap: nowrap; }
-.daev-deities { gap: 6px; flex-wrap: wrap; }
-.daev-points { white-space: nowrap; margin: 0 8px; }
-.daev-body { flex: 1; min-height: 0; display: flex; gap: 16px; }
-.daev-canvas-frame { flex: 1; min-width: 520px; min-height: 520px; display: flex; overflow: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
+.daev-header { gap: 6px; }
+.daev-points { white-space: nowrap; margin-right: 8px; }
+.daev-zoom { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 600; margin-right: 6px; }
+.daev-zoom input[type="range"] { width: 120px; accent-color: var(--accent); }
+.daev-zoom .val { min-width: 38px; text-align: right; color: var(--fg); }
+.daev-tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--border); }
+.daev-tab { display: inline-flex; align-items: center; gap: 7px; margin-bottom: -1px; padding: 6px 12px; background: transparent; border: 1px solid transparent; border-bottom: 2px solid transparent; border-radius: 8px 8px 0 0; color: var(--muted); }
+.daev-tab:hover { color: var(--fg); background: var(--overlay); border-color: transparent; border-bottom-color: var(--border); }
+.daev-tab.active, .daev-tab.active:hover { color: var(--accent); background: var(--accent-soft); border-color: transparent; border-bottom-color: var(--accent); }
+.daev-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex: none; }
+.daev-tab .dot.on { background: var(--success, #34d399); box-shadow: 0 0 6px var(--success, #34d399); }
+.daev-tab .pts { min-width: 22px; padding: 0 6px; border-radius: 9px; background: var(--overlay); color: var(--muted); font-size: 11px; font-weight: 700; text-align: center; }
+.daev-tab.active .pts { background: var(--accent); color: var(--bg); }
+.daev-tab.off .name { opacity: 0.6; }
+.daev-body { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.daev-board-box { position: relative; flex: none; width: var(--daev-side, 640px); height: var(--daev-side, 640px); max-width: 100%; }
+.daev-canvas-frame { width: 100%; height: 100%; display: flex; overflow: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
 .daev-canvas-frame canvas { margin: auto; display: block; cursor: pointer; flex: none; }
-.daev-side { width: 380px; flex: none; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.daev-resize { position: absolute; right: 3px; bottom: 3px; width: 18px; height: 18px; cursor: nwse-resize; touch-action: none; border-radius: 0 0 9px 0;
+  background: linear-gradient(135deg, transparent 0 48%, var(--muted) 48% 56%, transparent 56% 68%, var(--muted) 68% 76%, transparent 76% 88%, var(--muted) 88%); opacity: 0.7; }
+.daev-resize:hover, .daev-resize:focus-visible, .daev-resize.dragging { opacity: 1;
+  background: linear-gradient(135deg, transparent 0 48%, var(--accent) 48% 56%, transparent 56% 68%, var(--accent) 68% 76%, transparent 76% 88%, var(--accent) 88%); outline: none; }
+.daev-side { width: 380px; height: max(var(--daev-side, 640px), 560px); flex: none; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.daev-widget { display: flex; flex-direction: column; gap: 8px; max-width: 100%; }
+.daev-widget .daev-canvas-frame { overflow: hidden; }
+.daev-widget .daev-canvas-frame canvas { cursor: default; }
 .daev-budget { gap: 6px; flex-wrap: nowrap; }
 .daev-budget input { flex: 1; width: auto; text-align: left; }
 .daev-use { display: flex; align-items: center; gap: 8px; font-size: 13px; }
@@ -19,12 +38,12 @@
 .daev-status { color: var(--warn); font-size: 11px; font-style: italic; min-height: 1em; }
 .daev-status:empty { display: none; }
 .daev-filters { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
-.daev-acc { background: rgba(28, 39, 64, 0.6); border: 1px solid var(--border); border-radius: 10px; }
+.daev-acc { background: var(--overlay); border: 1px solid var(--border); border-radius: 10px; }
 .daev-acc summary { list-style: none; cursor: pointer; color: var(--accent); font-weight: 700; font-size: 14px; padding: 10px 12px; border-radius: 10px; user-select: none; }
 .daev-acc summary::-webkit-details-marker { display: none; }
 .daev-acc summary::before { content: "▸  "; }
 .daev-acc[open] summary::before { content: "▾  "; }
-.daev-acc summary:hover { background: rgba(34, 211, 238, 0.08); }
+.daev-acc summary:hover { background: var(--accent-soft); }
 .daev-acc .body { padding: 4px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
 .daev-acc .divider { color: var(--warn); font-size: 11px; font-style: italic; padding: 6px 0 2px; }
 .daev-acc .stat { display: flex; align-items: center; gap: 6px; }
@@ -48,7 +67,8 @@
 
 /* node tooltip (DaevanionNodeTooltip) */
 .daev-tip { position: fixed; z-index: 20; width: 240px; pointer-events: none; padding: 14px; display: flex; flex-direction: column; gap: 10px;
-  background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 13px; box-shadow: 0 16px 48px rgba(11, 17, 32, 0.6); font-size: 12px; }
+  background: var(--surface); color: var(--fg); border: 1px solid var(--border); border-radius: 13px; box-shadow: 0 16px 48px rgba(11, 17, 32, 0.6); font-size: 12px; }
+.daev-tip[hidden] { display: none; }
 .daev-tip .pill { align-self: flex-start; font-size: 10.5px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 9px; }
 .daev-tip .pill.grade-start { background: var(--accent-soft); color: var(--accent); }
 .daev-tip .pill.grade-Common { background: rgba(148, 163, 184, 0.2); }
@@ -56,13 +76,13 @@
 .daev-tip .pill.grade-Unique { background: rgba(250, 204, 21, 0.2); }
 .daev-tip .pill.grade-Legend { background: rgba(56, 189, 248, 0.2); }
 .daev-tip .title { font-size: 15px; font-weight: 700; color: var(--fg); }
-.daev-tip .meta { color: var(--muted); border-top: 1px solid rgba(148, 163, 184, 0.24); padding-top: 8px; }
+.daev-tip .meta { color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px; }
 .daev-tip .effects { display: flex; flex-direction: column; gap: 6px; }
-.daev-tip .effect { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(22, 32, 54, 0.6); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; }
-.daev-tip .effect .label { flex: 1; color: #cbd5e1; }
+.daev-tip .effect { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--overlay); border: 1px solid var(--border); border-radius: 8px; }
+.daev-tip .effect .label { flex: 1; color: var(--fg); }
 .daev-tip .effect .value { color: var(--accent); font-weight: 700; }
 .daev-tip .status { text-align: center; font-weight: 600; border-radius: 8px; padding: 8px 10px; }
 .daev-tip .status[data-status="start"], .daev-tip .status[data-status="active"] { background: rgba(34, 211, 238, 0.15); color: var(--accent); }
-.daev-tip .status[data-status="available"] { background: rgba(74, 222, 128, 0.14); color: #4ade80; }
+.daev-tip .status[data-status="available"] { background: rgba(52, 211, 153, 0.14); color: var(--success, #34d399); }
 .daev-tip .status[data-status="locked"] { background: rgba(148, 163, 184, 0.12); color: var(--muted); }
 .daev-tip .status[data-status="no_points"] { background: rgba(248, 113, 113, 0.14); color: var(--danger); }

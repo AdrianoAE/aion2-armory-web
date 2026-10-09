@@ -6,24 +6,36 @@
 
 import { bp, onChange, save } from "../state.js";
 import {
-  KEY_ROW, MOUSE_KEY_LABELS, SKILL_LAYOUT_COLS, SKILL_LAYOUT_ROWS, SKILL_MACRO_MAX, barContents, currentSkillBuildName, data,
+  DEFAULT_SKILL_BAR_KEYS, KEY_ROW, MOUSE_KEY_LABELS, SKILL_LAYOUT_COLS, SKILL_LAYOUT_ROWS, SKILL_MACRO_MAX, barContents, currentSkillBuildName, data,
   dropped, escapeHtml, ready, removeAt, skillBuild, skillContext, skillIconUrl, twoLineLabel,
 } from "../engine/skills.js";
 
 export const SKILL_LAYOUT_MIME = "application/x-aion2-skill-layout-slot";
 const SLOT_SIZE = 76;
 const EXPORT_SLOT = 64;
+const DRAG_IMAGE_SIZE = 40;
+const KEY_LABEL_MAX = 8;
 
 const TEXT = {
   title: "Skill Layout",
   build: (name) => `Skill build: ${name}`,
-  hint: "Drag skills from the list onto the bar or the macro, drag slots to move or swap them, and drag a slot back onto the list to remove it. The bottom row shows the lowest skill of each column, like in-game; right-click it to set its key. The macro casts its skills top to bottom, up to 4.",
+  hint: "Drag skills from the list onto the bar or the macro, drag slots to move or swap them, and drag a slot back onto the list to remove it. The bottom row shows the lowest skill of each column, like in-game; click a slot in it to change its key. The macro casts its skills top to bottom, up to 4.",
   bar: "Skill bar",
+  editKeys: "Edit keys",
+  editKeysTip: "Change the key shown on each column of the bottom row",
+  resetKeys: "Reset keys",
+  resetKeysTip: "Restore the default keys of the bottom row",
+  keySlotTip: "Click to change the key",
+  keyEditorTitle: (col) => `Key for column ${col}`,
+  keyPlaceholder: "e.g. F1, Alt+1",
+  keyboardKey: "Keyboard key",
+  keySave: "Save",
+  keyClear: "Clear",
+  keyEditorHint: "Enter saves, Escape cancels.",
   macro: "Macro",
   sections: { active: "Active Skills", stigma: "Stigma Skills" },
   onBar: (slot) => `Already on the skill bar (${slot}). Drag it from that slot to move it.`,
-  setKey: "Set key label...",
-  keyPrompt: "Key label (e.g. Ctrl+1), empty to remove:",
+  setKey: "Change key...",
   mouse: "Mouse button",
   mouseLabels: { "@mouse_left": "Left click", "@mouse_right": "Right click", "@mouse_forward": "Side button (forward)", "@mouse_back": "Side button (back)" },
   clear: "Clear slot",
@@ -125,6 +137,14 @@ export function drawMouseGlyph(ctx, box, button, colors) {
   ctx.restore();
 }
 
+function fitFont(ctx, text, px, maxWidth, family) {
+  for (; px > 6; px--) {
+    ctx.font = `bold ${px}px ${family}`;
+    if (ctx.measureText(text).width <= maxWidth) return;
+  }
+  ctx.font = `bold 6px ${family}`;
+}
+
 // content: { icon: HTMLImageElement|null, level: "Lv. 5"|"", key: "1"|"@mouse_left"|"", placeholder: "+"|"" }
 export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = false, colors = palette() } = {}) {
   const rect = { x: x + 1, y: y + 1, w: size - 2, h: size - 2 };
@@ -150,7 +170,7 @@ export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = f
     ctx.textBaseline = "middle";
     ctx.fillText(content.placeholder, rect.x + rect.w / 2, rect.y + rect.h / 2);
   }
-  ctx.font = `bold ${Math.max(9, Math.floor(size / 6))}px ${colors.font}`;
+  const labelPx = Math.max(9, Math.floor(size / 6));
   if (MOUSE_KEY_LABELS.includes(content.key)) {
     const g = Math.max(12, Math.round(size * 0.3));
     drawMouseGlyph(ctx, { x: rect.x + 4, y: rect.y + 3, w: g, h: g }, content.key.replace("@mouse_", ""), colors);
@@ -158,6 +178,7 @@ export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = f
   const box = { x: rect.x + 4, y: rect.y + 2, w: rect.w - 8, h: rect.h - 4 };
   for (const [text, align] of [[content.key, "left"], [content.level, "right"]]) {
     if (!text || MOUSE_KEY_LABELS.includes(text)) continue;
+    fitFont(ctx, text, labelPx, box.w, colors.font);
     const tx = align === "left" ? box.x : box.x + box.w;
     const ty = align === "left" ? box.y : box.y + box.h;
     ctx.textAlign = align;
@@ -194,10 +215,42 @@ function carriesSlot(event) {
   return !!event.dataTransfer && [...(event.dataTransfer.types || [])].includes(SKILL_LAYOUT_MIME);
 }
 
+export function dragImageCanvas(icon, colors = palette()) {
+  const size = DRAG_IMAGE_SIZE;
+  const dpr = window.devicePixelRatio || 1;
+  const canvas = document.createElement("canvas");
+  canvas.className = "skill-drag-image";
+  canvas.width = Math.round(size * dpr);
+  canvas.height = Math.round(size * dpr);
+  canvas.style.width = `${size}px`;
+  canvas.style.height = `${size}px`;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  roundRect(ctx, 1, 1, size - 2, size - 2, 6);
+  ctx.fillStyle = colors.bg;
+  ctx.fill();
+  if (icon && icon.complete && icon.naturalWidth) {
+    ctx.save();
+    roundRect(ctx, 2, 2, size - 4, size - 4, 5);
+    ctx.clip();
+    ctx.drawImage(icon, 2, 2, size - 4, size - 4);
+    ctx.restore();
+  }
+  roundRect(ctx, 1, 1, size - 2, size - 2, 6);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = colors.accent;
+  ctx.stroke();
+  return canvas;
+}
+
+// Chrome snapshots a drag image element only while it is in the document.
 function startDrag(event, address, icon) {
   event.dataTransfer.setData(SKILL_LAYOUT_MIME, JSON.stringify(address));
   event.dataTransfer.effectAllowed = "move";
-  if (icon && icon.complete && icon.naturalWidth) event.dataTransfer.setDragImage(icon, 24, 24);
+  const image = dragImageCanvas(icon);
+  document.body.appendChild(image);
+  event.dataTransfer.setDragImage(image, DRAG_IMAGE_SIZE / 2, DRAG_IMAGE_SIZE / 2);
+  setTimeout(() => image.remove(), 0);
 }
 
 // ── context menu ────────────────────────────────────────────────────────────
@@ -226,9 +279,80 @@ function showMenu(items, x, y) {
   openMenu = menu;
 }
 
+// ── key editor ──────────────────────────────────────────────────────────────
+
+let keyEditor = null;
+
+function closeKeyEditor() {
+  if (keyEditor) { keyEditor.remove(); keyEditor = null; }
+}
+
+function defaultKeys() {
+  const keys = {};
+  DEFAULT_SKILL_BAR_KEYS.forEach((key, col) => { keys[`${KEY_ROW},${col}`] = key; });
+  return keys;
+}
+
+function resetKeys(layout) {
+  layout.keys = defaultKeys();
+  save();
+}
+
+function openKeyEditor(anchor, where, layoutNow) {
+  closeMenu();
+  closeKeyEditor();
+  const current = layoutNow().keys[where] || "";
+  const isMouse = MOUSE_KEY_LABELS.includes(current);
+  const col = Number(String(where).split(",")[1]) + 1;
+  const editor = document.createElement("div");
+  editor.className = "key-editor";
+  editor.setAttribute("role", "dialog");
+  editor.innerHTML = `<div class="key-editor-title">${TEXT.keyEditorTitle(col)}</div>
+    <input type="text" class="key-input" maxlength="${KEY_LABEL_MAX}" placeholder="${TEXT.keyPlaceholder}" spellcheck="false" autocomplete="off">
+    <select class="key-mouse"><option value="">${TEXT.keyboardKey}</option>${MOUSE_KEY_LABELS.map((m) => `<option value="${m}">${TEXT.mouseLabels[m]}</option>`).join("")}</select>
+    <div class="key-editor-actions">
+      <button type="button" data-key-act="save" class="active">${TEXT.keySave}</button>
+      <button type="button" data-key-act="clear">${TEXT.keyClear}</button>
+      <span class="grow"></span>
+      <button type="button" data-key-act="reset" title="${TEXT.resetKeysTip}">${TEXT.resetKeys}</button>
+    </div>
+    <div class="key-editor-hint">${TEXT.keyEditorHint}</div>`;
+  const input = editor.querySelector(".key-input");
+  const mouse = editor.querySelector(".key-mouse");
+  input.value = isMouse ? "" : current;
+  mouse.value = isMouse ? current : "";
+  const apply = (value) => {
+    const layout = layoutNow();
+    if (value) layout.keys[where] = value; else delete layout.keys[where];
+    closeKeyEditor();
+    save();
+  };
+  input.addEventListener("input", () => { if (input.value) mouse.value = ""; });
+  mouse.addEventListener("change", () => { if (mouse.value) apply(mouse.value); });
+  editor.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); apply(mouse.value || input.value.trim()); }
+    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeKeyEditor(); }
+  });
+  editor.querySelector('[data-key-act="save"]').addEventListener("click", () => apply(mouse.value || input.value.trim()));
+  editor.querySelector('[data-key-act="clear"]').addEventListener("click", () => apply(""));
+  editor.querySelector('[data-key-act="reset"]').addEventListener("click", () => { closeKeyEditor(); resetKeys(layoutNow()); });
+  document.body.appendChild(editor);
+  const a = anchor.getBoundingClientRect();
+  const r = editor.getBoundingClientRect();
+  const below = a.bottom + 6 + r.height <= window.innerHeight;
+  editor.style.left = `${Math.max(4, Math.min(a.left, window.innerWidth - r.width - 4))}px`;
+  editor.style.top = `${below ? a.bottom + 6 : Math.max(4, a.top - r.height - 6)}px`;
+  keyEditor = editor;
+  input.focus();
+  input.select();
+}
+
 if (typeof document !== "undefined") {
-  document.addEventListener("mousedown", (e) => { if (openMenu && !openMenu.contains(e.target)) closeMenu(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
+  document.addEventListener("mousedown", (e) => {
+    if (openMenu && !openMenu.contains(e.target)) closeMenu();
+    if (keyEditor && !keyEditor.contains(e.target) && !(e.target.closest && e.target.closest(".key-editable, [data-keys]"))) closeKeyEditor();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeMenu(); closeKeyEditor(); } });
 }
 
 // ── the live bar + macro block ──────────────────────────────────────────────
@@ -297,7 +421,9 @@ export function skillBarWidget(classKey, buildName, { interactive = true } = {})
   root.className = "skill-bar-widget";
   const barCol = document.createElement("div");
   barCol.className = "bar-col";
-  barCol.innerHTML = `<div class="section-label">${TEXT.bar}</div>`;
+  barCol.innerHTML = `<div class="bar-head"><span class="section-label">${TEXT.bar}</span>${interactive
+    ? `<span class="grow"></span><button type="button" class="key-btn" data-keys="edit" title="${TEXT.editKeysTip}">${TEXT.editKeys}</button><button type="button" class="key-btn" data-keys="reset" title="${TEXT.resetKeysTip}">${TEXT.resetKeys}</button>`
+    : ""}</div>`;
   const grid = document.createElement("div");
   grid.className = "bar-grid";
   const barSlots = {};
@@ -343,15 +469,10 @@ export function skillBarWidget(classKey, buildName, { interactive = true } = {})
       const [kind, where] = address;
       const items = [];
       if (kind === "bar" && String(where).startsWith(`${KEY_ROW},`)) {
-        items.push({ label: TEXT.setKey, action: () => {
-          const current = layout.keys[where] || "";
-          const text = window.prompt(TEXT.keyPrompt, MOUSE_KEY_LABELS.includes(current) ? "" : current);
-          if (text === null) return;
-          if (text.trim()) layout.keys[where] = text.trim(); else delete layout.keys[where];
-          save();
-        } });
+        items.push({ label: TEXT.setKey, action: () => openKeyEditor(barSlots[where], where, layoutNow) });
         items.push({ label: TEXT.mouse, header: true });
         for (const label of MOUSE_KEY_LABELS) items.push({ label: TEXT.mouseLabels[label], indent: true, action: () => { layout.keys[where] = label; save(); } });
+        items.push({ label: TEXT.resetKeys, action: () => resetKeys(layout) });
       } else if (kind === "bar" && where in layout.slots) {
         items.push({ label: TEXT.clear, action: () => { removeAt(layout, address); save(); } });
       } else if (kind === "macro" && where < layout.macro.length) {
@@ -360,22 +481,37 @@ export function skillBarWidget(classKey, buildName, { interactive = true } = {})
       if (items.length) showMenu(items, x, y);
     },
   };
+  const layoutNow = () => layoutOf(classLower, buildOf());
   if (interactive) {
     for (const slot of Object.values(barSlots)) { slot.draggable = !slot.readOnly; wireSlot(slot, handlers); }
     for (const [, slot] of macroRows) { slot.draggable = true; wireSlot(slot, handlers); }
+    for (let c = 0; c < SKILL_LAYOUT_COLS; c++) {
+      const where = `${KEY_ROW},${c}`;
+      const slot = barSlots[where];
+      slot.classList.add("key-editable");
+      slot.tabIndex = 0;
+      slot.addEventListener("click", () => openKeyEditor(slot, where, layoutNow));
+      slot.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openKeyEditor(slot, where, layoutNow); } });
+    }
+    barCol.querySelector('[data-keys="edit"]').addEventListener("click", () => openKeyEditor(barSlots[`${KEY_ROW},0`], `${KEY_ROW},0`, layoutNow));
+    barCol.querySelector('[data-keys="reset"]').addEventListener("click", () => resetKeys(layoutNow()));
   }
 
   root.refresh = () => {
     const context = skillContext(bp(), classLower, buildOf());
     const layout = context.build.layout;
-    for (const [key, [skillId, keyText]] of Object.entries(barContents(layout))) barSlots[key].setContent(slotContent(context, skillId, keyText));
+    for (const [key, [skillId, keyText]] of Object.entries(barContents(layout))) {
+      const content = slotContent(context, skillId, keyText);
+      if (interactive && key.startsWith(`${KEY_ROW},`)) content.tooltip = content.tooltip ? `${content.tooltip}\n${TEXT.keySlotTip}` : TEXT.keySlotTip;
+      barSlots[key].setContent(content);
+    }
     macroRows.forEach(([row, slot], i) => {
       row.hidden = i > layout.macro.length;
       slot.setContent(slotContent(context, layout.macro[i] || null, "", "+"));
     });
   };
   const unsubscribe = onChange(() => root.refresh());
-  root.destroy = () => unsubscribe();
+  root.destroy = () => { unsubscribe(); closeKeyEditor(); };
   ready().then(() => root.refresh());
   return root;
 }
@@ -531,6 +667,7 @@ export function unmount() {
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   palettes = {};
   closeMenu();
+  closeKeyEditor();
 }
 
 // Resolves once the skill data is loaded; the synchronous helpers below need it.

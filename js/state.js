@@ -1,8 +1,8 @@
-// The profile: the same `build_planner` object the desktop Armory saves,
-// kept in localStorage, importable from and exportable to the desktop's
-// profile JSON so a player can move between the two.
+// The profile: the `build_planner` object kept in localStorage, exported and
+// imported as profile JSON (older profiles with the same keys import as is).
 
-import { defaultPlannerTasks } from "./engine/planner.js";
+import { defaultPlannerTasks, migratePlannerTasks } from "./engine/planner.js";
+import { buildsOf, currentPresetOf, migrateProfile, selectPresetIn } from "./builds.js";
 import { DEFAULT_REGION } from "./engine/timers.js";
 import { DEFAULT_SERVER } from "./engine/fieldboss.js";
 
@@ -50,7 +50,9 @@ export function bp() {
   const d = defaultBuildPlanner();
   for (const key of Object.keys(d)) if (p[key] === undefined) p[key] = d[key];
   for (const key of Object.keys(d.planner)) if (p.planner[key] === undefined) p.planner[key] = d.planner[key];
+  migratePlannerTasks(p.planner);
   mergeDefaultTasks(p.planner);
+  migrateProfile(p);
   return p;
 }
 
@@ -92,7 +94,8 @@ export function plannerServer() {
   return planner.servers[0];
 }
 
-// One entry per character: the equip sets of one class sharing a name.
+// One entry per character: the equip sets (presets) of one class sharing a
+// name; `builds` lists the presets, `builds2` the Builds with their presets.
 export function characters() {
   const p = bp();
   const grouped = new Map();
@@ -106,6 +109,10 @@ export function characters() {
       entry.builds.push(buildName);
       if (cls === p.character_class.toLowerCase() && buildName === p.current_build_name) entry.current = buildName;
     }
+  }
+  for (const entry of grouped.values()) {
+    entry.builds2 = buildsOf(p, entry.class, entry.name);
+    entry.preset = currentPresetOf(p, entry.class, entry.name);
   }
   const order = p.character_order || [];
   return [...grouped.values()].sort((a, b) => {
@@ -147,18 +154,30 @@ export function addCharacter(name, cls) {
     setName = name;
     while (builds[setName]) setName += " 2";
     builds[setName] = { equipped: {}, substats: {}, enchant: {}, philosopher_stone: {}, priority: {}, priority_progress: {} };
+    const sharesClass = Object.values(builds).some((e) => (e.character_name || "").trim());
+    if (sharesClass) {
+      p.daevanion_builds_data = p.daevanion_builds_data || {};
+      const sets = p.daevanion_builds_data[key] = p.daevanion_builds_data[key] || {};
+      let buildName = name;
+      while (sets[buildName]) buildName += " 2";
+      sets[buildName] = {};
+      builds[setName].linked_daevanion_build = buildName;
+    }
   }
   builds[setName].character_name = name;
-  p.character_class = cls;
-  p.current_build_name = setName;
+  migrateProfile(p);
+  selectPresetIn(p, key, setName);
   syncPlannerCharacters();
   save();
 }
 
-export function selectCharacter(cls, buildName) {
+export function selectCharacter(cls, presetName, characterName) {
   const p = bp();
-  p.character_class = cls[0].toUpperCase() + cls.slice(1);
-  p.current_build_name = buildName;
+  const preset = presetName || currentPresetOf(p, cls, characterName);
+  if (!selectPresetIn(p, cls, preset)) {
+    p.character_class = cls[0].toUpperCase() + cls.slice(1);
+    p.current_build_name = preset;
+  }
   save();
 }
 

@@ -14,7 +14,7 @@
 .layout-slot canvas { display: block; }
 .layout-slot:not(.read-only) { cursor: grab; }
 .layout-slot.drop-hover { box-shadow: 0 0 0 1px var(--accent); }
-.skill-palette { display: flex; flex-wrap: wrap; gap: 0; background: rgba(28, 39, 64, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 4px; min-height: 60px; }
+.skill-palette { display: flex; flex-wrap: wrap; gap: 0; background: var(--overlay); border: 1px solid var(--border); border-radius: 8px; padding: 4px; min-height: 60px; }
 .skill-palette.drop-hover { border-color: var(--accent); }
 .palette-tile { width: 112px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; cursor: grab; border-radius: 6px; user-select: none; }
 .palette-tile:hover { background: var(--overlay); }
@@ -27,3 +27,15 @@
 .ctx-menu .ctx-item.indent { padding-left: 22px; }
 .ctx-menu .ctx-item:hover { background: var(--accent-soft); color: var(--accent); }
 .ctx-menu .ctx-header { padding: 6px 10px 2px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.skill-bar-widget .bar-head { display: flex; align-items: center; gap: 6px; min-height: 26px; }
+.skill-bar-widget .bar-head .section-label { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.skill-bar-widget .key-btn { padding: 2px 10px; font-size: 12px; }
+.layout-slot.key-editable { cursor: pointer; }
+.layout-slot.key-editable:hover, .layout-slot.key-editable:focus-visible { outline: 1px dashed var(--accent); outline-offset: 1px; }
+.skill-drag-image { position: fixed; left: -200px; top: -200px; pointer-events: none; }
+.key-editor { position: fixed; z-index: 25; width: 240px; display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); font-size: 13px; }
+.key-editor .key-editor-title { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.key-editor input, .key-editor select { width: 100%; }
+.key-editor-actions { display: flex; align-items: center; gap: 6px; }
+.key-editor-actions button { padding: 3px 10px; font-size: 12px; }
+.key-editor-hint { color: var(--muted); font-size: 11px; }

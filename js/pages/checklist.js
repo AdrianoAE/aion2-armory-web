@@ -1,29 +1,36 @@
-// Checklist: server tasks, per-character checklists with Odyle energy.
-// Ticks are stored with their time; daily/weekly/portal ticks count until
-// the next reset (CEST schedule), "when available" entries are reminders.
+// Checklist: server-wide tasks, per-character tasks with Odyle energy.
+// Ticks are stored with their time and count until the next reset of their
+// kind (CEST schedule); "Info" entries are reminders without a tick.
 
-import { bp, newId, plannerServer, save, syncPlannerCharacters, characters } from "../state.js";
-import { PLANNER_KINDS, ODYLE_MAX, ODYLE_PER_TICK, isDone, nextReset, nextOdyleTick, odyleEnergy, countdown } from "../engine/planner.js";
+import { bp, characters, newId, plannerCharacterNamed, plannerServer, save, syncPlannerCharacters } from "../state.js";
+import {
+  KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, PLANNER_KINDS, durationText, isTaskDone, migratePlannerTasks,
+  nextOdyleTick, nextReset, odyleEnergy, taskProgress,
+} from "../engine/planner.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
 
+const REFRESH_MS = 30000;
+const ODYLE_WARN = 0.9;
+const RESET_KINDS = ["daily", "weekly", "portals"];
+const INFO_ICON = '<svg class="cl-info-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="7.25" y="7" width="1.5" height="5" rx="0.75" fill="currentColor"/><circle cx="8" cy="4.75" r="1" fill="currentColor"/></svg>';
+
 let timer = null;
 let root = null;
+let redrawAt = Infinity;
 
-const KIND_LABEL = {
-  daily: (now) => `Daily (resets ${localClock(nextReset("daily", now))})`,
-  weekly: (now) => `Weekly (resets ${nextReset("weekly", now).toLocaleDateString([], { weekday: "short" })} ${localClock(nextReset("weekly", now))})`,
-  portals: (now) => `Abyss portals (resets Mon, Thu, Sat ${localClock(nextReset("portals", now))})`,
-  available: () => "When available (info)",
-};
-
-function doneAt(planner, scopeId, taskId) {
-  const stamp = planner.done[`${scopeId}:${taskId}`];
-  return stamp ? new Date(stamp) : null;
+function resetMoment(at) {
+  return `${at.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" })}, ${localClock(at)}`;
 }
 
-function taskDone(planner, scopeId, task, now) {
-  return isDone(task.kind, doneAt(planner, scopeId, task.id), now);
+function resetSpan(kind, now, prefix) {
+  const at = nextReset(kind, now);
+  if (!at) return "";
+  return `<span class="cl-reset" data-reset="${kind}" data-prefix="${escapeHtml(prefix)}" title="Next reset: ${escapeHtml(resetMoment(at))} (your time)">${escapeHtml(prefix)} ${durationText(at - now)}</span>`;
+}
+
+function menuButton(scope, task) {
+  return `<button class="icon small cl-menu" data-menu="${scope}:${task.id}" title="Rename, change reset, remove">&#8943;</button>`;
 }
 
 function toggle(scopeId, taskId, checked) {
@@ -51,107 +58,191 @@ function tasksMenu(scope, task) {
   draw();
 }
 
-function addTask(scope, kind) {
-  const name = (prompt("Task:") || "").trim();
-  if (!name) return;
-  bp().planner.tasks[scope].push({ id: newId("t"), name, kind });
-  save();
-  draw();
+function addTaskDialog(scope = "character", kind = "daily") {
+  const dialog = document.createElement("dialog");
+  dialog.className = "cl-dialog";
+  dialog.innerHTML = `
+    <form method="dialog" class="stack">
+      <h2>Add task</h2>
+      <label class="stack">Task<input type="text" name="name" required autocomplete="off"></label>
+      <label class="stack">For<select name="scope">
+        <option value="character" ${scope === "character" ? "selected" : ""}>Each character</option>
+        <option value="server" ${scope === "server" ? "selected" : ""}>Server-wide</option>
+      </select></label>
+      <label class="stack">Resets<select name="kind">
+        ${PLANNER_KINDS.map((k) => `<option value="${k}" ${k === kind ? "selected" : ""}>${k === "available" ? "Info (no reset)" : KIND_TITLES[k]}</option>`).join("")}
+      </select></label>
+      <div class="row"><span class="grow"></span><button value="cancel" formnovalidate>Cancel</button><button value="add" class="active">Add</button></div>
+    </form>`;
+  document.body.appendChild(dialog);
+  dialog.addEventListener("close", () => {
+    const form = dialog.querySelector("form");
+    const name = form.elements.name.value.trim();
+    if (dialog.returnValue === "add" && name) {
+      bp().planner.tasks[form.elements.scope.value].push({ id: newId("t"), name, kind: form.elements.kind.value });
+      save();
+    }
+    dialog.remove();
+    draw();
+  });
+  dialog.showModal();
 }
 
-function characterMenu(server, character) {
-  const choice = prompt(`${character.name}\n\n1 = rename, 2 = remove from the planner`, "1");
-  if (choice === "1") {
-    const name = (prompt("Name:", character.name) || "").trim();
-    if (name) character.name = name;
-  } else if (choice === "2") {
-    server.characters = server.characters.filter((c) => c !== character);
-    const planner = bp().planner;
-    for (const key of Object.keys(planner.done)) if (key.startsWith(character.id + ":")) delete planner.done[key];
-    delete planner.odyle[character.id];
-  } else return;
-  save();
-  draw();
+function serverCard(planner, server, now) {
+  const tasks = planner.tasks.server;
+  const progress = taskProgress(planner, server.id, tasks, now);
+  const kinds = PLANNER_KINDS.filter((kind) => kind !== "portals" || tasks.some((t) => t.kind === kind));
+  const groups = kinds.map((kind) => {
+    const kindTasks = tasks.filter((t) => t.kind === kind);
+    const rows = kindTasks.map((task) => {
+      if (kind === "available") {
+        return `<div class="cl-item info">${INFO_ICON}<span class="cl-name">${escapeHtml(task.name)}</span>${menuButton("server", task)}</div>`;
+      }
+      const done = isTaskDone(planner, server.id, task, now);
+      return `<div class="cl-item${done ? " done" : ""}">
+        <label><input type="checkbox" data-task="${server.id}:${task.id}" ${done ? "checked" : ""}><span class="cl-name" title="${escapeHtml(task.name)}">${escapeHtml(task.name)}</span></label>
+        ${resetSpan(kind, now, "resets in")}${menuButton("server", task)}</div>`;
+    }).join("") || '<div class="muted small cl-empty">No tasks</div>';
+    return `<div class="cl-group kind-${kind}">
+      <div class="cl-group-head"><span class="cl-kind-name">${KIND_TITLES[kind]}</span><span class="grow"></span><button class="icon small" data-add="server:${kind}" title="Add a server-wide ${KIND_TITLES[kind].toLowerCase()} task">+</button></div>
+      ${rows}</div>`;
+  }).join("");
+  return `<section class="card cl-server" style="--groups:${kinds.length}">
+    <div class="cl-card-head"><h2>Server-wide</h2><span class="muted small">Done ${progress.done}/${progress.total}</span></div>
+    <div class="cl-groups">${groups}</div>
+  </section>`;
 }
 
-function grid(scope, columns, tasks, now, server) {
-  const planner = bp().planner;
-  let html = `<table class="planner"><tr><th></th>${columns.map((c) => `<th>${c.icon ? `<img class="class-icon" src="assets/class_icons/${c.icon}.png" alt=""> ` : ""}${escapeHtml(c.label)}${scope === "character" ? ` <button class="icon small" data-char="${c.id}" title="Rename or remove">&#8943;</button>` : ""}</th>`).join("")}</tr>`;
-  const tracked = tasks.filter((t) => t.kind !== "available");
-  html += `<tr class="info"><td></td>${columns.map((c) => `<td class="muted">${tracked.filter((t) => taskDone(planner, c.id, t, now)).length}/${tracked.length}</td>`).join("")}</tr>`;
-  if (scope === "character") {
-    html += `<tr><td class="accent">Odyle energy (+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))}, max ${ODYLE_MAX})</td>${columns.map((c) => {
-      const entry = planner.odyle[c.id];
-      const value = entry ? odyleEnergy(Number(entry.value), new Date(entry.since), now) : 0;
-      return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" onfocus="this.select()"></td>`;
-    }).join("")}</tr>`;
+function rosterColumns() {
+  const seen = new Set();
+  const columns = [];
+  for (const entry of characters()) {
+    const character = entry.name && plannerCharacterNamed(entry.name);
+    if (!character || seen.has(character.id)) continue;
+    seen.add(character.id);
+    columns.push({ id: character.id, name: character.name, cls: entry.class });
   }
+  return columns;
+}
+
+function odyleValue(planner, id, now) {
+  const entry = planner.odyle[id];
+  return entry ? odyleEnergy(Number(entry.value), new Date(entry.since), now) : 0;
+}
+
+function characterCard(planner, columns, now) {
+  if (!columns.length) {
+    return '<section class="card cl-chars"><h2>Characters</h2><div class="muted">No characters yet. Add them to the roster in the sidebar and they show up here.</div></section>';
+  }
+  const tasks = planner.tasks.character;
+  const span = columns.length;
+  const head = columns.map((c) => {
+    const progress = taskProgress(planner, c.id, tasks, now);
+    const complete = progress.total && progress.done === progress.total;
+    return `<th class="cl-char cl-class-${escapeHtml(c.cls)}" scope="col">
+      <div class="cl-char-name"><img class="class-icon" src="assets/class_icons/${escapeHtml(c.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></div>
+      <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div></th>`;
+  }).join("");
+  let body = `<tr class="cl-odyle"><th scope="row"><span class="cl-odyle-label">Odyle energy</span> <span class="muted small">+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))} · max ${ODYLE_MAX}</span></th>${columns.map((c) => {
+    const value = odyleValue(planner, c.id, now);
+    return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself"></td>`;
+  }).join("")}</tr>`;
   for (const kind of PLANNER_KINDS) {
     const kindTasks = tasks.filter((t) => t.kind === kind);
-    if (kind === "portals" && scope === "server" && !kindTasks.length) continue;
-    html += `<tr class="kind"><td colspan="${columns.length + 1}">${KIND_LABEL[kind](now)} <button class="icon small" data-add="${scope}:${kind}" title="Add task">+</button></td></tr>`;
+    if (!kindTasks.length && kind === "portals") continue;
+    body += `<tr class="cl-kind kind-${kind}"><th scope="rowgroup"><span class="cl-kind-name">${KIND_TITLES[kind]}</span>${resetSpan(kind, now, "resets in")}<button class="icon small" data-add="character:${kind}" title="Add a ${KIND_TITLES[kind].toLowerCase()} task for every character">+</button></th><td colspan="${span}"></td></tr>`;
     for (const task of kindTasks) {
-      const cells = kind === "available" ? "" : columns.map((c) => `<td><input type="checkbox" data-task="${c.id}:${task.id}" ${taskDone(planner, c.id, task, now) ? "checked" : ""}></td>`).join("");
-      html += `<tr class="${kind === "available" ? "info" : ""}"><td>${escapeHtml(task.name)} <button class="icon small" data-menu="${scope}:${task.id}" title="Rename, change reset, remove">&#8943;</button></td>${cells}</tr>`;
+      if (kind === "available") {
+        body += `<tr class="cl-row info kind-${kind}"><th scope="row"><span class="cl-task">${INFO_ICON}<span class="cl-name">${escapeHtml(task.name)}</span>${menuButton("character", task)}</span></th><td colspan="${span}"></td></tr>`;
+        continue;
+      }
+      body += `<tr class="cl-row kind-${kind}"><th scope="row"><span class="cl-task"><span class="cl-name">${escapeHtml(task.name)}</span>${menuButton("character", task)}</span></th>${columns.map((c) => {
+        const done = isTaskDone(planner, c.id, task, now);
+        return `<td class="${done ? "done" : ""}"><input type="checkbox" data-task="${c.id}:${task.id}" ${done ? "checked" : ""} title="${escapeHtml(c.name)}: ${escapeHtml(task.name)}"></td>`;
+      }).join("")}</tr>`;
     }
   }
-  return html + "</table>";
+  return `<section class="card cl-chars" style="--cols:${span}">
+    <div class="cl-scroll"><table class="cl-grid">
+      <colgroup><col class="cl-label-col">${columns.map(() => "<col>").join("")}</colgroup>
+      <thead><tr><th class="cl-corner" scope="col"><h2>Characters</h2></th>${head}</tr></thead>
+      <tbody>${body}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function editing() {
+  return root.querySelector("input[type=number]:focus") || document.querySelector("dialog.cl-dialog[open]");
+}
+
+function refreshCountdowns() {
+  if (!root) return;
+  const now = new Date();
+  if (now >= redrawAt && !editing()) { draw(); return; }
+  root.querySelectorAll("[data-reset]").forEach((el) => {
+    const at = nextReset(el.dataset.reset, now);
+    if (at) el.textContent = `${el.dataset.prefix} ${durationText(at - now)}`;
+  });
 }
 
 export function draw() {
   if (!root) return;
   syncPlannerCharacters();
-  const now = new Date();
   const planner = bp().planner;
+  if (migratePlannerTasks(planner)) save();
+  const now = new Date();
   const server = plannerServer();
-  const roster = characters().filter((c) => c.name).map((c) => c.name.toLowerCase());
-  const chars = [...server.characters].sort((a, b) => {
-    const ia = roster.indexOf(a.name.toLowerCase()), ib = roster.indexOf(b.name.toLowerCase());
-    return (ia < 0 ? roster.length : ia) - (ib < 0 ? roster.length : ib);
-  });
+  const columns = rosterColumns();
+  redrawAt = Math.min(...RESET_KINDS.map((k) => nextReset(k, now).getTime()), nextOdyleTick(now).getTime());
+  const scrollLeft = root.querySelector(".cl-scroll")?.scrollLeft || 0;
   root.innerHTML = `
-    <div class="row" style="margin-bottom:8px"><h1>Planner</h1>
-      <span class="accent small">Daily reset in ${countdown(nextReset("daily", now) - now)} (${localClock(nextReset("daily", now))}) · Weekly reset in ${countdown(nextReset("weekly", now) - now)} (${nextReset("weekly", now).toLocaleDateString([], { weekday: "short" })} ${localClock(nextReset("weekly", now))}) · Abyss portals reset in ${countdown(nextReset("portals", now) - now)} (${localClock(nextReset("portals", now))})</span>
-      <span class="grow"></span><button id="add-planner-char">Add character</button></div>
-    <div class="muted small" style="margin-bottom:10px">Tick what you have done; ticks clear at the game's reset times, shown in your local time zone. "When available" entries are reminders. Odyle energy: enter a character's current value and it keeps counting up by itself.</div>
-    <div class="card stack">
-      ${grid("server", [{ id: server.id, label: "Server", icon: null }], planner.tasks.server, now)}
-      ${chars.length ? grid("character", chars.map((c) => ({ id: c.id, label: c.name, icon: (c.class || "").toLowerCase() || null })), planner.tasks.character, now, server) : '<div class="muted">No characters yet.</div>'}
-    </div>`;
+    <div class="cl-title row">
+      <h1>Checklist</h1>
+      <span class="cl-chips">${RESET_KINDS.map((k) => `<span class="cl-chip kind-${k}">${resetSpan(k, now, `${KIND_TITLES[k]} resets in`)}</span>`).join("")}</span>
+      <span class="grow"></span>
+      <button id="cl-add-task" class="active">Add task</button>
+    </div>
+    <div class="muted small cl-help">Tick what you have done; ticks clear at the game's reset times, shown in your local time zone. Odyle energy: enter a character's current value and it keeps counting up by itself.</div>
+    ${serverCard(planner, server, now)}
+    ${characterCard(planner, columns, now)}`;
+  const scroller = root.querySelector(".cl-scroll");
+  if (scroller) scroller.scrollLeft = scrollLeft;
   root.querySelectorAll("[data-task]").forEach((box) => box.addEventListener("change", (e) => {
     const [scopeId, taskId] = e.target.dataset.task.split(":");
     toggle(scopeId, taskId, e.target.checked);
   }));
-  root.querySelectorAll("[data-odyle]").forEach((input) => input.addEventListener("change", (e) => {
-    const id = e.target.dataset.odyle;
-    const value = Math.max(0, Math.min(ODYLE_MAX, Number(e.target.value) || 0));
-    const current = planner.odyle[id] ? odyleEnergy(Number(planner.odyle[id].value), new Date(planner.odyle[id].since), new Date()) : 0;
-    if (value !== current) { planner.odyle[id] = { value, since: new Date().toISOString() }; save(); }
-    draw();
+  root.querySelectorAll("[data-odyle]").forEach((input) => {
+    input.addEventListener("focus", () => {
+      input.select();
+      input.addEventListener("mouseup", (e) => e.preventDefault(), { once: true });
+    });
+    input.addEventListener("change", () => {
+      const id = input.dataset.odyle;
+      const value = Math.max(0, Math.min(ODYLE_MAX, Math.round(Number(input.value)) || 0));
+      if (value !== odyleValue(planner, id, new Date())) { planner.odyle[id] = { value, since: new Date().toISOString() }; save(); }
+      draw();
+    });
+  });
+  root.querySelectorAll("[data-add]").forEach((btn) => btn.addEventListener("click", () => {
+    const [scope, kind] = btn.dataset.add.split(":");
+    addTaskDialog(scope, kind);
   }));
-  root.querySelectorAll("[data-add]").forEach((btn) => btn.addEventListener("click", () => { const [scope, kind] = btn.dataset.add.split(":"); addTask(scope, kind); }));
   root.querySelectorAll("[data-menu]").forEach((btn) => btn.addEventListener("click", () => {
     const [scope, taskId] = btn.dataset.menu.split(":");
-    tasksMenu(scope, planner.tasks[scope].find((t) => t.id === taskId));
+    const task = planner.tasks[scope].find((t) => t.id === taskId);
+    if (task) tasksMenu(scope, task);
   }));
-  root.querySelectorAll("[data-char]").forEach((btn) => btn.addEventListener("click", () => characterMenu(server, server.characters.find((c) => c.id === btn.dataset.char))));
-  root.querySelector("#add-planner-char").addEventListener("click", () => {
-    const name = (prompt("Name:") || "").trim();
-    if (!name) return;
-    const cls = (prompt("Class (optional):") || "").trim();
-    server.characters.push({ id: newId("ch"), name, class: cls ? cls[0].toUpperCase() + cls.slice(1).toLowerCase() : "" });
-    save();
-    draw();
-  });
+  root.querySelector("#cl-add-task").addEventListener("click", () => addTaskDialog());
 }
 
 export function mount(main) {
   root = main;
   draw();
-  timer = setInterval(() => { if (!root.querySelector("input:focus")) draw(); }, 30000);
+  timer = setInterval(refreshCountdowns, REFRESH_MS);
 }
 
 export function unmount() {
   clearInterval(timer);
+  timer = null;
   root = null;
 }
