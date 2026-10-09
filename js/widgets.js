@@ -228,8 +228,10 @@ function isEditing(el) {
   return !!active && el.contains(active) && active.matches("input, textarea, select, [contenteditable]");
 }
 
-export function mountArea(container, areaId, { defaults = [], allowed = () => true, empty = "" } = {}) {
-  areaDefaults.set(areaId, defaults);
+// pinsOnly: show only this area's pinned widgets in the page's bars, so a pin
+// follows the user to every page; the grid itself stays hidden.
+export function mountArea(container, areaId, { defaults = [], allowed = () => true, empty = "", pinsOnly = false } = {}) {
+  if (!pinsOnly) areaDefaults.set(areaId, defaults);
   const instances = new Map();
   let destroyed = false;
   let dragging = false;
@@ -244,6 +246,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     <div class="wa-foot"><button type="button" class="wa-add">${ICON.plus} Add widget</button></div>`;
   root.style.setProperty("--wa-unit", `${UNIT}px`);
   root.style.setProperty("--wa-gap", `${GAP}px`);
+  if (pinsOnly) root.hidden = true;
   container.appendChild(root);
   const grid = root.querySelector(".wa-grid");
   const emptyEl = root.querySelector(".wa-empty");
@@ -447,7 +450,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
 
   function sync() {
     if (destroyed) return;
-    const items = readItems(areaId);
+    const items = readItems(areaId).filter((i) => !pinsOnly || i.pinned);
     lastSeen = JSON.stringify(storedArea(areaId));
     const wanted = new Map(items.map((i) => [i.id, i]));
     for (const [id, inst] of instances) {
@@ -785,9 +788,12 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
   const onTheme = () => refresh();
   window.addEventListener("themechange", onTheme);
 
+  const pinTicker = pinsOnly ? setInterval(() => refresh({ passive: true }), 30000) : 0;
+
   function destroy() {
     if (destroyed) return;
     destroyed = true;
+    if (pinTicker) clearInterval(pinTicker);
     if (openPopup && (root.contains(openPopup.anchor) || Object.values(docks).some((d) => d.contains(openPopup.anchor)))) closePopup();
     for (const inst of instances.values()) dispose(inst);
     instances.clear();

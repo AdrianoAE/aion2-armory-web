@@ -5,7 +5,33 @@ import { askCharacter, renderRoster } from "./roster.js";
 import { ODYLE_MAX, characterTasks, isDone, odyleEnergy } from "./engine/planner.js";
 import { prefs, onPrefs } from "./ui.js";
 import { applyTheme } from "./theme.js";
+import { mountArea } from "./widgets.js";
 import "./notify.js";
+
+// Pinned widgets of every area show on every page. The page's own area
+// renders its pins itself; the other areas get a pins-only mount here.
+const AREA_OF_PAGE = { dashboard: "dashboard", character: "character", timers: "timers" };
+const AREA_MODULES = {
+  timers: ["./pages/timers.js"],
+  character: ["./pages/characters.js"],
+  dashboard: ["./pages/timers.js", "./pages/characters.js"],
+};
+let pinnedAreas = [];
+
+async function mountPinnedAreas(main, page) {
+  for (const area of pinnedAreas) area.destroy();
+  pinnedAreas = [];
+  const areas = prefs().areas || {};
+  const wanted = Object.entries(areas).filter(([id, layout]) => id !== AREA_OF_PAGE[page] && (layout.items || []).some((i) => i.pinned)).map(([id]) => id);
+  if (!wanted.length) return;
+  await Promise.all([...new Set(wanted.flatMap((id) => AREA_MODULES[id] || []))].map((path) => import(path).catch((err) => console.warn(`Pinned widgets of ${path} unavailable:`, err))));
+  for (const id of wanted) {
+    const host = document.createElement("div");
+    host.className = "wa-pins-host";
+    main.appendChild(host);
+    pinnedAreas.push(mountArea(host, id, { pinsOnly: true }));
+  }
+}
 
 const ICON = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 
@@ -75,6 +101,8 @@ async function render() {
   const backBtn = main.querySelector("#back-home");
   if (backBtn) backBtn.addEventListener("click", () => navigate("character"));
   await module.mount(host);
+  if (seq !== renderSeq) return;
+  mountPinnedAreas(main, name);
 }
 
 export function progressLine(name) {
