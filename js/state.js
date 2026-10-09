@@ -32,6 +32,7 @@ function defaultBuildPlanner() {
     fieldboss_only_artwork: true,
     fieldboss_tracked: ["elyos20"],
     fieldboss_done: {},
+    official_characters: {},
   };
 }
 

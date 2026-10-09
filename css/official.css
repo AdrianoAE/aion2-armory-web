@@ -1,0 +1,49 @@
+/* aion2.plaync.com import: dialog, results, progress, summary, Settings card */
+.official-dialog { max-width: 520px; padding: 14px 16px; }
+.official-dialog::backdrop { background: var(--backdrop); }
+.official-head { margin-bottom: 10px; }
+.official-head h3 { margin: 0; }
+.official-close { padding: 0 9px; font-size: 18px; line-height: 24px; background: transparent; border-color: transparent; }
+.official-close:hover { background: var(--overlay); border-color: var(--border); }
+
+.official-dialog label { gap: 4px; }
+.official-dialog input[type="text"], .official-dialog select { width: 100%; box-sizing: border-box; color: var(--fg); }
+.official-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.official-error { color: var(--danger); font-size: 12.5px; overflow-wrap: anywhere; }
+.official-actions { margin-top: 4px; }
+
+.official-dialog .class-icon { width: 30px; height: 30px; flex: none; border-radius: 6px; }
+.official-no-icon { display: inline-block; background: var(--overlay); border: 1px solid var(--border-soft); }
+
+.official-results { display: flex; flex-direction: column; gap: 4px; max-height: 52vh; overflow-y: auto; padding-right: 2px; }
+.official-result {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 6px 10px;
+  border-left: 3px solid var(--class-color, var(--border)); background: var(--overlay); color: var(--fg); font-weight: 500;
+}
+.official-result:hover { background: var(--accent-soft); }
+.official-result .grow, .official-who .grow { display: flex; flex-direction: column; min-width: 0; }
+.official-result .name, .official-who .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.official-choice {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--overlay); color: var(--fg); cursor: pointer;
+}
+.official-choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.official-choice select { width: auto; max-width: 45%; }
+
+.official-bar { height: 8px; border-radius: 999px; background: var(--track); overflow: hidden; }
+.official-bar span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s ease; }
+.official-status { font-weight: 600; }
+.official-log { margin: 0; padding-left: 18px; max-height: 30vh; overflow-y: auto; }
+
+.official-summary ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+
+.char-sync.linked { color: var(--info); border-color: color-mix(in srgb, var(--info) 45%, var(--border)); }
+
+.official-settings input[type="url"] {
+  width: 100%; box-sizing: border-box; background: var(--overlay); border: 1px solid var(--border); border-radius: 8px;
+  padding: 5px 8px; color: var(--fg); font-family: ui-monospace, Consolas, monospace; font-size: 12.5px;
+}
+.official-settings a { color: var(--accent); }
+.official-ok { color: var(--ok); }
+.official-bad { color: var(--danger); overflow-wrap: anywhere; }

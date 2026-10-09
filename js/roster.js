@@ -263,3 +263,10 @@ export function askCharacter() {
   input.addEventListener("keydown", (e) => { if (e.key === "Enter") finish(); if (e.key === "Escape") row.remove(); });
   input.focus();
 }
+
+export function openOfficialImport(options) {
+  return import("./official.js").then((m) => m.importCharacterDialog(options)).catch((err) => { console.error(err); alert(`The import could not start: ${err.message}`); });
+}
+
+const officialButton = document.getElementById("import-official");
+if (officialButton) officialButton.addEventListener("click", () => openOfficialImport());

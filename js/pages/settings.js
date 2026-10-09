@@ -4,6 +4,7 @@
 import { prefs, setPref } from "../ui.js";
 import { exportProfile } from "../state.js";
 import { escapeHtml, pickProfile } from "../app.js";
+import { DEFAULT_RELAY, searchUrl } from "../engine/official.js";
 
 const THEMES = [["system", "System", "Follows your device"], ["dark", "Dark", "Always dark"], ["light", "Light", "Always light"]];
 const AREA_NAMES = { dashboard: "Dashboard", timers: "Timers", character: "Character", characters: "Character" };
@@ -53,6 +54,39 @@ function drawLayouts() {
   if (all) armed(all, "Click again to reset every layout", () => { setPref("areas", {}); drawLayouts(); });
 }
 
+function relaySetting() {
+  return String(((prefs().official || {}).relay) || "").trim() || DEFAULT_RELAY;
+}
+
+function wireRelay(main) {
+  const input = main.querySelector("#official-relay");
+  const status = main.querySelector("#official-relay-status");
+  const store = () => {
+    const value = input.value.trim();
+    setPref("official.relay", value && value !== DEFAULT_RELAY ? value : undefined);
+    input.value = relaySetting();
+  };
+  input.addEventListener("change", store);
+  main.querySelector("#official-relay-reset").addEventListener("click", () => { input.value = ""; store(); status.textContent = ""; });
+  main.querySelector("#official-relay-test").addEventListener("click", async (e) => {
+    const button = e.currentTarget;
+    store();
+    button.disabled = true;
+    status.className = "muted small";
+    status.textContent = "Testing…";
+    try {
+      const { fetchViaRelay } = await import("../official.js");
+      const json = await fetchViaRelay(searchUrl({ keyword: "a", size: 1 }));
+      if (!Array.isArray(json.list)) throw new Error("The relay answered, but not with the site's search results.");
+      status.className = "official-ok small";
+      status.textContent = "The relay works.";
+    } catch (err) {
+      status.className = "official-bad small";
+      status.textContent = err.message;
+    } finally { button.disabled = false; }
+  });
+}
+
 async function drawAlerts(seq) {
   let notify = null;
   try { notify = await import("../notify.js"); } catch (err) { return; }
@@ -86,10 +120,17 @@ export async function mount(main) {
         <div class="muted small">Your characters, builds and checklist live in this browser. Export the profile to keep a copy or to move it to another browser; importing replaces the profile here.</div>
         <div class="row"><button type="button" id="settings-export">Export profile</button><button type="button" id="settings-import">Import profile</button></div>
       </section>
+      <section class="card official-settings" style="--section-color: var(--info)">
+        <h2>Official site</h2>
+        <div class="muted small">Character imports from aion2.plaync.com go through a CORS relay; to run your own, deploy <a href="docs/relay-worker.js" target="_blank" rel="noopener">docs/relay-worker.js</a> as a free Cloudflare Worker and paste its URL ending in <code>?url=</code>.</div>
+        <label class="stack small muted">Relay URL<input type="url" id="official-relay" spellcheck="false" placeholder="${escapeHtml(DEFAULT_RELAY)}" value="${escapeHtml(relaySetting())}"></label>
+        <div class="row"><button type="button" id="official-relay-reset">Reset</button><button type="button" id="official-relay-test">Test</button><span class="muted small" id="official-relay-status"></span></div>
+      </section>
     </div>`;
   main.querySelectorAll('input[name="theme"]').forEach((input) => input.addEventListener("change", () => { if (input.checked) setPref("theme", input.value); }));
   main.querySelector("#settings-export").addEventListener("click", exportProfile);
   main.querySelector("#settings-import").addEventListener("click", pickProfile);
+  wireRelay(main);
   drawLayouts();
   await drawAlerts(seq);
 }

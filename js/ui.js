@@ -11,6 +11,7 @@ const DEFAULTS = {
   alerts: {},
   timers: {},
   dashboard: {},
+  official: { relay: "" },
 };
 
 const isPlainObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);

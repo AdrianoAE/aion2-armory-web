@@ -258,3 +258,58 @@ The timers widgets share `js/widgets/timers/feed.js`: it loads the bundled sched
 Alert rules live in `js/widgets/alerts/core.js` as pure functions (tested by `tests/notify.test.mjs`); `js/notify.js` runs the ticker, sounds, toasts and browser notifications.
 
 A widget id can carry an instance suffix (`character.summary#2`) so one area can show the same widget twice with different settings.
+
+## Official import
+
+`js/official.js` imports a character from aion2.plaync.com (sidebar
+"Import from aion2.plaync.com", the Character page's "Sync…" button and
+its ⋯ menu); `js/engine/official.js` holds the URLs and the mapping as pure
+functions (tested by `tests/official.test.mjs`).
+
+| step | endpoint |
+|---|---|
+| search | `https://api-search.plaync.com/aion2global/search/v2/character?keyword=&region=&localeInfo=en-US&size=40&page=1` |
+| profile, class, boards | `https://aion2.plaync.com/api/character/info?lang=en-US&region=&characterId=&serverId=` |
+| equipment, wings, skills | `…/api/character/equipment?…` (same parameters) |
+| one item's rolled substats | `…/api/character/equipment/item?…&id=&enchantLevel=&slotPos=` |
+| one Daevanion board | `…/api/character/daevanion/detail?…&boardId=` |
+
+Regions are `eu`, `naw`, `nae`, `la` and `as`. Search names carry
+`<strong>` tags and the character id comes percent-encoded; both are
+cleaned before use. Item, skill, board and node ids are the Armory's own.
+Slot names match ours except `Cape` (the Cloak) and `Belt` (no slot); the
+wings come from `petwing.wing`. Requests run one at a time, 150 ms apart,
+with two retries on relay timeouts; nothing is cached.
+
+An import writes, for one preset: the equip set (`equipped`, `enchant` =
+enchant + exceed level, `substats` matched against the item's options),
+the linked skill build's `levels` (the site reports effective levels, so
+the bonus levels of the boards opened in game are subtracted), the linked Build's `s:<boardId>` node lists for boards with
+open nodes (every other board is a planned one and stays as it is), and
+`official_characters["<class>|<name>"] = { region, serverId, serverName,
+characterId, level, importedAt }`, which "Sync…" uses later. Skill layout,
+specializations, Arcana, Genius Insight and Pantheon are not on the site
+and stay as they are. A skill build or Build shared with another
+character's preset is copied first so the other character keeps its own.
+
+### Relay
+
+Browsers on another origin get `403 Invalid CORS request` from the site,
+so every call goes to `relay + encodeURIComponent(url)`. The relay prefix
+is `prefs().official.relay`, edited in Settings → Official site; the
+default is `https://api.allorigins.win/raw?url=`. Public relays are slow
+and sometimes time out, so the Armory ships `docs/relay-worker.js`, a
+Cloudflare Worker that relays only the character API and search, adds
+`Access-Control-Allow-Origin: *` and sends a browser User-Agent and the
+site's Referer. It takes `?url=` like allorigins, so the same prefix form
+works. Deploying it takes about two minutes on the free plan:
+
+- Dashboard: Workers & Pages → Create → Create Worker → name it (for
+  example `aion2-relay`) → Deploy → Edit code → replace the code with
+  `docs/relay-worker.js` → Deploy.
+- Wrangler: `npm create cloudflare@latest aion2-relay -- --type hello-world`,
+  replace `src/index.js` with `docs/relay-worker.js`, then
+  `npx wrangler deploy`.
+
+Then paste `https://aion2-relay.<account>.workers.dev/?url=` into
+Settings → Official site → Relay URL and press Test.

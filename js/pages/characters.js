@@ -10,6 +10,7 @@ import { currentBuild, deleteBuild, deletePreset, duplicateBuild, duplicatePrese
 import { askConfirm, askText, defaultDiffPair, diffHash } from "../roster.js";
 import { askCharacter, escapeHtml, navigate, pickProfile } from "../app.js";
 import { className, kindChipsHtml, ODYLE_MAX, odyleLevel, progressOf } from "../widgets/character/common.js";
+import { askSync, officialLink, syncCharacter, syncTitle } from "../official.js";
 
 const WIDGETS = ["summary", "checklist", "layout", "skills", "daevanion", "equipment", "arcana", "genius"];
 await Promise.all(WIDGETS.map((name) => import(`../widgets/character/${name}.js`).catch((err) => console.warn(`Character widget ${name} unavailable:`, err))));
@@ -152,6 +153,7 @@ function menuItems(entry) {
     } },
     { separator: true },
     { label: "Diff…", disabled: !preset, run: () => askDiff(entry) },
+    { label: "Sync from aion2.plaync.com…", disabled: !preset, run: () => askSync(entry) },
   ];
 }
 
@@ -190,7 +192,8 @@ function progressHtml(entry) {
   return odyle + kindChipsHtml(progress.kinds);
 }
 
-const BUILD_BUTTONS = `<button type="button" class="char-diff" title="Compare two presets side by side">Diff…</button>
+const buildButtons = (entry) => `<button type="button" class="char-sync${officialLink(entry) ? " linked" : ""}" title="${escapeHtml(syncTitle(entry))}">Sync…</button>
+    <button type="button" class="char-diff" title="Compare two presets side by side">Diff…</button>
     <button type="button" class="char-menu-btn" title="New, duplicate, rename or delete Builds and presets" aria-haspopup="menu">&#8943;</button>`;
 
 function singleBuild(entry) {
@@ -209,7 +212,7 @@ function buildsHtml(entry) {
       data-preset="${escapeHtml(name)}" title="Preset: ${escapeHtml(name)}">${escapeHtml(name)}</button>`).join("");
   return `<span class="char-label">Build</span><div class="char-build-tabs" role="tablist">${tabs}</div>
     <span class="char-label">Preset</span><div class="char-preset-chips">${chips}</div>
-    <span class="grow"></span>${BUILD_BUTTONS}`;
+    <span class="grow"></span>${buildButtons(entry)}`;
 }
 
 function renderHeader(head, entry) {
@@ -221,7 +224,7 @@ function renderHeader(head, entry) {
       <input class="char-name" type="text" placeholder="Character name" aria-label="Character name" maxlength="40" value="${escapeHtml(entry.name)}">
       <div class="char-progress">${progressHtml(entry)}</div>
       <span class="grow"></span>
-      <div class="char-pages">${PAGE_BUTTONS.map(([page, title]) => `<button type="button" data-open="${page}">${title}</button>`).join("")}${singleBuild(entry) ? BUILD_BUTTONS : ""}</div>
+      <div class="char-pages">${PAGE_BUTTONS.map(([page, title]) => `<button type="button" data-open="${page}">${title}</button>`).join("")}${singleBuild(entry) ? buildButtons(entry) : ""}</div>
     </div>
     ${singleBuild(entry) ? "" : `<div class="char-builds">${buildsHtml(entry)}</div>`}`;
   head.querySelector(".char-name").addEventListener("change", (e) => renameCharacter(entry, e.target.value.trim()));
@@ -243,6 +246,7 @@ function renderHeader(head, entry) {
     selectCharacter(entry.class, b.dataset.preset, entry.name);
     reload();
   }));
+  head.querySelector(".char-sync").addEventListener("click", () => syncCharacter(entry, entry.preset));
   head.querySelector(".char-diff").addEventListener("click", () => askDiff(entry));
   const menuButton = head.querySelector(".char-menu-btn");
   menuButton.addEventListener("click", () => showMenu(menuButton, entry));
