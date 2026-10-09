@@ -16,12 +16,12 @@
 .arcana-banner .set-name { position: absolute; left: 18px; bottom: 8px; color: var(--fg); font-weight: 700; font-size: 16px; }
 
 .arcana-card-grid { display: grid; grid-template-columns: repeat(5, 185px); gap: 14px; align-content: start; }
-.arcana-card { width: 185px; height: 200px; padding: 14px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(22, 32, 54, 0.75); border: 1px solid #475569; border-radius: 14px; cursor: pointer; text-align: center; }
+.arcana-card { width: 185px; min-height: 200px; padding: 14px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(22, 32, 54, 0.75); border: 1px solid #475569; border-radius: 14px; cursor: pointer; text-align: center; }
 .arcana-card:hover { border-color: rgba(34, 211, 238, 0.7); }
 .arcana-card[data-state="themed"] { background: rgba(251, 191, 36, 0.12); border: 2px solid rgba(251, 191, 36, 0.55); padding: 13px 9px 9px; }
 .arcana-card[data-state="themed"]:hover { border-color: var(--warn); }
 .arcana-card[data-state="unavailable"] { background: rgba(22, 32, 54, 0.4); border: 2px dashed var(--border); padding: 13px 9px 9px; }
-.arcana-card.with-slots { height: 346px; }
+.arcana-card.with-slots { min-height: 346px; }
 .arcana-card .icon { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
 .arcana-card .icon img { width: 56px; height: 56px; }
 .arcana-card .name { font-weight: 700; font-size: 13px; }

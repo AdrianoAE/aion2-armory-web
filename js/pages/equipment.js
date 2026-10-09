@@ -14,6 +14,11 @@ import {
   mergeStatPriorityProfiles, pickPrioritySubstats,
 } from "../engine/substats.js";
 import * as transfer from "../engine/transfer.js";
+import { arcanaLordPointsByLord, linkedSkillBuildName, loadArcanaData } from "./arcana.js";
+import { geniusStatTotals, linkedGeniusBuildName } from "./genius.js";
+import { loadPantheonData, pantheonLordTotals } from "./pantheon.js";
+import { currentBoardStatTotals, prepare as prepareDaevanion } from "./daevanion.js";
+import { passiveSkillStatTotals, ready as skillsReady } from "../engine/skills.js";
 
 const { T, escapeHtml: h, formatNumber: fmt } = D;
 
@@ -97,7 +102,7 @@ export function mount(el) {
   main.addEventListener("input", onInput);
   document.addEventListener("keydown", onKeydown);
   unsubscribe = D.onDetailReady(onDetailReady);
-  D.loadData().then(() => { if (main !== el) return; D.requestDetails(build().equipped); draw(); });
+  ready().then(() => { if (main !== el) return; D.requestDetails(build().equipped); draw(); });
 }
 
 export function unmount() {
@@ -214,6 +219,7 @@ function sourceTooltip(sid, value, suffix, s, effect = []) {
   if (s.wings[sid]) lines.push(`${T.stat_source_wings}: ${fmt(s.wings[sid])}${suffix}`);
   for (const [name, v] of Object.entries(s.byAttr[sid] || {})) if (v) lines.push(`${name}: ${fmt(v)}${suffix}`);
   for (const [name, v] of Object.entries(s.byLord[sid] || {})) if (v) lines.push(`${name}: ${fmt(v)}${suffix}`);
+  for (const [name, v] of Object.entries(s.byLabel[sid] || {})) if (v) lines.push(`${name}: ${fmt(v)}${suffix}`);
   if (lines.length > 1) lines.push(`${T.stat_total}: ${fmt(value)}${suffix}`);
   const parts = [];
   if (lines.length) parts.push(`${T.stat_source}\n${lines.join("\n")}`);
@@ -223,7 +229,7 @@ function sourceTooltip(sid, value, suffix, s, effect = []) {
 
 function statValues() {
   const b = build();
-  const s = D.fullBuildTotals(b);
+  const s = D.fullBuildTotals(b, statExtras(bp().current_build_name));
   const totals = s.totals;
   const gearscore = D.buildGearscore(b);
   const iconPanel = `<div class="eq-icon-panel">${D.STAT_ICON_ROWS.map((row) => `<div class="eq-icon-row">${row.map(([name, key, sid]) => {
@@ -868,7 +874,7 @@ function comparePage() {
   const stateA = normalizeBuild(builds[ui.compare.a] || emptyBuild()), stateB = normalizeBuild(builds[ui.compare.b] || emptyBuild());
   const gsA = D.buildGearscore(stateA), gsB = D.buildGearscore(stateB);
   const delta = gsB - gsA;
-  const totalsA = D.fullBuildTotals(stateA).totals, totalsB = D.fullBuildTotals(stateB).totals;
+  const totalsA = D.fullBuildTotals(stateA, statExtras(ui.compare.a)).totals, totalsB = D.fullBuildTotals(stateB, statExtras(ui.compare.b)).totals;
   const rows = D.STAT_COMPARE_CATEGORIES.find(([key]) => key === ui.compare.category)[2];
   const valueCells = (a, b, suffix) => {
     const fa = fmt(a), fb = fmt(b);
@@ -1071,7 +1077,23 @@ function onInput(e) {
 }
 
 // --- exports for the Characters page -------------------------------------------
-export const ready = () => D.loadData();
+export const ready = () => Promise.all([D.loadData(), loadArcanaData(), loadPantheonData(), skillsReady(), prepareDaevanion(bp().character_class)]);
+
+// Non-gear Stat Info sources of one equip set (app.py _refresh_stat_info).
+function statExtras(setName) {
+  const cls = classKey();
+  const skillBuild = linkedSkillBuildName(cls, setName);
+  let daevanion = {};
+  try { daevanion = currentBoardStatTotals(); } catch (err) { console.warn("Daevanion stats unavailable:", err.message); }
+  return {
+    lordPoints: [
+      { source: T.stat_source_arcana, points: arcanaLordPointsByLord(cls, skillBuild) },
+      { source: T.stat_source_pantheon, points: pantheonLordTotals() },
+    ],
+    sources: [[T.stat_source_genius, geniusStatTotals(linkedGeniusBuildName(cls, setName))], [T.stat_source_daevanion, daevanion],
+      [T.stat_source_passive, passiveSkillStatTotals(bp(), cls, skillBuild)]],
+  };
+}
 
 export function gearScore(classKey, setName) {
   const b = ((bp().equip_builds_data || {})[String(classKey).toLowerCase()] || {})[setName];

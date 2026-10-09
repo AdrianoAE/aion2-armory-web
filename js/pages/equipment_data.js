@@ -56,6 +56,7 @@ export const T = {
   category_earring_necklace: "Earrings & Necklace", category_bracelet: "Bracelets",
   role_attacker: "Attacker", role_defender: "Defender", role_support: "Support",
   stat_source: "Source", stat_effect: "Effect", stat_total: "Total", stat_source_wings: "Wings",
+  stat_source_arcana: "Arcana", stat_source_pantheon: "Pantheon", stat_source_genius: "Genius Insight", stat_source_daevanion: "Daevanion Board", stat_source_passive: "Passive Skills",
   nav_back: "Back to Characters", no_sets: "No Sets",
 };
 
@@ -534,29 +535,47 @@ export function attributeDerivedDetailed(baseTotals) {
 
 // Lord points rolled on gear (Bracelets) feed the Lords' derived %-stats;
 // Arcana cards and the Pantheon are not on the web Armory yet.
-export function lordDerivedDetailed(equipmentTotals) {
+// Lord points from gear, Arcana cards and Pantheon combine per Lord before
+// the derived stats (app.py _arcana_lord_stat_totals_detailed).
+export function lordDerivedDetailed(equipmentTotals, lordPoints = []) {
   const totals = {};
   const byLord = {};
+  const add = (sid, source, value) => {
+    if (!value) return;
+    totals[sid] = (totals[sid] || 0) + value;
+    (byLord[sid] || (byLord[sid] = {}))[source] = ((byLord[sid] || {})[source] || 0) + value;
+  };
   for (const [lord, pointsId] of Object.entries(LORD_POINTS_STAT_ID)) {
-    const points = equipmentTotals[pointsId] || 0;
+    let points = equipmentTotals[pointsId] || 0;
+    for (const { source, points: byLordPoints } of lordPoints) {
+      const extra = (byLordPoints || {})[lord] || 0;
+      add(pointsId, source, extra);
+      points += extra;
+    }
     if (!points) continue;
     const pct = points * ARCANA_LORD_RATE;
-    for (const sid of ARCANA_LORD_STAT_IDS[lord] || []) {
-      totals[sid] = (totals[sid] || 0) + pct;
-      (byLord[sid] || (byLord[sid] = {}))[lord] = ((byLord[sid] || {})[lord] || 0) + pct;
-    }
+    for (const sid of ARCANA_LORD_STAT_IDS[lord] || []) add(sid, lord, pct);
   }
   return [totals, byLord];
 }
 
-export function fullBuildTotals(build) {
+// extras: {lordPoints: [{source, points: {Lord: n}}], sources: [[label, {sid: value}]]}
+export function fullBuildTotals(build, extras = {}) {
   const [equipment, bySlot] = computeStatTotalsDetailed(build.equipped || {}, substatSets(build.substats), build.enchant || {}, provider);
   const [attribute, byAttr] = attributeDerivedDetailed(equipment);
-  const [lord, byLord] = lordDerivedDetailed(equipment);
+  const [lord, byLord] = lordDerivedDetailed(equipment, extras.lordPoints || []);
   const wings = wingsTotalsFor(build.equipped || {});
   const totals = { ...equipment };
+  const byLabel = {};
+  for (const [label, source] of extras.sources || []) {
+    for (const [sid, v] of Object.entries(source)) {
+      if (!v) continue;
+      totals[sid] = (totals[sid] || 0) + v;
+      (byLabel[sid] || (byLabel[sid] = {}))[label] = ((byLabel[sid] || {})[label] || 0) + v;
+    }
+  }
   for (const source of [attribute, lord, wings]) for (const [sid, v] of Object.entries(source)) totals[sid] = (totals[sid] || 0) + v;
-  return { totals, equipment, bySlot, byAttr, byLord, wings };
+  return { totals, equipment, bySlot, byAttr, byLord, wings, byLabel };
 }
 
 export function buildGearscore(build) {

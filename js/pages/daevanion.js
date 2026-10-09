@@ -1024,3 +1024,11 @@ export function boardsInUse(classKey = classDisplay()) {
 }
 
 export function variantData() { return variant; }
+
+// Stat Info contribution of the viewed deity board (app.py _daevanion_stat_totals).
+export function currentBoardStatTotals() {
+  if (!variant) return {};
+  const board = currentBoard();
+  if (!board) return {};
+  return D.statTotals(variant.node_by_id, activeOf(currentSet(), board));
+}

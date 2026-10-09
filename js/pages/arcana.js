@@ -508,9 +508,18 @@ function drawSets(body) {
       onSkillSlotClicked(ct, Number(slotEl.dataset.slot));
     }));
   }
-  body.querySelector(".build-select").addEventListener("change", (e) => { bp().current_skill_build_name = e.target.value; save(); draw(); });
+  body.querySelector(".build-select").addEventListener("change", (e) => switchSkillBuild(e.target.value));
   body.querySelectorAll(".build-row [data-act]").forEach((b) => b.addEventListener("click", () => onBuildAction(b.dataset.act)));
   body.querySelector(".arcana-calc").addEventListener("click", () => openArcanaCalculator());
+}
+
+// _load_current_build_state: a wish only means something on the build it
+// was set on, so switching builds clears it.
+function switchSkillBuild(name) {
+  bp().current_skill_build_name = name;
+  bp().skill_arcana_wish = {};
+  save();
+  draw();
 }
 
 function onBuildAction(action) {
@@ -521,25 +530,25 @@ function onBuildAction(action) {
     const name = (prompt(`${T.newBuild}\n${T.nameColon}`) || "").trim();
     if (!name || name in builds) return;
     builds[name] = emptySkillBuild();
-    bp().current_skill_build_name = name;
+    switchSkillBuild(name);
   } else if (action === "dup") {
     const name = (prompt(`${T.duplicateTitle}\n${T.nameColon}`, T.duplicateDefault(current)) || "").trim();
     if (!name || name in builds) return;
     builds[name] = JSON.parse(JSON.stringify(builds[current]));
-    bp().current_skill_build_name = name;
+    switchSkillBuild(name);
   } else if (action === "rename") {
     const name = (prompt(`${T.renameTitle}\n${T.nameColon}`, current) || "").trim();
     if (!name || name === current || name in builds) return;
     builds[name] = builds[current];
     delete builds[current];
     bp().current_skill_build_name = name;
+    save();
+    draw();
   } else if (action === "delete") {
     if (Object.keys(builds).length <= 1 || !confirm(T.deleteConfirm(current))) return;
     delete builds[current];
-    bp().current_skill_build_name = Object.keys(builds)[0];
+    switchSkillBuild(Object.keys(builds)[0]);
   }
-  save();
-  draw();
 }
 
 function currentCardData(ct) {

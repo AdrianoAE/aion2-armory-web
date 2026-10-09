@@ -160,18 +160,23 @@ function mergeBuild(saved) {
   return merged;
 }
 
+const merged = new WeakSet();
+
 export function geniusBuilds() {
   const p = bp();
   if (!p.genius_builds_data || !Object.keys(p.genius_builds_data).length) p.genius_builds_data = { Default: defaultState() };
   if (!(p.current_genius_build_name in p.genius_builds_data)) p.current_genius_build_name = Object.keys(p.genius_builds_data)[0];
+  for (const name of Object.keys(p.genius_builds_data)) {
+    if (!merged.has(p.genius_builds_data[name])) {
+      p.genius_builds_data[name] = mergeBuild(p.genius_builds_data[name]);
+      merged.add(p.genius_builds_data[name]);
+    }
+  }
   return p.genius_builds_data;
 }
 
 function currentState() {
-  const builds = geniusBuilds();
-  const name = bp().current_genius_build_name;
-  builds[name] = mergeBuild(builds[name]);
-  return builds[name];
+  return geniusBuilds()[bp().current_genius_build_name];
 }
 
 // _linked_genius_build_name_for: the profile an equip set counts.
@@ -219,7 +224,7 @@ const formatTotal = (total, pct) => (pct ? `${total.toFixed(1)}%` : String(Math.
 // Compact HTML of the profile an equip set counts, for summaries elsewhere.
 export function geniusSummaryHtml(classKey, equipSetName) {
   const name = linkedGeniusBuildName(classKey, equipSetName);
-  const sums = labelSums(mergeBuild(geniusBuilds()[name]));
+  const sums = labelSums(geniusBuilds()[name]);
   const rows = Object.entries(sums).map(([label, [total, pct]]) => `<div class="genius-summary-row"><span class="owned-name">${esc(label)}</span><span class="owned-value">${formatTotal(total, pct)}</span></div>`);
   return `<div class="genius-summary"><div class="muted small">${esc(name)}</div>${rows.join("")}</div>`;
 }

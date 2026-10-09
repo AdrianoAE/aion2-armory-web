@@ -560,6 +560,11 @@ function draw() {
     e.target.value = p.monolith_level;
     refreshSkillPoints();
   });
+  q("#arcana-calculator").addEventListener("click", async () => {
+    const { openArcanaCalculator } = await import("./arcana.js");
+    await openArcanaCalculator();
+    draw();
+  });
   q("#sp-unlimited").addEventListener("click", () => { commit(() => { p.skill_points_unlimited = p.skill_points_unlimited === false; }); refreshSkillPoints(); });
   for (const tab of main.querySelectorAll(".tabs button")) tab.addEventListener("click", () => {
     view.tab = tab.dataset.tab;

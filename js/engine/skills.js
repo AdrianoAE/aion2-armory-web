@@ -450,6 +450,19 @@ export function skillContext(p, classLower, buildName) {
   };
 }
 
+// Stat Info contribution of the passive skills at their effective level
+// (app.py _passive_skill_stat_totals_for). Needs ready().
+export function passiveSkillStatTotals(p, classLower, buildName) {
+  const context = skillContext(p, classLower, buildName);
+  const totals = {};
+  for (const [skillId, entries] of Object.entries(LEVEL_SCALING)) {
+    const level = (p.skill_levels[skillId] || 0) + (context.bonus.total[skillId] || 0);
+    if (level <= 0) continue;
+    for (const [statId, lv1, lv10] of entries) totals[statId] = (totals[statId] || 0) + lv1 + (lv10 - lv1) / 9 * (level - 1);
+  }
+  return totals;
+}
+
 // ── Skill Layout: bar + macro ───────────────────────────────────────────────
 
 export const SKILL_LAYOUT_ROWS = 5;
