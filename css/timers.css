@@ -128,3 +128,8 @@ dialog.tm-map-dialog.faction-asmo { --faction: var(--asmos); }
 
 .tm-window { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; margin-right: 8px; }
 .tm-window select { padding: 2px 6px; font-size: 12px; }
+
+/* pinned bar: the tracked cards in one row, portraits included */
+.wa-pin .tm-boss-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.wa-pin .tm-boss-grid > * { flex: 0 0 380px; max-width: 100%; }
+.wa-pin .tm-feed-line { margin-bottom: 4px; }

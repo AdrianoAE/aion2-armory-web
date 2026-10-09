@@ -504,6 +504,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       if (action === "pin-top" || action === "pin-bottom") {
         items.splice(index, 1);
         item.pinned = action === "pin-top" ? "top" : "bottom";
+        item.collapsed = false;
         items.push(item);
       } else if (action === "unpin") item.pinned = null;
       else if (action === "collapse") item.collapsed = !item.collapsed;
@@ -595,7 +596,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       const from = items.findIndex((i) => i.id === id);
       if (from < 0) return false;
       const [item] = items.splice(from, 1);
-      if (pinned !== undefined) item.pinned = pinned;
+      if (pinned !== undefined) { item.pinned = pinned; if (pinned) item.collapsed = false; }
       const to = targetId ? items.findIndex((i) => i.id === targetId) : -1;
       if (to < 0) items.push(item);
       else items.splice(to + (after ? 1 : 0), 0, item);
