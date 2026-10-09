@@ -111,7 +111,7 @@ export function estimateArmorExceedBonus(level, normalMaxLevel) {
 }
 
 export const GEARSCORE_NORMAL_RATE = 1.0;
-export const GEARSCORE_EXCEED_RATE = 5.0;
+export const GEARSCORE_EXCEED_RATE = 11.0;
 
 export function gearscorePush(enchantLevel, normalMaxLevel) {
   if (enchantLevel <= 0) return 0.0;

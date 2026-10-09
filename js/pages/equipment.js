@@ -16,7 +16,8 @@ import * as transfer from "../engine/transfer.js";
 import { arcanaLordPointsByLord, linkedSkillBuildName, loadArcanaData } from "./arcana.js";
 import { geniusStatTotals, linkedGeniusBuildName } from "./genius.js";
 import { loadPantheonData, pantheonLordTotals } from "./pantheon.js";
-import { currentBoardStatTotals, prepare as prepareDaevanion } from "./daevanion.js";
+import { currentBoardStatTotals, prepare as prepareDaevanion, variantData } from "./daevanion.js";
+import { arcanaScore, daevanionScore } from "../engine/stats.js";
 import { passiveSkillStatTotals, ready as skillsReady } from "../engine/skills.js";
 
 const { T, escapeHtml: h, formatNumber: fmt } = D;
@@ -41,7 +42,7 @@ function buildsOf(key) {
   return p.equip_builds_data[key];
 }
 function normalizeBuild(b) {
-  for (const key of ["equipped", "substats", "enchant", "philosopher_stone", "priority", "priority_progress"]) if (!b[key] || typeof b[key] !== "object") b[key] = {};
+  for (const key of ["equipped", "substats", "enchant", "philosopher_stone", "priority", "priority_progress", "manastones"]) if (!b[key] || typeof b[key] !== "object") b[key] = {};
   return b;
 }
 function build() {
@@ -229,7 +230,8 @@ function statValues() {
   const b = build();
   const s = D.fullBuildTotals(b, statExtras(bp().current_build_name));
   const totals = s.totals;
-  const gearscore = D.buildGearscore(b);
+  const gearParts = gearScoreParts(classKey(), bp().current_build_name) || { items: 0, daevanion: 0, arcana: 0, total: 0 };
+  const gearscore = gearParts.total;
   const iconPanel = `<div class="eq-icon-panel">${D.STAT_ICON_ROWS.map((row) => `<div class="eq-icon-row">${row.map(([name, key, sid]) => {
     const value = totals[sid] || 0;
     let feeds = [];
@@ -260,7 +262,7 @@ function statValues() {
   }
   return `<div class="eq-stats">
     <h2>${T.stat_values}</h2>
-    <div class="eq-gearscore" data-gearscore>GearScore: ${fmt(gearscore)}</div>
+    <div class="eq-gearscore" data-gearscore title="${h(gearScoreTitle(gearParts))}">GearScore: ${fmt(gearscore)}</div>
     ${iconPanel}
     <div class="eq-tabs">${tabs.map(([key, label]) => `<button data-action="stat-tab" data-tab="${key}"${ui.statTab === key ? ' class="active"' : ""}>${label}</button>`).join("")}</div>
     <div class="eq-tab-body card">${body}</div>
@@ -870,7 +872,7 @@ function comparePage() {
   const builds = buildsOf(classKey());
   const names = Object.keys(builds);
   const stateA = normalizeBuild(builds[ui.compare.a] || emptyBuild()), stateB = normalizeBuild(builds[ui.compare.b] || emptyBuild());
-  const gsA = D.buildGearscore(stateA), gsB = D.buildGearscore(stateB);
+  const gsA = gearScore(classKey(), ui.compare.a), gsB = gearScore(classKey(), ui.compare.b);
   const delta = gsB - gsA;
   const totalsA = D.fullBuildTotals(stateA, statExtras(ui.compare.a)).totals, totalsB = D.fullBuildTotals(stateB, statExtras(ui.compare.b)).totals;
   const rows = D.STAT_COMPARE_CATEGORIES.find(([key]) => key === ui.compare.category)[2];
@@ -1092,9 +1094,29 @@ function statExtras(setName) {
   };
 }
 
+// Gear Score as the game counts it: items, enchant, manastones, the Build's
+// Daevanion points and the preset's Arcana cards.
+export function gearScoreParts(classKey, setName) {
+  const cls = String(classKey).toLowerCase();
+  const b = ((bp().equip_builds_data || {})[cls] || {})[setName];
+  if (!b) return null;
+  normalizeBuild(b);
+  const items = D.buildGearscore(b);
+  const variant = variantData();
+  const set = ((bp().daevanion_builds_data || {})[cls] || {})[b.linked_daevanion_build] || {};
+  const daevanion = variant ? daevanionScore(set, variant.node_by_id) : 0;
+  const skillBuild = ((bp().skill_builds_data || {})[cls] || {})[linkedSkillBuildName(cls, setName)] || {};
+  const arcana = arcanaScore(skillBuild.arcana_cards);
+  return { items, daevanion, arcana, total: items + daevanion + arcana };
+}
+
 export function gearScore(classKey, setName) {
-  const b = ((bp().equip_builds_data || {})[String(classKey).toLowerCase()] || {})[setName];
-  return b ? D.buildGearscore(normalizeBuild(b)) : 0;
+  const parts = gearScoreParts(classKey, setName);
+  return parts ? parts.total : 0;
+}
+
+function gearScoreTitle(parts) {
+  return `Items, enchant and manastones ${fmt(parts.items)} · Daevanion points ${fmt(parts.daevanion)} · Arcana cards ${fmt(parts.arcana)}`;
 }
 
 export function equipmentSummaryHtml(classKey, setName) {
@@ -1107,5 +1129,6 @@ export function equipmentSummaryHtml(classKey, setName) {
     const level = item ? b.enchant[slotId] || 0 : 0;
     return `<span class="eq-summary-slot" title="${h(item ? item.name || "" : T.slot_empty_tooltip(slotLabel(slotId)))}">${item ? iconHtml(item, "small") : placeholderHtml(slotId)}${level ? `<span class="eq-summary-enchant">+${level}</span>` : ""}</span>`;
   }).join("");
-  return `<div class="eq-summary"><div class="eq-summary-slots">${cells}</div><div class="eq-gearscore">GearScore: ${fmt(D.buildGearscore(b))}</div></div>`;
+  const parts = gearScoreParts(classKey, setName);
+  return `<div class="eq-summary"><div class="eq-summary-slots">${cells}</div><div class="eq-gearscore" title="${h(gearScoreTitle(parts))}">GearScore: ${fmt(parts.total)}</div></div>`;
 }

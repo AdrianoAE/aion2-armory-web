@@ -36,9 +36,24 @@ test("the unenchanted merge reproduces its recorded totals", () => {
   assert.deepEqual(Object.keys(bySlot).sort(), Object.keys(GOLDEN.stat_by_slot_unenchanted).sort());
 });
 
-test("the gearscore reproduces its recorded value", () => {
-  close(stats.computeGearscore(F.EQUIPPED, F.ENCHANT, provider), GOLDEN.gearscore);
+test("the gearscore reproduces its recorded value (exceed steps now push 11, not 5)", () => {
+  let exceedSteps = 0;
+  for (const [slot, item] of Object.entries(F.EQUIPPED)) {
+    const detail = item && provider.get(item.id);
+    const cap = Number((detail && detail.maxEnchantLevel) || 0);
+    const level = F.ENCHANT[slot] || 0;
+    if (detail && detail.level && cap && level > cap) exceedSteps += level - cap;
+  }
+  close(stats.computeGearscore(F.EQUIPPED, F.ENCHANT, provider), GOLDEN.gearscore + 6 * exceedSteps);
   close(stats.computeGearscore(F.EQUIPPED, {}, provider), GOLDEN.gearscore_unenchanted);
+});
+
+test("manastones, Arcana cards and Daevanion points add to the score", () => {
+  assert.equal(stats.manastoneScore({ MainHand: ["Rare", "Rare", "Common"], Torso: ["Unique"] }), 2 + 2 + 1 + 4);
+  assert.equal(stats.arcanaScore({ Chalice: { theme: "Vigor", grade: "Unique" }, Bell: { theme: "Vigor", grade: "Rare" }, Mirror: { theme: "", grade: "Unique" } }), 80 + 40);
+  const nodes = new Map([["110001", { cost: 0 }], ["110002", { cost: 1 }], ["110003", { cost: 3 }]]);
+  assert.equal(stats.daevanionScore({ "s:11": ["110001", "110002", "110003"], "s:12": ["110002"], other: 5 }, nodes), 0 + 1 + 3 + 1);
+  assert.equal(stats.computeGearscore({ MainHand: { id: 1, level: 45, maxEnchantLevel: 15 } }, { MainHand: 16 }, { get: () => null }, { MainHand: ["Rare"] }), 45 + 15 + 11 + 2);
 });
 
 test("an unresolvable slot is skipped, not raised", () => {

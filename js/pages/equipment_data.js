@@ -64,7 +64,7 @@ export const T = {
 export const SLOT_LABELS = {
   MainHand: "Main Weapon", SubHand: "Guard", Helmet: "Helmet", Shoulder: "Shoulders", Torso: "Chest", Gloves: "Gloves", Pants: "Pants",
   Boots: "Boots", Cloak: "Cloak", Earring1: "Earrings", Earring2: "Earrings", Necklace: "Necklace", Amulet: "Amulet", Ring1: "Rings", Ring2: "Rings",
-  Bracelet1: "Bracelet", Bracelet2: "Bracelet", Brooch1: "Brooch", Brooch2: "Brooch", Rune1: "Rune", Rune2: "Rune", Wings1: "Wings",
+  Bracelet1: "Bracelet", Bracelet2: "Bracelet", Brooch1: "Brooch", Brooch2: "Brooch", Rune1: "Rune", Rune2: "Rune", Wings1: "Wings", Belt: "Belt",
 };
 export const QUICK_GEAR_SLOT_LABELS = {
   MainHand: "Main Weapon", SubHand: "Guard", Helmet: "Helmet", Shoulder: "Shoulders", Torso: "Chest", Gloves: "Gloves", Pants: "Pants",
@@ -76,7 +76,7 @@ export const QUICK_GEAR_SLOT_LABELS = {
 export const SLOT_LAYOUT = [
   ["MainHand", ["Greatsword", "Longsword", "Dagger", "Bow", "Spellbook", "Orb", "Mace", "Staff", "Fist"]],
   ["SubHand", ["Guard"]], ["Helmet", ["Helm"]], ["Shoulder", ["Pauldrons"]], ["Torso", ["Top"]], ["Gloves", ["Gloves"]],
-  ["Pants", ["Legs"]], ["Boots", ["Shoes"]], ["Cloak", ["Cloak"]], ["Earring1", ["Earrings"]], ["Earring2", ["Earrings"]],
+  ["Pants", ["Legs"]], ["Boots", ["Shoes"]], ["Cloak", ["Cloak"]], ["Belt", ["Belt"]], ["Earring1", ["Earrings"]], ["Earring2", ["Earrings"]],
   ["Necklace", ["Necklace"]], ["Amulet", ["Amulet"]], ["Ring1", ["Ring"]], ["Ring2", ["Ring"]], ["Bracelet1", ["Bracelet"]],
   ["Bracelet2", ["Bracelet"]], ["Brooch1", ["Brooch"]], ["Brooch2", ["Brooch"]], ["Rune1", ["Rune"]], ["Rune2", ["Rune"]],
   ["Wings1", ["Wings Equip"]],
@@ -84,7 +84,7 @@ export const SLOT_LAYOUT = [
 export const SLOT_CATEGORIES = Object.fromEntries(SLOT_LAYOUT);
 export const LEFT_SECTIONS = [
   [T.section_weapon, ["MainHand", "SubHand"]],
-  [T.section_armor, ["Helmet", "Shoulder", "Torso", "Gloves", "Pants", "Boots", "Cloak"]],
+  [T.section_armor, ["Helmet", "Shoulder", "Torso", "Gloves", "Pants", "Boots", "Cloak", "Belt"]],
   [T.section_wings, ["Wings1"]],
 ];
 export const RIGHT_SECTIONS = [
@@ -93,7 +93,7 @@ export const RIGHT_SECTIONS = [
 export const SLOT_PLACEHOLDER = {
   MainHand: "weapon", SubHand: "guard", Helmet: "helm", Shoulder: "pauldrons", Torso: "top", Gloves: "gloves", Pants: "legs", Boots: "shoes",
   Earring1: "earrings_1", Earring2: "earrings_2", Necklace: "necklace", Amulet: "amulet", Ring1: "ring_1", Ring2: "ring_2",
-  Bracelet1: "bracelet_1", Bracelet2: "bracelet_2", Wings1: "wings", Cloak: "cloak",
+  Bracelet1: "bracelet_1", Bracelet2: "bracelet_2", Wings1: "wings", Cloak: "cloak", Belt: "belt",
 };
 export const EQUIP_PRIORITY_SECTIONS = [
   ["weapon", T.section_weapon, ["Greatsword", "Longsword", "Dagger", "Bow", "Spellbook", "Orb", "Mace", "Staff", "Fist"]],
@@ -615,7 +615,7 @@ export function fullBuildTotals(build, extras = {}) {
 }
 
 export function buildGearscore(build) {
-  return computeGearscore(build.equipped || {}, build.enchant || {}, scoreProvider);
+  return computeGearscore(build.equipped || {}, build.enchant || {}, scoreProvider, build.manastones || {});
 }
 
 export const GEAR_STAT_ALIASES = GEAR_STAT_ID_ALIASES;

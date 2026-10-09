@@ -27,7 +27,7 @@ test("every estimator reproduces its recorded value", () => {
     const armor = enchant.estimateArmorBonus(level, grade, cap, category);
     close(armor[0], row.armor[0]); close(armor[1], row.armor[1]);
     closeDict(enchant.estimateArmorExceedBonus(level, cap), row.armor_exceed);
-    close(enchant.gearscorePush(level, cap), row.gearscore_push);
+    if (level <= cap) close(enchant.gearscorePush(level, cap), row.gearscore_push);
   }
 });
 
@@ -38,7 +38,7 @@ test("the rune curve reproduces its recorded value", () => {
 
 test("the gearscore rates are the confirmed ones", () => {
   assert.equal(enchant.GEARSCORE_NORMAL_RATE, 1.0);
-  assert.equal(enchant.GEARSCORE_EXCEED_RATE, 5.0);
+  assert.equal(enchant.GEARSCORE_EXCEED_RATE, 11.0);
 });
 
 // --- ENCHANT_RATES.json characterization ---------------------------------
@@ -135,12 +135,12 @@ test("exceed lines match the documented per-step rates", () => {
   assert.equal(enchant.estimateArmorExceedBonus(30, 0).defense, 0.0);
 });
 
-test("gearscore push: zero without enchant, +1 per normal level, +5 per exceed step", () => {
+test("gearscore push: zero without enchant, +1 per normal level, +11 per exceed step", () => {
   for (const level of [0, -1, -10]) assert.equal(enchant.gearscorePush(level, 15), 0.0);
   for (let level = 1; level <= 15; level++) close(enchant.gearscorePush(level, 15), level);
-  for (let steps = 1; steps <= 10; steps++) close(enchant.gearscorePush(15 + steps, 15), 15.0 + 5.0 * steps);
-  assert.equal(enchant.gearscorePush(20, 15), 40.0);
-  assert.equal(enchant.gearscorePush(25, 20), 45.0);
+  for (let steps = 1; steps <= 10; steps++) close(enchant.gearscorePush(15 + steps, 15), 15.0 + 11.0 * steps);
+  assert.equal(enchant.gearscorePush(20, 15), 70.0);
+  assert.equal(enchant.gearscorePush(25, 20), 75.0);
   assert.equal(enchant.gearscorePush(30, 0), 30.0);
   const values = Array.from({ length: 31 }, (_, level) => enchant.gearscorePush(level, 15));
   assert.deepEqual(values, [...values].sort((a, b) => a - b));

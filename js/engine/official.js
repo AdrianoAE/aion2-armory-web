@@ -31,7 +31,7 @@ export const REGIONS = [
 export const regionOf = (id) => REGIONS.find((r) => r.id === id) || REGIONS[0];
 
 export const SLOT_IDS = ["MainHand", "SubHand", "Helmet", "Shoulder", "Torso", "Gloves", "Pants", "Boots", "Cloak", "Wings1",
-  "Earring1", "Earring2", "Necklace", "Amulet", "Ring1", "Ring2", "Bracelet1", "Bracelet2", "Rune1", "Rune2"];
+  "Earring1", "Earring2", "Necklace", "Amulet", "Ring1", "Ring2", "Bracelet1", "Bracelet2", "Rune1", "Rune2", "Belt"];
 
 export const SLOT_MAP = { ...Object.fromEntries(SLOT_IDS.map((id) => [id, id])), Cape: "Cloak", Wings: "Wings1", Wing: "Wings1" };
 
@@ -138,6 +138,7 @@ export function mapEquipment(json, itemsById, wingsById = {}, itemsByName = {}) 
   };
   for (const entry of ((json && json.equipment) || {}).equipmentList || []) {
     const slotId = SLOT_MAP[entry.slotPosName];
+    if (/^Arcana\d/.test(entry.slotPosName || "")) continue;
     if (!slotId) { skipped.push(`${entry.name || entry.id} (${entry.slotPosName || "unknown slot"})`); continue; }
     place(slotId, entry, true);
   }
@@ -177,12 +178,14 @@ export function matchSubstats(apiSubStats, ourOptions) {
 
 // Writes an import into an equip set. A slot whose item stayed keeps its
 // substats unless new ones matched; a changed or emptied slot loses them.
-export function mergeEquipSet(set, mapped, substatsBySlot = {}) {
+export function mergeEquipSet(set, mapped, substatsBySlot = {}, manastonesBySlot = {}) {
   const before = set.equipped || {};
   set.equipped = { ...mapped.equipped };
   set.enchant = { ...mapped.enchant };
   set.substats = set.substats || {};
   set.philosopher_stone = set.philosopher_stone || {};
+  set.manastones = {};
+  for (const [slotId, grades] of Object.entries(manastonesBySlot)) if (grades && grades.length) set.manastones[slotId] = [...grades];
   for (const slotId of new Set([...Object.keys(set.substats), ...Object.keys(set.philosopher_stone), ...Object.keys(mapped.equipped)])) {
     const item = mapped.equipped[slotId];
     const same = !!item && !!before[slotId] && String(before[slotId].id) === String(item.id);
@@ -192,6 +195,40 @@ export function mergeEquipSet(set, mapped, substatsBySlot = {}) {
     if (!same) delete set.philosopher_stone[slotId];
   }
   return set;
+}
+
+// Grades of the manastones socketed in one rolled item sheet.
+export function manastoneGrades(sheet) {
+  return ((sheet && sheet.magicStoneStat) || []).map((stone) => stone.grade).filter(Boolean);
+}
+
+// The level and enchant cap the site reports for a rolled item, kept on the
+// equipped copy so the score does not depend on the bundled list.
+export function withSheetLevel(item, sheet) {
+  if (!sheet || !sheet.level) return item;
+  return { ...item, level: Number(sheet.level), maxEnchantLevel: Number(sheet.maxEnchantLevel) || item.maxEnchantLevel };
+}
+
+// "Chalice of Vigor" in slot Arcana1 → { cardType: "Chalice", theme: "Vigor", grade }.
+export function mapArcanaCards(json) {
+  const cards = {};
+  for (const entry of ((json && json.equipment) || {}).equipmentList || []) {
+    if (!/^Arcana\d/.test(entry.slotPosName || "")) continue;
+    const match = /^(\w+) of (\w+)/.exec(entry.name || "");
+    if (!match) continue;
+    cards[match[1]] = { theme: match[2], grade: entry.grade || "Unique" };
+  }
+  return cards;
+}
+
+export function mergeArcanaCards(skillBuild, cards) {
+  skillBuild.arcana_cards = skillBuild.arcana_cards || {};
+  for (const [cardType, card] of Object.entries(cards)) {
+    const previous = skillBuild.arcana_cards[cardType];
+    const keepSlots = previous && previous.theme === card.theme ? previous.slots : null;
+    skillBuild.arcana_cards[cardType] = { theme: card.theme, grade: card.grade, slots: keepSlots || [null, null, null, null] };
+  }
+  return Object.keys(cards).length;
 }
 
 // ── skills ──────────────────────────────────────────────────────────────────

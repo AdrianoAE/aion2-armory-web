@@ -113,7 +113,7 @@ async function collect(who, info, progress, isCancelled) {
   }
   const plan = O.boardPlan(info);
   progress.total(2 + mapped.rolls.length + plan.length);
-  const substats = {}, unread = [];
+  const substats = {}, manastones = {}, unread = [];
   let failedInARow = 0;
   for (const [index, roll] of mapped.rolls.entries()) {
     if (failedInARow >= 2) { unread.push(roll.name); continue; }
@@ -122,6 +122,8 @@ async function collect(who, info, progress, isCancelled) {
       const detail = await itemDetail(mapped.equipped[roll.slotId].id);
       const matched = O.matchSubstats(rolled.subStats, detail && detail.subStats);
       if (matched.length) substats[roll.slotId] = matched;
+      manastones[roll.slotId] = O.manastoneGrades(rolled);
+      mapped.equipped[roll.slotId] = O.withSheetLevel(mapped.equipped[roll.slotId], rolled);
       failedInARow = 0;
     } catch (err) {
       if (isCancelled()) throw err;
@@ -141,7 +143,8 @@ async function collect(who, info, progress, isCancelled) {
       boardFailures.push(board.name);
     }
   }
-  return { info, mapped, substats, unread, skillList: ((equipment.skill || {}).skillList) || [], boardIds, boardNotes, boardFailures };
+  const itemLevel = Number((((info.stat || {}).statList) || []).find((stat) => stat.name === "아이템레벨" || /item level/i.test(stat.name || ""))?.value) || null;
+  return { info, mapped, substats, manastones, arcanaCards: O.mapArcanaCards(equipment), itemLevel, unread, skillList: ((equipment.skill || {}).skillList) || [], boardIds, boardNotes, boardFailures };
 }
 
 // ── profile writes ──────────────────────────────────────────────────────────
@@ -189,7 +192,7 @@ function writeImport(p, target, who, result) {
   const equips = equipSetsOf(p, cls);
   const equip = equips[presetName];
   for (const part of ["equipped", "substats", "enchant", "philosopher_stone", "priority", "priority_progress"]) if (!equip[part] || typeof equip[part] !== "object") equip[part] = {};
-  O.mergeEquipSet(equip, result.mapped, result.substats);
+  O.mergeEquipSet(equip, result.mapped, result.substats, result.manastones || {});
   const buildName = ownDaevanionSet(p, cls, presetName);
   const boardSet = daevanionSetsOf(p, cls)[buildName];
   const updatedBoards = O.mergeBoards(boardSet, result.boardIds);
@@ -199,15 +202,16 @@ function writeImport(p, target, who, result) {
   const skills = O.investedLevels(result.skillList, skillBonusFromBoards(cls, openInGame, skillsData.boards));
   if (isNew) for (const id of Object.keys(build.levels)) delete build.levels[id];
   O.mergeSkillLevels(build.levels, skills);
+  const arcanaCount = O.mergeArcanaCards(build, result.arcanaCards || {});
   const profile = result.info.profile || {};
   p.official_characters = p.official_characters || {};
   p.official_characters[entryKey(cls, target.name)] = {
     region: who.region, serverId: who.serverId, serverName: who.serverName || profile.serverName || "",
-    characterId: who.characterId, level: Number(profile.characterLevel) || null, importedAt: new Date().toISOString(),
+    characterId: who.characterId, level: Number(profile.characterLevel) || null, itemLevel: result.itemLevel, importedAt: new Date().toISOString(),
   };
   selectPresetIn(p, cls, presetName);
   save();
-  return { presetName, buildName, skillName, skills, updatedBoards };
+  return { presetName, buildName, skillName, skills, updatedBoards, arcanaCount };
 }
 
 // ── dialog ──────────────────────────────────────────────────────────────────
@@ -303,7 +307,7 @@ function summaryView(body, target, written, result) {
         <div class="muted small">${escapeHtml(O.className(target.cls) || target.cls)} · Level ${escapeHtml(String((result.info.profile || {}).characterLevel || "?"))} · ${escapeHtml(target.serverName || "")}</div></div>
         <span class="tag success">${target.mode === "new" ? "Created" : "Updated"}</span></div>
       <ul>${lines.map((l) => `<li>${l}</li>`).join("")}</ul>
-      <div class="muted small">Skill layout, specializations, Arcana, Genius Insight and Pantheon are not on the site and were left as they were.</div>
+      <div class="muted small">Skill layout, specializations, Arcana card skills, Genius Insight and Pantheon are not on the site and were left as they were.</div>
       <div class="row official-actions"><span class="grow"></span><button type="button" class="close">Close</button><button type="button" class="primary open">Open character</button></div>
     </div>`;
   body.querySelector(".close").addEventListener("click", () => body.closest("dialog").close());
