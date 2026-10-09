@@ -5,7 +5,7 @@ characterWidget({
   title: "Daevanion boards",
   description: "One deity board at a time with tabs; the board fills the card.",
   accent: "secondary",
-  defaultSize: { cols: 2, rows: "auto" },
+  defaultSize: { cols: 1, rows: "auto" },
   page: "daevanion",
   pageTitle: "Daevanion Board",
   async fill(box, target) {

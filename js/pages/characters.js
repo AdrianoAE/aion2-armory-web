@@ -50,7 +50,7 @@ function widgetsWithData(entry) {
 function defaultLayout(width, entry) {
   const item = (name, cols, rows = "auto") => ({ id: `character.${name}`, cols, rows });
   const plan = width >= WIDE
-    ? [item("checklist", 1), item("equipment", 2), item("arcana", 1), item("genius", 1), item("layout", 2), item("daevanion", 2), item("skills", 2)]
+    ? [item("checklist", 1), item("equipment", 2), item("arcana", 1), item("genius", 1), item("layout", 2), item("daevanion", 1), item("skills", 3)]
     : [item("checklist", 2), item("equipment", 2), item("arcana", 1), item("genius", 1), item("layout", 4), item("daevanion", 2), item("skills", 4)];
   const has = widgetsWithData(entry);
   const items = plan.filter((w) => has.has(w.id.slice("character.".length)));
