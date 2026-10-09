@@ -223,7 +223,7 @@ test("Nightmare entries gain 2 per daily reset up to 14, and the old info rows a
   assert.equal(planner.nightmareEntries(4, since, new Date(Date.UTC(2026, 9, 10, 8, 30))), 6);
   assert.equal(planner.nightmareEntries(4, since, new Date(Date.UTC(2026, 9, 20, 8, 30))), 14);
   assert.equal(planner.nightmareCapText({ value: 14, since }, new Date(Date.UTC(2026, 9, 9, 8, 30))), "full");
-  assert.match(planner.nightmareCapText({ value: 12, since }, new Date(Date.UTC(2026, 9, 9, 8, 30))), /^full in /);
+  assert.match(planner.nightmareCapText({ value: 12, since }, new Date(Date.UTC(2026, 9, 9, 8, 30))), /^full in .* · /);
   const defaults = planner.defaultPlannerTasks();
   assert.ok(!defaults.character.some((t) => /Nightmare|Expedition/.test(t.name)));
   const old = { tasks: { character: [{ id: "c7", name: "Nightmare", kind: "available" }, { id: "c8", name: "Expedition / Transcendence", kind: "available" }, { id: "c1", name: "Farm", kind: "daily" }], server: [] }, done: { "ch1:c7": "2026-10-09T00:00:00Z" }, defaults_seen: [] };

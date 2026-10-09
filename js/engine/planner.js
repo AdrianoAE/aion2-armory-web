@@ -211,7 +211,7 @@ export function odyleCapText(entry, now = new Date()) {
   if (odyleEnergy(value, since, now) >= ODYLE_MAX) return "full";
   const ticks = Math.ceil((ODYLE_MAX - value) / ODYLE_PER_TICK);
   const at = new Date(nextOdyleTick(since).getTime() + (ticks - 1) * ODYLE_TICK_HOURS * HOUR);
-  return `full in ${durationText(at - now)}`;
+  return `full in ${durationText(at - now)} · ${capMoment(at, now)}`;
 }
 
 // Nightmare (solo boss) entries: +2 at every daily reset, held up to 14.
@@ -244,5 +244,11 @@ export function nightmareCapText(entry, now = new Date()) {
   const resetsNeeded = Math.ceil((NIGHTMARE_MAX - current) / NIGHTMARE_PER_DAY);
   let at = now;
   for (let i = 0; i < resetsNeeded; i += 1) { at = nextReset("daily", at); if (!at) return ""; }
-  return `full in ${durationText(at - now)}`;
+  return `full in ${durationText(at - now)} · ${capMoment(at, now)}`;
+}
+
+// "Mon 09:00", with the date when it is more than six days away.
+export function capMoment(at, now = new Date()) {
+  const far = at - now > 6 * 24 * 3600 * 1000;
+  return at.toLocaleString([], far ? { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" } : { weekday: "short", hour: "2-digit", minute: "2-digit" });
 }
