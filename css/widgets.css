@@ -59,9 +59,9 @@ body.wa-moving, body.wa-moving * { cursor: grabbing !important; user-select: non
 #main.wa-host { display: flex; flex-direction: column; }
 #main.wa-host > * { flex-shrink: 0; }
 .wa-dock { position: sticky; z-index: 6; display: flex; flex-direction: column; gap: 6px; padding: 8px var(--main-pad-x, 18px);
-  background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(6px); }
-.wa-dock-top { top: 0; margin: calc(-1 * var(--main-pad-y, 14px)) calc(-1 * var(--main-pad-x, 18px)) 12px; border-bottom: 1px solid var(--border-soft); }
-.wa-dock-bottom { bottom: 0; margin: auto calc(-1 * var(--main-pad-x, 18px)) calc(-1 * var(--main-pad-y, 14px)); border-top: 1px solid var(--border-soft); }
+  background: var(--bg); }
+.wa-dock-top { top: 0; margin: calc(-1 * var(--main-pad-y, 14px)) calc(-1 * var(--main-pad-x, 18px)) 12px; border-bottom: 2px solid var(--border); box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.6); }
+.wa-dock-bottom { bottom: 0; margin: auto calc(-1 * var(--main-pad-x, 18px)) calc(-1 * var(--main-pad-y, 14px)); border-top: 2px solid var(--border); box-shadow: 0 -6px 14px -6px rgba(0, 0, 0, 0.6); }
 .wa > .wa-dock { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
 .wa-dock-items { display: flex; flex-wrap: wrap; gap: 8px; }
 .wa-dock-items:empty { display: none; }
@@ -69,7 +69,7 @@ body.wa-moving, body.wa-moving * { cursor: grabbing !important; user-select: non
   font-size: 12px; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; background: color-mix(in srgb, var(--bg) 88%, transparent); }
 .wa-dock-ready .wa-dock-hint { display: flex; }
 .wa-dock-ready.wa-drop-over .wa-dock-hint { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--bg)); }
-.wa-dock.wa-dock-vacant { height: 0; padding: 0; border: 0; overflow: visible; background: none; backdrop-filter: none; }
+.wa-dock.wa-dock-vacant { height: 0; padding: 0; border: 0; overflow: visible; background: none; box-shadow: none; }
 .wa-dock-top.wa-dock-vacant { margin: 0 calc(-1 * var(--main-pad-x, 18px)); }
 .wa-dock-bottom.wa-dock-vacant { margin: auto calc(-1 * var(--main-pad-x, 18px)) 0; }
 .wa-dock-top.wa-dock-vacant .wa-dock-hint { top: 0; bottom: auto; height: 44px; }
