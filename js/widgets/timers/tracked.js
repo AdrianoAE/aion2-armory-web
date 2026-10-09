@@ -67,7 +67,8 @@ registerWidget({
     const stale = feed.age && feed.age.level !== "fresh"
       ? `<div class="tm-compact-stale tm-feed-${feed.age.level}">Live feed updated ${esc(feed.age.text)}${feed.age.level === "stale" ? ": the mirror is stale" : ""}</div>` : "";
     if (!state.statuses.length) {
-      el.innerHTML = `<span class="muted small">${state.all ? "Nothing spawning soon." : "No bosses tracked yet."}</span>`;
+      el.innerHTML = `<span class="muted small">${state.all ? "Nothing spawning soon." : "No bosses tracked yet."}</span> <button type="button" class="tm-link" data-open-settings>Select bosses…</button>`;
+      el.querySelector("[data-open-settings]").addEventListener("click", () => { const gear = el.closest(".wa-pin, .wa-card")?.querySelector('[data-act="settings"]'); if (gear) gear.click(); });
       return unwatch;
     }
     el.innerHTML = `<div class="tm-compact-list">${state.statuses.map((s) => {

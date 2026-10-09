@@ -1,6 +1,6 @@
 /* widget areas */
 .wa { container-type: inline-size; }
-.wa-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--wa-gap); row-gap: 0; grid-auto-rows: var(--wa-track); }
+.wa-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--wa-gap); grid-auto-rows: auto; align-items: stretch; }
 .wa-c1 { grid-column: span 1; }
 .wa-c2 { grid-column: span 2; }
 .wa-c3 { grid-column: span 3; }
@@ -14,9 +14,8 @@
   .wa-c2, .wa-c3, .wa-c4 { grid-column: span 1; }
 }
 
-.wa-card { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; margin-bottom: var(--wa-gap); overflow: hidden;
+.wa-card { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
   background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--wa-accent); border-radius: var(--radius); }
-.wa-card.wa-auto { align-self: start; }
 .wa-head { display: flex; align-items: center; gap: 6px; padding: 5px 6px 5px 4px; border-bottom: 1px solid var(--border-soft);
   background: color-mix(in srgb, var(--wa-accent) 7%, transparent); }
 .wa-collapsed .wa-head { border-bottom: 0; }
@@ -27,6 +26,9 @@
 .wa-grip:hover, .wa-grip:focus-visible { color: var(--wa-accent); background: var(--hover); outline: none; }
 .wa-grip svg { width: 14px; height: 14px; }
 .wa-tools { flex: none; display: flex; gap: 1px; opacity: 0.55; transition: opacity 0.15s; }
+.wa-pin .wa-tools { opacity: 1; }
+.wa-btn-text { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-size: 12px; }
+.wa-btn-text span { line-height: 1; }
 .wa-card:hover .wa-tools, .wa-card:focus-within .wa-tools, .wa-pin:hover .wa-tools, .wa-pin:focus-within .wa-tools { opacity: 1; }
 @media (hover: none) { .wa-tools { opacity: 1; } }
 .wa-btn { display: inline-flex; align-items: center; justify-content: center; padding: 3px; border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 6px; }
@@ -34,7 +36,6 @@
 .wa-btn:hover, .wa-btn.active { color: var(--fg); background: var(--hover); border-color: var(--border); }
 .wa-btn[data-act="remove"]:hover { color: var(--danger); }
 .wa-body { flex: 1; min-height: 0; min-width: 0; overflow: auto; padding: 10px 12px; }
-.wa-auto .wa-body { flex: none; }
 .wa-error { color: var(--danger); font-size: 12px; }
 
 .wa-resize { position: absolute; right: 1px; bottom: 1px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none; opacity: 0.45; border-radius: 0 0 var(--radius) 0;

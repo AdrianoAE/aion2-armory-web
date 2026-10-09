@@ -12,7 +12,6 @@ const UNIT = 136;
 const GAP = 12;
 // Rows are spans of a fine 4 px track so auto-height cards pack tightly
 // under shorter neighbours instead of reserving whole row units.
-const TRACK = 4;
 
 const SVG = (body, fill = false) => `<svg viewBox="0 0 16 16" aria-hidden="true" ${fill ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"'}>${body}</svg>`;
 const ICON = {
@@ -218,8 +217,6 @@ function columnCount(grid) {
   return getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length || 1;
 }
 
-const fixedSpan = (rows) => (rows * (UNIT + GAP)) / TRACK;
-
 function isEditing(el) {
   const active = document.activeElement;
   return !!active && el.contains(active) && active.matches("input, textarea, select, [contenteditable]");
@@ -241,7 +238,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     <div class="wa-foot"><button type="button" class="wa-add">${ICON.plus} Add widget</button></div>`;
   root.style.setProperty("--wa-unit", `${UNIT}px`);
   root.style.setProperty("--wa-gap", `${GAP}px`);
-  root.style.setProperty("--wa-track", `${TRACK}px`);
   container.appendChild(root);
   const grid = root.querySelector(".wa-grid");
   const emptyEl = root.querySelector(".wa-empty");
@@ -267,15 +263,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     root.append(docks.bottom);
   }
 
-  const observer = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const card = entry.target;
-      if (!card.classList.contains("wa-auto")) continue;
-      const span = Math.max(1, Math.ceil((card.getBoundingClientRect().height + GAP) / TRACK));
-      const value = `span ${span}`;
-      if (card.style.gridRowEnd !== value) card.style.gridRowEnd = value;
-    }
-  });
 
   const mutate = (fn) => {
     const items = readItems(areaId);
@@ -365,8 +352,10 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       handle.addEventListener("keydown", (e) => keyResize(inst, e));
     } else {
       el.className = "wa-pin";
-      el.innerHTML = `<span class="wa-pin-title" title="${title}">${title}</span><div class="wa-body wa-pin-body"></div>
-        <span class="wa-tools">${gear}${toolButton("unpin", ICON.unpin, "Unpin")}</span>`;
+      el.innerHTML = `<span class="wa-grip" tabindex="0" role="button" title="Drag back into the page" aria-label="Move ${title}">${ICON.grip}</span>
+        <span class="wa-pin-title" title="${title}">${title}</span><div class="wa-body wa-pin-body"></div>
+        <span class="wa-tools">${gear}<button type="button" class="wa-btn wa-btn-text" data-act="unpin" title="Put the widget back into the page">${ICON.unpin}<span>Unpin</span></button></span>`;
+      el.querySelector(".wa-grip").addEventListener("pointerdown", (e) => startDrag(inst, e));
     }
     el.addEventListener("click", (e) => {
       const btn = e.target.closest(".wa-tools [data-act]");
@@ -381,7 +370,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     inst.disposed = true;
     if (openPopup && inst.el.contains(openPopup.anchor)) closePopup();
     runCleanup(inst);
-    observer.unobserve(inst.el);
     inst.el.remove();
   }
 
@@ -390,8 +378,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     for (let c = 1; c <= 4; c += 1) el.classList.toggle(`wa-c${c}`, c === cols);
     const auto = rows === "auto" || inst.item.collapsed;
     el.classList.toggle("wa-auto", auto);
-    if (auto) observer.observe(el);
-    else { observer.unobserve(el); el.style.gridRowEnd = `span ${fixedSpan(rows)}`; }
+    el.style.maxHeight = auto ? "" : `${rows * UNIT + (rows - 1) * GAP}px`;
   }
 
   function applyChrome(inst) {
@@ -633,7 +620,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       dragging = false;
       if (commit && drop) {
         if (drop.pinned) moveItem(inst.item.id, null, true, drop.pinned);
-        else moveItem(inst.item.id, drop.target, drop.after);
+        else moveItem(inst.item.id, drop.target, drop.after, null);
       }
       updateDocks();
     };
@@ -761,7 +748,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     if (openPopup && (root.contains(openPopup.anchor) || Object.values(docks).some((d) => d.contains(openPopup.anchor)))) closePopup();
     for (const inst of instances.values()) dispose(inst);
     instances.clear();
-    observer.disconnect();
     unsubscribe();
     registryListeners.delete(onRegister);
     window.removeEventListener("themechange", onTheme);

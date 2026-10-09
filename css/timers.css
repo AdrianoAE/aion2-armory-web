@@ -123,3 +123,5 @@ dialog.tm-map-dialog.faction-asmo { --faction: var(--asmos); }
 .tm-map-facts { flex: 1 1 240px; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 13px; }
 .tm-map-facts dt { color: var(--muted); font-weight: 600; }
 .tm-map-facts dd { margin: 0; }
+
+.tm-link { background: none; border: 0; padding: 0; color: var(--accent); font-size: 12px; cursor: pointer; text-decoration: underline; }
