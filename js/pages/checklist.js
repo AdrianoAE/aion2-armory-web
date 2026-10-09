@@ -1,4 +1,4 @@
-// Planner: server tasks, per-character checklists with Odyle energy.
+// Checklist: server tasks, per-character checklists with Odyle energy.
 // Ticks are stored with their time; daily/weekly/portal ticks count until
 // the next reset (CEST schedule), "when available" entries are reminders.
 
