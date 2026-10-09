@@ -297,7 +297,7 @@ character's preset is copied first so the other character keeps its own.
 Browsers on another origin get `403 Invalid CORS request` from the site,
 so every call goes to `relay + encodeURIComponent(url)`. The relay prefix
 is `prefs().official.relay`, edited in Settings → Official site; the
-default is `https://api.allorigins.win/raw?url=`. Public relays are slow
+default is `https://aion2-armory-relay.aion2-armory-relay.workers.dev/?url=`, a Cloudflare Worker running `docs/relay-worker.js` from the `aion2-armory-relay` folder next to this repo. Public relays are slow
 and sometimes time out, so the Armory ships `docs/relay-worker.js`, a
 Cloudflare Worker that relays only the character API and search, adds
 `Access-Control-Allow-Origin: *` and sends a browser User-Agent and the

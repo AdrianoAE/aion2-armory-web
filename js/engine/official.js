@@ -5,7 +5,7 @@ import { SERVERS } from "./fieldboss.js";
 
 export const SITE = "https://aion2.plaync.com";
 export const SEARCH_SITE = "https://api-search.plaync.com";
-export const DEFAULT_RELAY = "https://api.allorigins.win/raw?url=";
+export const DEFAULT_RELAY = "https://aion2-armory-relay.aion2-armory-relay.workers.dev/?url=";
 export const DEFAULT_REGION = "eu";
 export const DEFAULT_SERVER = "Vaizel";
 export const LANG = "en-US";
