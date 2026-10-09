@@ -59,3 +59,42 @@ export function isSoon(status, now, horizon = SOON_MS) {
   const left = timeLeft(status, now);
   return left !== null && left <= horizon;
 }
+
+export const FACTIONS = [["elyos", "Elyos"], ["asmo", "Asmodians"]];
+
+export function factionLabel(faction) {
+  return faction === "asmo" ? "Asmodian" : "Elyos";
+}
+
+export function serverOptions() {
+  return SERVERS.flatMap(([region, servers]) => servers.map(([id, label]) => [id, `${region} · ${label}`]));
+}
+
+// A done mark holds until the boss is seen again after it: a newer kill or
+// a newer spawn clears it.
+export function isMarkedDone(status, doneStamp) {
+  if (!doneStamp) return false;
+  const doneAt = new Date(doneStamp);
+  if (Number.isNaN(doneAt.getTime())) return false;
+  return !(status.known && status.since && status.since > doneAt);
+}
+
+export function sortStatuses(statuses, by, now) {
+  const list = [...statuses];
+  if (by === "name") return list.sort((a, b) => a.boss.name.localeCompare(b.boss.name));
+  if (by === "zone") return list.sort((a, b) => a.boss.zone.localeCompare(b.boss.zone) || a.boss.name.localeCompare(b.boss.name));
+  const key = (s) => (!s.known ? Infinity : s.up ? -1 : s.nextSpawn ? s.nextSpawn - now : Infinity);
+  return list.sort((a, b) => key(a) - key(b) || a.boss.name.localeCompare(b.boss.name));
+}
+
+export const FEED_FRESH_MINUTES = 15;
+export const FEED_STALE_MINUTES = 60;
+
+export function feedAge(mirroredAt, now) {
+  if (!mirroredAt) return null;
+  const minutes = Math.max(0, Math.floor((now - mirroredAt) / 60000));
+  const level = minutes < FEED_FRESH_MINUTES ? "fresh" : minutes <= FEED_STALE_MINUTES ? "warn" : "stale";
+  const hours = Math.floor(minutes / 60);
+  const text = minutes < 1 ? "just now" : hours ? `${hours} h ${minutes % 60} min ago` : `${minutes} min ago`;
+  return { minutes, level, text };
+}

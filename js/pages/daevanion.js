@@ -677,7 +677,14 @@ function linkedSetOf(classKeyAny) {
 // frame size in CSS px (a size the user dragged to wins); `onChange` gets
 // {board, key, spent, activeSet} when another tab is picked. Call
 // `el.destroy()` when the host unmounts.
-export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {}) {
+export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, preset = null } = {}) {
+  const setOf = () => {
+    if (!preset) return linkedSetOf(classKeyAny);
+    const lower = String(classKeyAny || "").trim().toLowerCase();
+    const className = BUILDS_CLASS_BY_DATA_KEY[lower] || lower;
+    const equip = ((bp().equip_builds_data || {})[className] || {})[preset] || null;
+    return ((bp().daevanion_builds_data || {})[className] || {})[linkedSetName(equip, className)] || {};
+  };
   const el = document.createElement("div");
   el.className = "daev-widget";
   el.innerHTML = `<div class="muted small">${T.loading}</div>`;
@@ -693,7 +700,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {
     const board = boardNow();
     if (!board || !canvasEl) return;
     const v = viewNow();
-    renderBoard(canvasEl, variant, board, activeOf(linkedSetOf(classKeyAny), board), {
+    renderBoard(canvasEl, variant, board, activeOf(setOf(), board), {
       side: size - 2, hovered: hoveredKey, showLabels: v.show_labels !== false, hideBorders: !!v.hide_borders,
     });
   }
@@ -701,7 +708,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {
   function render() {
     const list = boards();
     if (!list.length) { el.innerHTML = `<div class="muted small">${T.no_board_for_class}</div>`; tabs = box = canvasEl = null; return; }
-    const set = linkedSetOf(classKeyAny);
+    const set = setOf();
     if (!list.some((b) => b.order === current)) current = initialOrder(dataKey, list, set);
     tabs.innerHTML = boardTabsHtml(list, set, current);
     paint();
@@ -725,7 +732,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {
       render();
       const board = boardNow();
       if (onChange && board) {
-        const active = activeOf(linkedSetOf(classKeyAny), board);
+        const active = activeOf(setOf(), board);
         onChange({ board, key: boardKey(board), spent: D.spentCost(active, variant.node_by_id), activeSet: active });
       }
     });
@@ -737,7 +744,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null } = {
       const rc = node && node.g !== "empty" ? D.gridKey(node.r, node.c) : null;
       if (rc !== hoveredKey) { hoveredKey = rc; paint(); }
       if (!rc) { hideTooltip(); return; }
-      showTooltip(node, { board, activeSet: activeOf(linkedSetOf(classKeyAny), board), x: e.clientX, y: e.clientY });
+      showTooltip(node, { board, activeSet: activeOf(setOf(), board), x: e.clientX, y: e.clientY });
     });
     const leave = () => {
       if (hoveredKey) { hoveredKey = null; paint(); }

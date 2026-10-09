@@ -14,7 +14,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "elyos01.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos01.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.3846,
+     0.4467
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/kernon-of-the-west"
   },
   {
    "id": "elyos02",
@@ -25,7 +34,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "elyos02.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos02.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4295,
+     0.3956
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/neikel-of-the-east"
   },
   {
    "id": "elyos03",
@@ -36,7 +54,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "elyos03.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos03.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4666,
+     0.401
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/rotten-kutar"
   },
   {
    "id": "elyos04",
@@ -47,7 +74,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "elyos04.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos04.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4576,
+     0.4553
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/blooming-korin"
   },
   {
    "id": "elyos05",
@@ -58,7 +94,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "elyos05.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos05.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.5228,
+     0.4998
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/bodyguard-teegant"
   },
   {
    "id": "elyos06",
@@ -69,7 +114,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos06.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos06.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4778,
+     0.4872
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/kusan-the-mad-gladiator"
   },
   {
    "id": "elyos07",
@@ -80,7 +134,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos07.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos07.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4669,
+     0.5244
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/ritualist-garshim"
   },
   {
    "id": "elyos08",
@@ -91,7 +154,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos08.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos08.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4283,
+     0.5684
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/bloodfang-pnyn"
   },
   {
    "id": "elyos09",
@@ -102,7 +174,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos09.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos09.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4291,
+     0.6013
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/furious-saursus"
   },
   {
    "id": "elyos10",
@@ -113,7 +194,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos10.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos10.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4434,
+     0.6223
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/scholar-aulla"
   },
   {
    "id": "elyos12",
@@ -143,7 +233,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos12.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.4685,
+     0.662
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/forest-warrior-aullamu"
   },
   {
    "id": "elyos13",
@@ -154,7 +253,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos13.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos13.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.5229,
+     0.6165
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/heretic-layla"
   },
   {
    "id": "elyos14",
@@ -184,7 +292,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos14.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6206,
+     0.5912
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/black-tentacle-lawa"
   },
   {
    "id": "elyos15",
@@ -214,7 +331,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos15.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6531,
+     0.5135
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/centurion-demiros"
   },
   {
    "id": "elyos16",
@@ -244,7 +370,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos16.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6757,
+     0.5433
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/divine-ansas"
   },
   {
    "id": "elyos17",
@@ -255,7 +390,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "elyos17.png",
-   "artwork": null
+   "artwork": null,
+   "map": "elyos17.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6437,
+     0.3818
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/harvest-manager-moshav"
   },
   {
    "id": "elyos18",
@@ -285,7 +429,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos18.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6603,
+     0.404
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/sentinel-k-nash"
   },
   {
    "id": "elyos19",
@@ -315,7 +468,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos19.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6951,
+     0.3395
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/researcher-setram"
   },
   {
    "id": "elyos20",
@@ -345,7 +507,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos20.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6031,
+     0.7187
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/phantasm-kasia"
   },
   {
    "id": "elyos21",
@@ -375,7 +546,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos21.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.5179,
+     0.674
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/silent-dartan"
   },
   {
    "id": "elyos22",
@@ -405,7 +585,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos22.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.6693,
+     0.5882
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/soul-ruler-kashapa"
   },
   {
    "id": "elyos23",
@@ -435,7 +624,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "elyos23.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.5889,
+     0.4182
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/high-commander-lagta"
   },
   {
    "id": "elyos24",
@@ -469,7 +667,16 @@
       "5"
      ]
     ]
-   }
+   },
+   "map": "elyos24.jpg",
+   "map_region": "region_verteron.jpg",
+   "map_points": [
+    [
+     0.2308,
+     0.7986
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/eternal-gartua"
   },
   {
    "id": "asmo01",
@@ -480,7 +687,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "asmo01.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo01.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.4024,
+     0.4082
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/melted-danar"
   },
   {
    "id": "asmo02",
@@ -491,7 +707,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "asmo02.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo02.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.3126,
+     0.3615
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/black-warrior-aed"
   },
   {
    "id": "asmo03",
@@ -502,7 +727,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "asmo03.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo03.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.2914,
+     0.4783
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/faithful-rajit"
   },
   {
    "id": "asmo04",
@@ -513,7 +747,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "asmo04.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo04.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.2795,
+     0.4941
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/berserker-vargor"
   },
   {
    "id": "asmo05",
@@ -524,7 +767,16 @@
    "grade": "Rare",
    "level": 35,
    "image": "asmo05.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo05.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.4583,
+     0.5503
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/blood-warrior-lannar"
   },
   {
    "id": "asmo06",
@@ -535,7 +787,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo06.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo06.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.4955,
+     0.5503
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/predator-garsan"
   },
   {
    "id": "asmo07",
@@ -546,7 +807,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo07.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo07.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.5233,
+     0.4592
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/deceiver-trid"
   },
   {
    "id": "asmo08",
@@ -557,7 +827,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo08.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo08.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.5274,
+     0.413
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/blue-wave-kelpina"
   },
   {
    "id": "asmo09",
@@ -568,7 +847,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo09.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo09.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.5797,
+     0.2787
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/advisor-resana"
   },
   {
    "id": "asmo10",
@@ -579,7 +867,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo10.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo10.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.5768,
+     0.323
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/high-overseer-nutah"
   },
   {
    "id": "asmo12",
@@ -609,7 +906,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo12.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.7438,
+     0.3558
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/desecrator-newbold"
   },
   {
    "id": "asmo13",
@@ -639,7 +945,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo13.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.7017,
+     0.4216
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/specter-archon-axios"
   },
   {
    "id": "asmo14",
@@ -650,7 +965,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo14.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo14.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.6555,
+     0.5394
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/addicted-hardirun"
   },
   {
    "id": "asmo15",
@@ -680,7 +1004,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo15.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.6515,
+     0.6183
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/executioner-barthien"
   },
   {
    "id": "asmo16",
@@ -710,7 +1043,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo16.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.7216,
+     0.6438
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/drakan-battalion-weapon-guruta"
   },
   {
    "id": "asmo17",
@@ -721,7 +1063,16 @@
    "grade": "Unique",
    "level": 40,
    "image": "asmo17.png",
-   "artwork": null
+   "artwork": null,
+   "map": "asmo17.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.6329,
+     0.6976
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/veteran-shujakan"
   },
   {
    "id": "asmo18",
@@ -751,7 +1102,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo18.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.5856,
+     0.6926
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/visionary-karuka"
   },
   {
    "id": "asmo19",
@@ -781,7 +1141,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo19.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.4938,
+     0.6934
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/dark-shadow-vishwada"
   },
   {
    "id": "asmo20",
@@ -811,7 +1180,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo20.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.6819,
+     0.7178
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/sharp-shylak"
   },
   {
    "id": "asmo21",
@@ -841,7 +1219,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo21.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.6466,
+     0.367
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/silent-dartan-altgard"
   },
   {
    "id": "asmo22",
@@ -871,7 +1258,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo22.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.681,
+     0.5889
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/soul-ruler-kashapa-altgard"
   },
   {
    "id": "asmo23",
@@ -901,7 +1297,16 @@
       "4"
      ]
     ]
-   }
+   },
+   "map": "asmo23.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.4701,
+     0.6913
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/high-commander-lagta-altgard"
   },
   {
    "id": "asmo24",
@@ -935,7 +1340,16 @@
       "5"
      ]
     ]
-   }
+   },
+   "map": "asmo24.jpg",
+   "map_region": "region_altgard.jpg",
+   "map_points": [
+    [
+     0.2557,
+     0.7785
+    ]
+   ],
+   "page": "https://wikily.gg/aion-2/bosses/immortal-gartua"
   }
  ]
 }

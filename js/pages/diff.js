@@ -226,7 +226,12 @@ export async function mount(main) {
     + `<section class="card stack diff-section" data-section="daevanion">
       <div class="row"><h3>Daevanion boards</h3><span class="muted small">${buildA === buildB ? `Both presets use the build "${esc(buildA)}"` : `${esc(buildA)} → ${esc(buildB)}`}</span><span class="grow"></span><span class="muted small diff-count"></span></div>
       <div class="diff-boards stack">${buildA === buildB ? '<div class="muted small diff-none">No differences</div>' : '<span class="muted small">Loading…</span>'}</div></section>`;
-  if (buildA !== buildB) await fillDaevanion(sections.querySelector('[data-section="daevanion"]'), cls, a, b, mine);
+  if (buildA === buildB) return;
+  const daevanion = sections.querySelector('[data-section="daevanion"]');
+  const redraw = () => { if (mine === token) fillDaevanion(daevanion, cls, a, b, mine); };
+  window.addEventListener("themechange", redraw);
+  cleanups.push(() => window.removeEventListener("themechange", redraw));
+  await fillDaevanion(daevanion, cls, a, b, mine);
 }
 
 export function unmount() {

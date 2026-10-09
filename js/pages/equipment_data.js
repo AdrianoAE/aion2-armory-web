@@ -1,11 +1,10 @@
-// Equipment page data: the desktop's slot/stat tables (ItemDatabase/app.py
-// module constants), the catalog + per-item detail cache, and the totals
-// pipeline the Stat Values panel and Build Compare share.
+// Equipment page data: the slot/stat tables, the catalog + per-item detail
+// cache, and the totals pipeline the Stat Values panel and Build Compare share.
 
 import { GEAR_STAT_ID_ALIASES, RUNE_PVE_ITEM_ID, RUNE_PVP_ITEM_ID } from "../engine/enchant.js";
 import { computeGearscore, computeStatTotalsDetailed } from "../engine/stats.js";
 
-// --- texts (core/translations.py, en block) --------------------------------
+// --- texts ------------------------------------------------------------------
 export const T = {
   equipment: "Equipment", jewelry: "Jewelry", stat_values: "Stat Values", gearscore_zero: "GearScore: 0",
   main_stats: "Main Stats", sub_stats: "Sub Stats", utility: "Utility & Recovery", genius: "Genius Insight",
@@ -57,7 +56,7 @@ export const T = {
   role_attacker: "Attacker", role_defender: "Defender", role_support: "Support",
   stat_source: "Source", stat_effect: "Effect", stat_total: "Total", stat_source_wings: "Wings",
   stat_source_arcana: "Arcana", stat_source_pantheon: "Pantheon", stat_source_genius: "Genius Insight", stat_source_daevanion: "Daevanion Board", stat_source_passive: "Passive Skills",
-  nav_back: "Back to Characters", no_sets: "No Sets",
+  no_sets: "No Sets",
 };
 
 export const SLOT_LABELS = {
@@ -109,8 +108,8 @@ export const CLASS_WEAPON_CATEGORY = {
 export const ACTIVE_SUBSKILL_SLOT_CATEGORIES = new Set(["Greatsword", "Longsword", "Dagger", "Bow", "Spellbook", "Orb", "Mace", "Staff", "Fist", "Guard", "Ring"]);
 export const RARITY_ORDER = ["Common", "Rare", "Legend", "Unique", "Epic"];
 export const RARITY_RANK = Object.fromEntries(RARITY_ORDER.map((g, i) => [g, i]));
-export const GRADE_COLORS = { Common: "#94a3b8", Rare: "#4ade80", Unique: "#facc15", Epic: "#f59e0b", Legend: "#38bdf8" };
-export const ROLE_COLORS = { Angreifer: "#fb923c", Verteidiger: "#60a5fa", Support: "#4ade80" };
+export const GRADE_COLORS = { Common: "var(--grade-common)", Rare: "var(--grade-rare)", Unique: "var(--grade-unique)", Epic: "var(--grade-epic)", Legend: "var(--grade-legend)" };
+export const ROLE_COLORS = { Angreifer: "var(--role-attacker)", Verteidiger: "var(--role-defender)", Support: "var(--role-support)" };
 export const ROLE_LABELS = { Angreifer: T.role_attacker, Verteidiger: T.role_defender, Support: T.role_support };
 export const AION2_RACES = ["Elyos", "Asmodae"];
 
@@ -533,10 +532,8 @@ export function attributeDerivedDetailed(baseTotals) {
   return [derived, byAttr];
 }
 
-// Lord points rolled on gear (Bracelets) feed the Lords' derived %-stats;
-// Arcana cards and the Pantheon are not on the web Armory yet.
-// Lord points from gear, Arcana cards and Pantheon combine per Lord before
-// the derived stats (app.py _arcana_lord_stat_totals_detailed).
+// Lord points from gear (Bracelets), Arcana cards and the Pantheon combine
+// per Lord before the Lords' derived %-stats.
 export function lordDerivedDetailed(equipmentTotals, lordPoints = []) {
   const totals = {};
   const byLord = {};

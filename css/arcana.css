@@ -1,41 +1,66 @@
-/* arcana — desktop _build_arcana_tab / styles.template.qss #Arcana* */
+/* arcana */
+:root {
+  --arcana-vigor: #facc15;
+  --arcana-magic: #22d3ee;
+  --arcana-frenzy: #fb923c;
+  --arcana-purity: #a78bfa;
+  --arcana-punishment: #f87171;
+  --arcana-protection: #4ade80;
+  --arcana-indomitability: #f472b6;
+  --on-art: #f8fafc;
+  --art-shade: #0f172a;
+}
+:root[data-theme="light"] {
+  --arcana-vigor: #a16207;
+  --arcana-magic: #0e7490;
+  --arcana-frenzy: #c2410c;
+  --arcana-purity: #7c3aed;
+  --arcana-punishment: #dc2626;
+  --arcana-protection: #15803d;
+  --arcana-indomitability: #db2777;
+}
 .arcana-page { display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
-.arcana-subtabs { gap: 4px; }
+.arcana-subtabs { gap: 4px; border-bottom: 1px solid var(--border); }
+.arcana-subtabs button { border-radius: 8px 8px 0 0; border-bottom: none; }
+.arcana-subtabs button.active { box-shadow: inset 0 -2px 0 var(--accent); }
 .arcana-body { flex: 1; }
 
 .arcana-info { display: flex; gap: 24px; padding: 2px 0; align-items: flex-start; }
 .arcana-sets-col { display: flex; flex-direction: column; gap: 8px; width: 220px; flex: none; }
-.arcana-none { width: 220px; min-height: 40px; background: rgba(28, 39, 64, 0.6); border: 2px solid #475569; border-radius: 10px; color: var(--muted); font-weight: 700; font-size: 13px; }
-.arcana-none.checked { border-color: var(--accent); color: var(--accent); background: rgba(34, 211, 238, 0.1); }
-.arcana-banner { position: relative; width: 220px; min-height: 68px; height: 68px; padding: 0; overflow: hidden; border-radius: 10px; border: 2px solid rgba(226, 232, 240, 0.08); text-align: left; }
-.arcana-banner.checked { border-color: var(--fg); }
-.arcana-banner:hover { border-color: rgba(226, 232, 240, 0.5); }
+.arcana-none { width: 220px; min-height: 40px; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; color: var(--muted); font-weight: 700; font-size: 13px; }
+.arcana-none.checked { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.arcana-banner { --theme: var(--accent); position: relative; width: 220px; min-height: 68px; height: 68px; padding: 0; overflow: hidden; border-radius: 10px; border: 2px solid transparent; text-align: left;
+  background: linear-gradient(135deg, var(--art-shade), color-mix(in srgb, var(--theme) 60%, var(--art-shade))); }
+.arcana-banner:hover { border-color: color-mix(in srgb, var(--theme) 60%, transparent); }
+.arcana-banner.checked { border-color: var(--theme); box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme) 30%, transparent); }
 .arcana-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.arcana-banner .overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.55) 42%, rgba(15, 23, 42, 0.08) 75%); }
-.arcana-banner .spark { position: absolute; left: 18px; top: 8px; color: var(--accent); font-size: 14px; }
-.arcana-banner .set-name { position: absolute; left: 18px; bottom: 8px; color: var(--fg); font-weight: 700; font-size: 16px; }
+.arcana-banner .overlay { position: absolute; inset: 0; background: linear-gradient(to right, color-mix(in srgb, var(--art-shade) 92%, transparent) 0%, color-mix(in srgb, var(--art-shade) 55%, transparent) 42%, color-mix(in srgb, var(--art-shade) 8%, transparent) 75%); }
+.arcana-banner .spark { position: absolute; left: 18px; top: 8px; color: color-mix(in srgb, var(--theme) 50%, var(--on-art)); font-size: 14px; }
+.arcana-banner .set-name { position: absolute; left: 18px; bottom: 8px; color: var(--on-art); font-weight: 700; font-size: 16px; text-shadow: 0 1px 2px var(--art-shade); }
 
 .arcana-card-grid { display: grid; grid-template-columns: repeat(5, 185px); gap: 14px; align-content: start; }
-.arcana-card { width: 185px; min-height: 200px; padding: 14px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(22, 32, 54, 0.75); border: 1px solid #475569; border-radius: 14px; cursor: pointer; text-align: center; }
-.arcana-card:hover { border-color: rgba(34, 211, 238, 0.7); }
-.arcana-card[data-state="themed"] { background: rgba(251, 191, 36, 0.12); border: 2px solid rgba(251, 191, 36, 0.55); padding: 13px 9px 9px; }
+.arcana-card { width: 185px; min-height: 200px; padding: 14px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; cursor: pointer; text-align: center; }
+.arcana-card:hover { border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+.arcana-card[data-state="themed"] { background: color-mix(in srgb, var(--warn) 9%, var(--surface)); border: 2px solid color-mix(in srgb, var(--warn) 55%, transparent); padding: 13px 9px 9px; }
 .arcana-card[data-state="themed"]:hover { border-color: var(--warn); }
-.arcana-card[data-state="unavailable"] { background: rgba(22, 32, 54, 0.4); border: 2px dashed var(--border); padding: 13px 9px 9px; }
+.arcana-card[data-state="unavailable"] { background: transparent; border: 2px dashed var(--border); padding: 13px 9px 9px; cursor: default; }
 .arcana-card.with-slots { min-height: 346px; }
 .arcana-card .icon { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
 .arcana-card .icon img { width: 56px; height: 56px; }
 .arcana-card .name { font-weight: 700; font-size: 13px; }
 .arcana-card .info { font-size: 11px; line-height: 1.3; }
 .arcana-card .info .effect { font-size: 10px; color: var(--muted); }
+.arcana-card .info .lord-points { color: var(--fg); font-weight: 700; }
 .arcana-card .hint { color: var(--muted); font-size: 13px; font-weight: 700; }
 .arcana-card .grades { font-size: 11px; }
 .arcana-card .grade-pills { display: flex; gap: 4px; margin-top: 4px; }
-.arcana-card .grade-pill { background: rgba(22, 32, 54, 0.6); border: 1px solid var(--border); border-radius: 5px; font-size: 10px; font-weight: 700; padding: 2px 6px; }
-.arcana-card .grade-pill.checked { background: rgba(148, 163, 184, 0.18); border-color: rgba(148, 163, 184, 0.6); }
-.arcana-card .grade-pill:disabled { color: rgba(148, 163, 184, 0.45) !important; border-style: dashed; cursor: default; }
-.arcana-card .skill-slot { width: 100%; height: 24px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 8px; background: rgba(28, 39, 64, 0.4); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; margin-top: 4px; text-align: left; }
-.arcana-card .skill-slot:hover { border-color: rgba(34, 211, 238, 0.6); background: rgba(34, 211, 238, 0.06); }
-.arcana-card .skill-slot.disabled { background: rgba(22, 32, 54, 0.3); border-style: dashed; cursor: default; }
+.arcana-card .grade-pill { background: transparent; border: 1px solid var(--border); border-radius: 999px; font-size: 10px; font-weight: 700; padding: 1px 8px; }
+.arcana-card .grade-pill:hover:not(:disabled) { border-color: currentColor; }
+.arcana-card .grade-pill.checked { background: color-mix(in srgb, currentColor 16%, transparent); border-color: currentColor; }
+.arcana-card .grade-pill:disabled { color: var(--muted) !important; opacity: 0.6; border-style: dashed; cursor: default; }
+.arcana-card .skill-slot { width: 100%; height: 24px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 8px; background: var(--overlay); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; margin-top: 4px; text-align: left; }
+.arcana-card .skill-slot:hover { border-color: var(--accent); background: var(--accent-soft); }
+.arcana-card .skill-slot.disabled { background: transparent; border-style: dashed; cursor: default; }
 .arcana-card .skill-slot .sname { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .arcana-card .skill-slot .sval { flex: none; }
 
@@ -43,14 +68,14 @@
 .arcana-sets .build-row select { min-width: 160px; min-height: 32px; }
 .arcana-sets .build-row button.icon { width: 40px; height: 32px; padding: 0; font-size: 16px; }
 
-.arcana-lord-bar { background: rgba(28, 39, 64, 0.55); border: 1px solid var(--border); border-radius: 12px; padding: 6px 14px; display: flex; flex-direction: column; gap: 2px; }
+.arcana-lord-bar { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--warn); border-radius: 12px; padding: 6px 14px; display: flex; flex-direction: column; gap: 2px; }
 .arcana-lord-bar .title { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: 1px; }
-.arcana-lord-bar .text { color: #cbd5e1; font-size: 11px; line-height: 1.5; }
+.arcana-lord-bar .text { color: var(--fg); font-size: 11px; line-height: 1.5; }
 
 .arcana-tooltip[hidden] { display: none; }
 .arcana-tooltip { width: 380px; max-width: 380px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-size: 11px; }
 .arcana-tooltip .title { font-size: 15px; font-weight: 700; }
-.arcana-tooltip .lord-line { border-bottom: 1px solid rgba(148, 163, 184, 0.24); padding-bottom: 8px; }
+.arcana-tooltip .lord-line { border-bottom: 1px solid var(--border-soft); padding-bottom: 8px; }
 .arcana-tooltip .cols { display: flex; gap: 14px; }
 .arcana-tooltip .col { flex: 1; display: flex; flex-direction: column; gap: 3px; }
 .arcana-tooltip .col-head { font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 1px; }
@@ -65,6 +90,7 @@
 .arcana-dialog.tall .results-list { max-height: 70vh; }
 .arcana-dialog .arcana-list { gap: 3px; }
 .arcana-dialog .option { padding: 6px 10px; }
+.arcana-dialog .option.current, .arcana-dialog .skill-option.current { border-color: var(--accent); background: var(--accent-soft); }
 .arcana-dialog .skill-option { display: flex; align-items: center; gap: 8px; padding: 4px 8px; }
 .arcana-dialog .skill-option img, .arcana-dialog .skill-option .no-icon { width: 28px; height: 28px; flex: none; }
 .arcana-dialog .type-header { font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 8px 6px 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
@@ -79,19 +105,22 @@
 .arcana-theme-grid td.ct { font-weight: 700; font-size: 13px; }
 .arcana-theme-grid .info-dot { display: inline-block; width: 14px; height: 14px; line-height: 11px; border: 1.5px solid var(--muted); border-radius: 7px; font-size: 9px; text-align: center; cursor: help; vertical-align: middle; }
 .arcana-theme-grid .theme-option { display: flex; align-items: center; gap: 8px; width: 168px; padding: 6px 10px; border: 1px solid transparent; border-radius: 8px; cursor: pointer; }
-.arcana-theme-grid .theme-option:hover { background: rgba(148, 163, 184, 0.1); }
+.arcana-theme-grid .theme-option:hover { background: var(--hover); border-color: var(--border-soft); }
 .arcana-theme-grid .theme-option.selected { background: color-mix(in srgb, var(--theme) 10%, transparent); border-color: color-mix(in srgb, var(--theme) 35%, transparent); }
 .arcana-theme-grid .theme-option.selected .lord { color: var(--theme); }
 .arcana-theme-grid .theme-option input { accent-color: var(--theme); margin: 0; }
 .arcana-dialog .accordion { border: 1px solid var(--border); border-radius: 8px; background: var(--overlay); }
 .arcana-dialog .accordion summary { cursor: pointer; padding: 8px 12px; font-weight: 700; list-style: none; }
-.arcana-dialog .accordion summary::before { content: "▸  "; }
+.arcana-dialog .accordion summary:hover { color: var(--accent); }
+.arcana-dialog .accordion summary::before { content: "▸  "; color: var(--accent); }
 .arcana-dialog .accordion[open] summary::before { content: "▾  "; }
 .arcana-dialog .accordion-body { display: flex; flex-direction: column; gap: 6px; padding: 4px 12px 12px; }
 .arcana-dialog .accordion-body hr { width: 100%; border: 0; border-top: 1px solid var(--border); margin: 2px 0; }
+.arcana-dialog .coverage-full { color: var(--success); font-weight: 700; }
+.arcana-dialog .coverage-short { color: var(--danger); font-weight: 700; }
 .arcana-dialog .result-tiles { display: flex; justify-content: center; gap: 8px; }
-.arcana-dialog .result-tile { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(22, 32, 54, 0.75); border: 2px solid #475569; border-radius: 8px; }
-.arcana-dialog .result-tile.assigned { border-color: rgba(34, 211, 238, 0.7); }
+.arcana-dialog .result-tile { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; }
+.arcana-dialog .result-tile.assigned { border-color: var(--success); background: color-mix(in srgb, var(--success) 10%, var(--surface)); }
 .arcana-dialog .result-tile img { width: 44px; height: 44px; }
 .arcana-dialog .reason { color: var(--muted); font-size: 11px; }
 .arcana-dialog .leftover-header { color: var(--muted); font-size: 11px; font-weight: 700; margin-top: 4px; }

@@ -5,24 +5,35 @@ name: Mirror the live feeds
 # browser User-Agent and publishes the JSON on the `data` branch, which
 # raw.githubusercontent.com serves with CORS. The branch is rewritten each
 # run so its history stays one commit deep.
+#
+# Five minutes is GitHub's shortest schedule, and scheduled runs often start
+# late or are skipped; the site shows each feed's age from `mirroredAt`.
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+# A late run that overlaps the next one would push an older branch over a
+# newer one; queue them instead.
+concurrency:
+  group: mirror-feeds
+  cancel-in-progress: false
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Fetch feeds
         shell: python
         run: |
           import json, os, time, urllib.request
           UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          PREVIOUS = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/data/"
           servers = ["eu-siel", "eu-israphel", "eu-nezekan", "eu-zikel", "eu-vaizel", "eu-triniel", "eu-kaisinel",
                      "eu-lumiel", "eu-yustiel", "eu-marchutan", "eu-ariel", "eu-azphel", "eu-fregion", "eu-ereshkigal",
                      "eu-beritra", "nae-siel", "nae-israphel", "nae-nezekan", "nae-zikel", "nae-triniel",
@@ -32,24 +43,37 @@ jobs:
               req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
               with urllib.request.urlopen(req, timeout=30) as r:
                   return r.read()
+          # The branch is rewritten, so a file that failed this run would vanish;
+          # keep the last good copy instead (its mirroredAt shows its real age).
+          def keep_previous(path):
+              try:
+                  open(f"out/{path}", "wb").write(get(f"{PREVIOUS}{path}?t={int(time.time())}"))
+                  print("  kept the previous", path)
+              except Exception as exc:
+                  print("  no previous", path, exc)
           ok = 0
           for server in servers:
               try:
                   data = json.loads(get(f"https://www.aion2timers.com/api/fieldboss.php?action=feed&server={server}"))
-                  if data.get("ok"):
-                      data["mirroredAt"] = int(time.time())
-                      open(f"out/feeds/{server}.json", "w").write(json.dumps(data, separators=(",", ":")))
-                      ok += 1
+                  if not data.get("ok"):
+                      raise ValueError("feed not ok")
+                  data["mirroredAt"] = int(time.time())
+                  open(f"out/feeds/{server}.json", "w").write(json.dumps(data, separators=(",", ":")))
+                  ok += 1
               except Exception as exc:
                   print(server, "failed:", exc)
+                  keep_previous(f"feeds/{server}.json")
               time.sleep(0.3)
           try:
-              open("out/shugo_timers.json", "wb").write(get("https://shugo.gg/timers.json"))
+              schedule = get("https://shugo.gg/timers.json")
+              json.loads(schedule)
+              open("out/shugo_timers.json", "wb").write(schedule)
           except Exception as exc:
               print("shugo timers failed:", exc)
+              keep_previous("shugo_timers.json")
           print(f"{ok}/{len(servers)} servers mirrored")
           if ok == 0:
-              raise SystemExit("no feed fetched")
+              raise SystemExit("no feed fetched; the data branch stays as it is")
 
       - name: Publish to the data branch
         run: |

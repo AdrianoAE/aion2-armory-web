@@ -1,7 +1,6 @@
-// Export images: the desktop's _daevanion_on_export, which writes one PNG per
-// Daevanion board with nodes taken plus skills.png and "skill layout.png"
-// into a folder named after the class. A browser cannot write a folder, so
-// the same files go into one "<Class>.zip" download.
+// Export images: one PNG per Daevanion board with nodes taken, plus
+// skills.png and "skill layout.png", in one "<Class>.zip" download because a
+// browser cannot write a folder.
 
 import { bp } from "./state.js";
 import * as D from "./engine/daevanion.js";

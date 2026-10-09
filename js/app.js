@@ -5,6 +5,7 @@ import { askCharacter, renderRoster } from "./roster.js";
 import { ODYLE_MAX, isDone, odyleEnergy } from "./engine/planner.js";
 import { prefs, onPrefs } from "./ui.js";
 import { applyTheme } from "./theme.js";
+import "./notify.js";
 
 const ICON = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 
@@ -25,6 +26,8 @@ const PAGES = {
   genius: { title: "Genius Insight", load: () => import("./pages/genius.js") },
 };
 const TOOLS = ["dashboard", "checklist", "timers"];
+// Pages whose own header row already carries the title and its controls.
+const OWN_TITLE = new Set(["skills", "layout", "pantheon", "genius"]);
 const NO_BACK_ROW = new Set(["dashboard", "settings", "timers", "checklist", "character"]);
 
 let current = null;
@@ -66,7 +69,7 @@ async function render() {
   if (seq !== renderSeq) return;
   current.module = module;
   main.innerHTML = NO_BACK_ROW.has(name) ? "" :
-    `<div class="row" style="margin-bottom:10px"><button id="back-home">Back to Characters</button><h1>${current.title}</h1></div>`;
+    `<div class="row" style="margin-bottom:10px"><button id="back-home">Back to Characters</button>${OWN_TITLE.has(name) ? "" : `<h1>${current.title}</h1>`}</div>`;
   const host = document.createElement("div");
   main.appendChild(host);
   const backBtn = main.querySelector("#back-home");

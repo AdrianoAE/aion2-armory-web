@@ -1,21 +1,14 @@
 // Arcana: the Information tab (Set banners + the 10 card types), the Sets
 // tab (the 5 real Lord card slots of the current skill build, grade pills,
 // per-slot skill picking), the Arcana Calculator and the "Arcana Types"
-// footer. Desktop: _build_arcana_tab, _ArcanaCardButton, _ArcanaSetBanner,
-// ArcanaCardTooltip, ArcanaThemeChoiceDialog, ArcanaResultsDialog,
-// ArcanaApplyTargetDialog, ArcanaSkillSlotDialog, ArcanaCardThemeDialog.
+// footer.
 
 import { bp, save } from "../state.js";
 import * as A from "../engine/arcana.js";
 
 export const CARD_TYPES = ["Chalice", "Parchment", "Compass", "Bell", "Mirror", "Scales", "Key", "Hourglass", "Dice", "Lantern"];
 export const THEME_ORDER = ["Vigor", "Magic", "Frenzy", "Purity", "Punishment", "Protection", "Indomitability"];
-export const THEME_COLORS = {
-  Vigor: "#facc15", Magic: "#22d3ee", Frenzy: "#f97316", Purity: "#a78bfa",
-  Punishment: "#ef4444", Protection: "#4ade80", Indomitability: "#f472b6",
-};
-const CATEGORY_COLORS = { pve: "#4ade80", pvp: "#fb7185", offense: "#f59e0b", defence: "#38bdf8", cure: "#a855f7" };
-const CATEGORY_DEEP = { pve: "#14532d", pvp: "#4c0519", offense: "#78350f", defence: "#0c4a6e", cure: "#4c1d95" };
+export const THEME_COLORS = Object.fromEntries(THEME_ORDER.map((theme) => [theme, `var(--arcana-${theme.toLowerCase()})`]));
 export const LORD_EFFECTS = {
   Time: "Combat Speed / Smite Resist",
   Freedom: "Accuracy / Evasion",
@@ -29,15 +22,14 @@ export const LORD_EFFECTS = {
   Space: "Move Speed / Block Increase",
 };
 export const SET_BONUSES = {
-  Vigor: { setName: "Primal Vigor", "2pc": "+60 PvE Attack bei HP ≥70%", "4pc": "+150 PvE Attack bei HP ≥70%" },
-  Magic: { setName: "Magic Armor", "2pc": "Erstattet 1.500 MP bei MP ≤20% (30s Cooldown)", "4pc": "+1.000 PvE Defense bei MP ≥50%" },
-  Frenzy: { setName: "Frenzy", "2pc": "+50 PvE Attack", "4pc": "+5% Boss Damage Boost, +10% Boss Damage Tolerance bei HP ≤70%" },
-  Purity: { setName: "Pure Blood", "2pc": "+500 PvE Defense", "4pc": "+5% Critical Damage Boost, +1.000 Defense bei HP ≤70%" },
-  Punishment: { setName: "Punishing Overture", "2pc": "+5% Boss Damage Tolerance", "4pc": "+60 PvE Attack, +10% PvE Damage Boost bei HP ≥70%" },
-  Protection: { setName: "Protected Soul", "2pc": "+5% Restoration", "4pc": "+5% Weapon Damage Boost, Schutzschild (10.000 Schaden, 5s) bei HP ≤30% (2min Cooldown)" },
-  Indomitability: { setName: "Indomitable Dedication", "2pc": "+5% Weapon Damage Tolerance", "4pc": "+5% Critical Damage Tolerance, +50% PvP Damage Tolerance für 5s bei Stun/Knockdown/Airborne/Grab/Frost/Fear" },
+  Vigor: { setName: "Primal Vigor", "2pc": "+60 PvE Attack at HP ≥70%", "4pc": "+150 PvE Attack at HP ≥70%" },
+  Magic: { setName: "Magic Armor", "2pc": "Restores 1,500 MP at MP ≤20% (30s cooldown)", "4pc": "+1,000 PvE Defense at MP ≥50%" },
+  Frenzy: { setName: "Frenzy", "2pc": "+50 PvE Attack", "4pc": "+5% Boss Damage Boost, +10% Boss Damage Tolerance at HP ≤70%" },
+  Purity: { setName: "Pure Blood", "2pc": "+500 PvE Defense", "4pc": "+5% Critical Damage Boost, +1,000 Defense at HP ≤70%" },
+  Punishment: { setName: "Punishing Overture", "2pc": "+5% Boss Damage Tolerance", "4pc": "+60 PvE Attack, +10% PvE Damage Boost at HP ≥70%" },
+  Protection: { setName: "Protected Soul", "2pc": "+5% Restoration", "4pc": "+5% Weapon Damage Boost, a shield (10,000 damage, 5s) at HP ≤30% (2min cooldown)" },
+  Indomitability: { setName: "Indomitable Dedication", "2pc": "+5% Weapon Damage Tolerance", "4pc": "+5% Critical Damage Tolerance, +50% PvP Damage Tolerance for 5s on Stun/Knockdown/Airborne/Grab/Frost/Fear" },
 };
-const THEME_CATEGORY = { Vigor: "pve", Punishment: "pve", Frenzy: "offense", Magic: "defence", Purity: "defence", Protection: "cure", Indomitability: "pvp" };
 const BANNER_TRANSFORM = { "Primal Vigor": [1.0, 0.5, 0.5], "Magic Armor": [1.2, 0.2, 0.5] };
 const SEASON_GROUPS = [
   ["vigor_magic", "Vigor / Magic", ["Magic", "Vigor"]],
@@ -46,14 +38,13 @@ const SEASON_GROUPS = [
 ];
 const FUTURE_SEASONS_ENABLED = false;
 const MIN_COVERAGE_PERCENT = 70;
-export const GRADE_COLORS = { Common: "#94a3b8", Rare: "#4ade80", Unique: "#facc15", Epic: "#f59e0b", Legend: "#38bdf8" };
+export const GRADE_COLORS = { Common: "var(--grade-common)", Rare: "var(--grade-rare)", Unique: "var(--grade-unique)", Epic: "var(--grade-epic)", Legend: "var(--grade-legend)" };
 const RARITY_RANK = { Common: 0, Rare: 1, Legend: 2, Unique: 3, Epic: 4 };
-export const SKILL_TYPE_COLORS = { active: "#22d3ee", passive: "#a855f7", stigma: "#facc15" };
+export const SKILL_TYPE_COLORS = { active: "var(--skill-active)", passive: "var(--skill-passive)", stigma: "var(--skill-stigma)" };
 const CLASS_ALIASES = { spiritmaster: "elementalist" };
 const SKILL_LAYOUT_ROWS = 5;
 const DEFAULT_SKILL_BAR_KEYS = ["1", "2", "3", "4", "R", "X", "@mouse_forward", "@mouse_back", "Q", "E", "@mouse_left", "@mouse_right"];
 
-// core/translations.py, en
 const T = {
   information: "Information", sets: "Sets", noSets: "No Sets", empty: "Empty", notAvailable: "Not available",
   randomSubstats: "+ Random Substats", active: "Active", passive: "Passive", types: "ARCANA TYPES",
@@ -159,7 +150,7 @@ export function currentSkillBuildName(classKey) {
   return Object.keys(builds)[0];
 }
 
-// _linked_skill_build_name_for: the skill/arcana build an equip set counts.
+// The skill/arcana build an equip set counts.
 export function linkedSkillBuildName(classKey, equipSetName) {
   const builds = (bp().skill_builds_data || {})[classKey] || {};
   const equip = ((bp().equip_builds_data || {})[classKey] || {})[equipSetName] || {};
@@ -195,7 +186,7 @@ function skillName(sid, pools) {
   return sid;
 }
 
-// _skill_priority_rank: active then passive priority-list positions.
+// Active then passive priority-list positions.
 function priorityRank(build) {
   const rank = {};
   let i = 0;
@@ -209,8 +200,8 @@ function priorityRank(build) {
 
 // ---- exports for other pages ----------------------------------------------
 
-// {lord: points} of a skill build's assigned cards (the Arcana share of
-// _arcana_lord_stat_totals_detailed). Requires loadArcanaData() first.
+// {lord: points} of a skill build's assigned cards (the Arcana share of the
+// Lord totals). Requires loadArcanaData() first.
 export function arcanaLordPointsByLord(classKeyArg, buildName) {
   const out = {};
   if (!data) return out;
@@ -309,7 +300,6 @@ function moveTooltip(event) {
 
 function hideTooltip() { if (tooltipEl) tooltipEl.hidden = true; }
 
-// ArcanaCardTooltip.set_card
 function cardTooltipHtml(cardType, theme, lord, pool, assigned) {
   const lordLine = lord
     ? `<div class="lord-line"><span class="warn" style="font-weight:700">${lord}</span> <span class="accent" style="font-weight:700">+${A.CARD_EXTRA_BUDGET}</span><br><span class="muted">${esc(LORD_EFFECTS[lord] || "")}</span></div>`
@@ -360,13 +350,12 @@ function gradeDots(grades) {
 
 function cardInfoHtml(entry, lordPoints) {
   if (entry.lord) {
-    const value = lordPoints !== null && lordPoints !== undefined ? ` <span style="color:var(--fg);font-weight:700">${lordPoints}</span>` : "";
+    const value = lordPoints !== null && lordPoints !== undefined ? ` <span class="lord-points">${lordPoints}</span>` : "";
     return `<span class="warn" style="font-weight:700">${entry.lord}</span>${value}<br><span class="effect">${esc(LORD_EFFECTS[entry.lord] || "")}</span>`;
   }
   return `<span class="warn" style="font-weight:700">${esc(entry.mainStat || "")}</span><br><span class="effect">${T.randomSubstats}</span>`;
 }
 
-// _ArcanaCardButton: state "default" | "themed" | "unavailable".
 function cardHtml(ct, entry, { unavailable = false, lordPoints = null, withSlots = false, grade = A.DEFAULT_GRADE, slotsEnabled = false } = {}) {
   const state = unavailable ? "unavailable" : entry ? "themed" : "default";
   const icon = unavailable ? "" : iconUrl(entry ? entry.iconFile : data.defaultIcon[ct]);
@@ -429,14 +418,11 @@ function draw() {
   if (subTab === "info") drawInformation(body); else drawSets(body);
 }
 
-// _build_arcana_column + _refresh_arcana_cards
 function drawInformation(body) {
   const banners = THEME_ORDER.map((theme) => {
-    const category = THEME_CATEGORY[theme];
     const setName = (SET_BONUSES[theme] || {}).setName || theme;
     const [zoom, ax, ay] = BANNER_TRANSFORM[setName] || [1.0, 0.5, 0.5];
-    const fallback = `linear-gradient(135deg, ${CATEGORY_DEEP[category]}, ${CATEGORY_COLORS[category]})`;
-    return `<button type="button" class="arcana-banner${activeTheme === theme ? " checked" : ""}" data-theme="${theme}" style="background:${fallback}">
+    return `<button type="button" class="arcana-banner${activeTheme === theme ? " checked" : ""}" data-theme="${theme}" style="--theme:${THEME_COLORS[theme]}">
       <img src="${bannerImage(setName)}" alt="" style="object-position:${ax * 100}% ${ay * 100}%;transform:scale(${zoom});transform-origin:${ax * 100}% ${ay * 100}%" onerror="this.remove()">
       <span class="overlay"></span><span class="spark">✦</span><span class="set-name">${esc(setName)}</span></button>`;
   }).join("");
@@ -465,7 +451,6 @@ function drawInformation(body) {
   });
 }
 
-// _build_arcana_sets_tab + _refresh_arcana_equip_slots
 function drawSets(body) {
   const cls = classKey();
   const builds = skillBuildsFor(cls);
@@ -513,7 +498,7 @@ function drawSets(body) {
   body.querySelector(".arcana-calc").addEventListener("click", () => openArcanaCalculator());
 }
 
-// _load_current_build_state: a wish only means something on the build it
+// A wish only means something on the build it
 // was set on, so switching builds clears it.
 function switchSkillBuild(name) {
   bp().current_skill_build_name = name;
@@ -558,7 +543,6 @@ function currentCardData(ct) {
   return build.arcana_cards[ct];
 }
 
-// ArcanaCardThemeDialog
 function onCardSetClicked(ct) {
   const card = currentCardData(ct);
   const options = [...A.ACTIVE_THEMES].filter((theme) => ct in (data.themeMap[theme] || {})).map((theme) => [theme, data.themeMap[theme][ct]]);
@@ -584,7 +568,6 @@ function onGradeChanged(ct, grade) {
   draw();
 }
 
-// ArcanaSkillSlotDialog
 function onSkillSlotClicked(ct, slotIndex) {
   const card = currentCardData(ct);
   const slots = A.cardSlotList(card);
@@ -670,7 +653,7 @@ export async function openArcanaCalculator() {
   resultsDialog(results, wishes, names, usableTypes, pools, typeToTheme);
 }
 
-// ArcanaThemeChoiceDialog → {usableTypes, typeToTheme, pools} or null
+// Resolves to {usableTypes, typeToTheme, pools}, or null when cancelled.
 function themeChoiceDialog() {
   return new Promise((resolve) => {
     let groupIdx = SEASON_GROUPS.findIndex(([, , themes]) => themes.some((t) => A.ACTIVE_THEMES.has(t)));
@@ -724,7 +707,6 @@ function themeChoiceDialog() {
   });
 }
 
-// ArcanaResultsDialog
 function resultsDialog(allResults, wishes, skillNames, usableTypes, pools, typeToTheme) {
   const hadAny = allResults.length > 0;
   const results = allResults.filter((r) => A.resultCoveragePercent(r, wishes) > MIN_COVERAGE_PERCENT);
@@ -761,7 +743,7 @@ function resultsDialog(allResults, wishes, skillNames, usableTypes, pools, typeT
         const covered = result.covered[sid] || 0;
         const name = skillNames[sid] || sid;
         const full = covered >= need;
-        let html = `<div style="color:${full ? "#4ade80" : "var(--danger)"};font-weight:700">${esc(T.covered(name, Math.min(covered, need), need))}</div>`;
+        let html = `<div class="${full ? "coverage-full" : "coverage-short"}">${esc(T.covered(name, Math.min(covered, need), need))}</div>`;
         if (!full) {
           const [key, kwargs] = A.uncoveredReason(sid, need, covered, usableTypes, pools, typeById);
           html += `<div class="reason">${esc(T.reason[key](kwargs))}</div>`;
@@ -805,7 +787,6 @@ function resultsDialog(allResults, wishes, skillNames, usableTypes, pools, typeT
   }));
 }
 
-// ArcanaApplyTargetDialog + _on_apply_arcana_combination
 function applyCombination(byType) {
   const cls = classKey();
   const builds = skillBuildsFor(cls);

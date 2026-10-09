@@ -250,3 +250,11 @@ Notes:
   widgets with `registerWidget()`.
 - The default `QWebEngineProfile` is off the record, so every run starts
   with empty `localStorage`.
+
+## Timers data and alerts
+
+The timers widgets share `js/widgets/timers/feed.js`: it loads the bundled schedule and boss data, polls the mirrored kill feed once a minute while a timers widget is mounted, and shows each feed's age. The mirror workflow keeps a server's previous file when its fetch fails, so an age is always honest. `scripts/fetch_boss_maps.py` adds `map`, `map_region`, `map_points` and `page` to each boss in `data/field_bosses.json` from its wikily.gg page.
+
+Alert rules live in `js/widgets/alerts/core.js` as pure functions (tested by `tests/notify.test.mjs`); `js/notify.js` runs the ticker, sounds, toasts and browser notifications.
+
+A widget id can carry an instance suffix (`character.summary#2`) so one area can show the same widget twice with different settings.

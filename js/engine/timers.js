@@ -98,6 +98,17 @@ export function nextOccurrence(event, region, now) {
   return found.find((o) => o.end > now || (o.end.getTime() === o.start.getTime() && o.start >= now)) || null;
 }
 
+export function upcomingOccurrences(event, region, now, count = 3) {
+  const found = occurrences(event, region, new Date(now.getTime() - 2 * HOUR), new Date(now.getTime() + 8 * DAY), now);
+  return found.filter((o) => o.end > now || (o.end.getTime() === o.start.getTime() && o.start >= now)).slice(0, count);
+}
+
+// Events the region schedules that still have a time ahead (a one-off
+// launch drops out once it has passed).
+export function regionEvents(events, region, now) {
+  return events.filter((e) => eventSchedule(e, region.id) && nextOccurrence(e, region, now));
+}
+
 export function scheduleSummary(schedule, region) {
   if (!schedule) return "";
   if (schedule.type === "hourly") return `Every hour at :${String(schedule.minute || 0).padStart(2, "0")}`;

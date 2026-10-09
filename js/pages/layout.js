@@ -1,8 +1,6 @@
 // Skill Layout page: the in-game skill bar (5 rows x 12 columns, the bottom
 // row being the key row) and the macro chain, stored per skill build, with
-// drag-and-drop from the Active / Stigma palettes. Port of the desktop's
-// _build_skill_layout_tab / _SkillLayoutSlot / _SkillLayoutPalette /
-// _render_skill_layout.
+// drag-and-drop from the Active / Stigma palettes.
 
 import { bp, onChange, save } from "../state.js";
 import {
@@ -44,7 +42,7 @@ const TEXT = {
 
 // ── colours and icons ───────────────────────────────────────────────────────
 
-function cssVar(name, fallback) {
+export function cssVar(name, fallback) {
   if (typeof document === "undefined") return fallback;
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
@@ -52,8 +50,11 @@ function cssVar(name, fallback) {
 
 export function palette() {
   return {
-    bg: cssVar("--bg", "#0f172a"), fg: cssVar("--fg", "#e2e8f0"), muted: cssVar("--muted", "#94a3b8"),
-    border: cssVar("--border", "#3b4863"), accent: cssVar("--accent", "#22d3ee"), font: cssVar("--font", '"Segoe UI", system-ui, sans-serif'),
+    bg: cssVar("--bg", "#0f172a"), surface: cssVar("--surface", "#162036"), overlay: cssVar("--overlay", "#1c2740"),
+    fg: cssVar("--fg", "#e2e8f0"), muted: cssVar("--muted", "#94a3b8"), border: cssVar("--border", "#3b4863"),
+    accent: cssVar("--accent", "#22d3ee"), secondary: cssVar("--secondary", "#a78bfa"), warn: cssVar("--warn", "#fbbf24"),
+    onIcon: cssVar("--slot-label", "#f8fafc"), iconShade: cssVar("--slot-label-shade", "#020617"),
+    font: cssVar("--font", '"Segoe UI", system-ui, sans-serif'),
   };
 }
 
@@ -156,7 +157,9 @@ export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = f
   ctx.fill();
   ctx.stroke();
   const icon = content.icon;
-  if (icon && icon.complete && icon.naturalWidth) {
+  const hasIcon = !!(icon && icon.complete && icon.naturalWidth);
+  const ink = hasIcon ? { ...colors, fg: colors.onIcon, bg: colors.iconShade } : colors;
+  if (hasIcon) {
     ctx.save();
     if (readOnly) ctx.globalAlpha = 0.6;
     roundRect(ctx, rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4, 4);
@@ -173,7 +176,7 @@ export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = f
   const labelPx = Math.max(9, Math.floor(size / 6));
   if (MOUSE_KEY_LABELS.includes(content.key)) {
     const g = Math.max(12, Math.round(size * 0.3));
-    drawMouseGlyph(ctx, { x: rect.x + 4, y: rect.y + 3, w: g, h: g }, content.key.replace("@mouse_", ""), colors);
+    drawMouseGlyph(ctx, { x: rect.x + 4, y: rect.y + 3, w: g, h: g }, content.key.replace("@mouse_", ""), ink);
   }
   const box = { x: rect.x + 4, y: rect.y + 2, w: rect.w - 8, h: rect.h - 4 };
   for (const [text, align] of [[content.key, "left"], [content.level, "right"]]) {
@@ -183,9 +186,9 @@ export function drawSlot(ctx, x, y, size, content, { readOnly = false, hover = f
     const ty = align === "left" ? box.y : box.y + box.h;
     ctx.textAlign = align;
     ctx.textBaseline = align === "left" ? "top" : "bottom";
-    ctx.fillStyle = withAlpha(colors.bg, 220 / 255);
+    ctx.fillStyle = withAlpha(ink.bg, 220 / 255);
     ctx.fillText(text, tx + 1, ty + 1);
-    ctx.fillStyle = colors.fg;
+    ctx.fillStyle = ink.fg;
     ctx.fillText(text, tx, ty);
   }
   ctx.restore();
@@ -511,7 +514,9 @@ export function skillBarWidget(classKey, buildName, { interactive = true } = {})
     });
   };
   const unsubscribe = onChange(() => root.refresh());
-  root.destroy = () => { unsubscribe(); closeKeyEditor(); };
+  const repaint = () => { for (const slot of [...Object.values(barSlots), ...macroRows.map(([, slot]) => slot)]) slot.paint(); };
+  window.addEventListener("themechange", repaint);
+  root.destroy = () => { unsubscribe(); window.removeEventListener("themechange", repaint); closeKeyEditor(); };
   ready().then(() => root.refresh());
   return root;
 }
@@ -544,8 +549,8 @@ export function makeRemoveDropZone(el, classKey, buildName) {
 
 // ── export image ────────────────────────────────────────────────────────────
 
-// Bar + macro as one image at the desktop's fixed geometry. Returned at
-// once; `canvas.ready` resolves when the data and icons are drawn.
+// Bar + macro as one image at a fixed geometry. Returned at once;
+// `canvas.ready` resolves when the data and icons are drawn.
 export function renderSkillBar(classKey, buildName, { scale = 1 } = {}) {
   const classLower = classLowerOf(classKey);
   const size = EXPORT_SLOT, gap = 4, pad = 12, titleH = 26;

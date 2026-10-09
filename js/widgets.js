@@ -39,6 +39,9 @@ export function registerWidget(def) {
   return def;
 }
 
+// "character.summary#2" is a second instance of "character.summary".
+function defOf(id) { return registry.get(String(id || "").split("#")[0]); }
+
 export function registeredWidgets() {
   return [...registry.values()];
 }
@@ -76,7 +79,7 @@ function readItems(areaId) {
 }
 
 function sizeOf(item) {
-  const def = registry.get(item.id);
+  const def = defOf(item.id);
   const size = (def && def.defaultSize) || {};
   const defRows = size.rows == null || size.rows === "auto" ? "auto" : clampInt(size.rows, 1, 4);
   return { cols: item.cols ?? clampInt(size.cols ?? 2, 1, 4), rows: item.rows ?? defRows };
@@ -100,7 +103,7 @@ function mergedSettings(def, overrides) {
 
 export function widgetSettings(areaId, widgetId) {
   const item = readItems(areaId).find((i) => i.id === widgetId);
-  return mergedSettings(registry.get(widgetId), item && item.settings);
+  return mergedSettings(defOf(widgetId), item && item.settings);
 }
 
 export function setWidgetSetting(areaId, widgetId, key, value) {
@@ -416,11 +419,11 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     const wanted = new Map(items.map((i) => [i.id, i]));
     for (const [id, inst] of instances) {
       const item = wanted.get(id);
-      if (!item || registry.get(id) !== inst.def || (item.pinned || "grid") !== inst.mode) { dispose(inst); instances.delete(id); }
+      if (!item || defOf(id) !== inst.def || (item.pinned || "grid") !== inst.mode) { dispose(inst); instances.delete(id); }
     }
     const lists = { grid: [], top: [], bottom: [] };
     for (const item of items) {
-      const def = registry.get(item.id);
+      const def = defOf(item.id);
       if (!def) continue;
       const mode = item.pinned || "grid";
       let inst = instances.get(item.id);
@@ -513,7 +516,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
   function openAddMenu(anchor) {
     const pop = showPopup(anchor, "wa-menu");
     if (!pop) return;
-    const present = new Set(readItems(areaId).filter((i) => registry.has(i.id)).map((i) => i.id));
+    const present = new Set(readItems(areaId).filter((i) => defOf(i.id)).map((i) => i.id.split("#")[0]));
     const defs = [...registry.values()].filter((d) => safeAllowed(d.id));
     const byTitle = (a, b) => String(a.group || "").localeCompare(String(b.group || "")) || String(a.title || a.id).localeCompare(String(b.title || b.id));
     const groups = new Map();
@@ -524,8 +527,8 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     }
     const entry = (def) => {
       const added = present.has(def.id);
-      return `<button type="button" class="wa-menu-item" data-add="${esc(def.id)}" style="--wa-accent:${accentValue(def.accent)}" ${added ? "disabled" : ""}>
-          <span class="wa-menu-title">${esc(def.title || def.id)}${added ? ' <span class="muted small">· added</span>' : ""}</span>
+      return `<button type="button" class="wa-menu-item" data-add="${esc(def.id)}" style="--wa-accent:${accentValue(def.accent)}">
+          <span class="wa-menu-title">${esc(def.title || def.id)}${added ? ' <span class="muted small">· add another</span>' : ""}</span>
           ${def.description ? `<span class="muted small">${esc(def.description)}</span>` : ""}</button>`;
     };
     pop.el.innerHTML = `<div class="wa-pop-head"><b>Add widget</b></div>` + (groups.size
@@ -538,10 +541,10 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       closePopup();
       if (!def) return;
       mutate((items) => {
-        const at = items.findIndex((i) => i.id === def.id);
-        if (at >= 0) items.splice(at, 1);
+        let id = def.id;
+        for (let n = 2; items.some((i) => i.id === id); n++) id = `${def.id}#${n}`;
         const size = def.defaultSize || {};
-        items.push(normalizeItem({ id: def.id, cols: size.cols ?? 2, rows: size.rows ?? "auto" }));
+        items.push(normalizeItem({ id, cols: size.cols ?? 2, rows: size.rows ?? "auto" }));
       });
       const inst = instances.get(def.id);
       if (inst) {

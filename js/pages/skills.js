@@ -1,17 +1,16 @@
 // Skill Planner page: per-class skill builds, the Skill Description cards
 // (level counters, Arcana wish, specializations in effect, star, hide), the
-// description panel, the Priority List, and the skill points header. Port of
-// the desktop's _build_skill_planner_tab and friends.
+// description panel, the Priority List, and the skill points header.
 
 import { bp, onChange, save } from "../state.js";
 import {
-  DAMAGE_TYPE_COLORS, MONOLITH_MAX_LEVEL, SECTION_LABELS, SKILLPOINTS_BASE_AT_LEVEL_45, SKILL_LEVEL_BASE_CAP, SKILL_TYPES,
-  SKILL_TYPE_COLORS, STIGMA_LEVEL_BASE_CAP, activeSpecCap, arcanaCeiling, arcanaClassPools, arcanaUsableLordTypes,
+  MONOLITH_MAX_LEVEL, SECTION_LABELS, SKILLPOINTS_BASE_AT_LEVEL_45, SKILL_LEVEL_BASE_CAP, SKILL_TYPES,
+  STIGMA_LEVEL_BASE_CAP, activeSpecCap, arcanaCeiling, arcanaClassPools, arcanaUsableLordTypes,
   cooldownReductionMs, currentSkillBuildName, data, describeSkill, emptyBuildState, ensureClassBuilds, escapeHtml, formatLevelHtml,
   formatSkillStats, layoutCopy, ready, setCurrentSkillBuild, skillContext, skillIconUrl, skillPointsRemaining, specIconHtml,
   specIconUrl, specLabel, specsHtml, specsInEffect, stigmaPointsSpent,
 } from "../engine/skills.js";
-import { iconImage, loadIcons, palette } from "./layout.js";
+import { cssVar, iconImage, loadIcons, palette } from "./layout.js";
 
 const TEXT = {
   title: "Skill Planner",
@@ -38,7 +37,7 @@ const TEXT = {
 const CARD_COLUMNS = 2;
 const EXPORT_WIDTH = 1400;
 
-const STAR_SVG = `<svg viewBox="0 0 18 18" width="18" height="18"><polygon fill="#fbbf24" points="9,0.5 11.4,6.1 17.5,6.5 12.9,10.5 14.3,16.5 9,13.3 3.7,16.5 5.1,10.5 0.5,6.5 6.6,6.1"/></svg>`;
+const STAR_SVG = `<svg viewBox="0 0 18 18" width="18" height="18"><polygon fill="currentColor" points="9,0.5 11.4,6.1 17.5,6.5 12.9,10.5 14.3,16.5 9,13.3 3.7,16.5 5.1,10.5 0.5,6.5 6.6,6.1"/></svg>`;
 function eyeSvg(slashed) {
   return `<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
     <path d="M1.3 8 Q8 1.3 14.7 8 Q8 14.7 1.3 8 Z"/><circle cx="8" cy="8" r="1.9" fill="currentColor"/>${slashed ? `<path d="M2.9 2.9 L13.1 13.1"/>` : ""}</svg>`;
@@ -88,7 +87,7 @@ function refreshSkillPoints() {
   else {
     const remaining = skillPointsRemaining(p.skill_levels, context.typeById, p.monolith_level || 0);
     const base = Math.min(remaining, SKILLPOINTS_BASE_AT_LEVEL_45);
-    value.innerHTML = `<span class="lv-manual">${base}</span> <span class="lv-bonus">(+${remaining - base})</span>`;
+    value.innerHTML = remaining <= 0 ? `<span class="lv-capped">0</span>` : `<span class="lv-manual">${base}</span> <span class="lv-bonus">(+${remaining - base})</span>`;
   }
   q("#monolith-level").disabled = unlimited;
   q("#sp-unlimited").classList.toggle("active", unlimited);
@@ -124,7 +123,7 @@ function wishRowHtml(skill) {
 function buildCard(skill) {
   const id = skill.id;
   const card = document.createElement("div");
-  card.className = "skill-card";
+  card.className = `skill-card skill-type-${skill.type}`;
   card.dataset.skill = id;
   const url = skillIconUrl(skill);
   card.innerHTML = `
@@ -132,7 +131,7 @@ function buildCard(skill) {
       <div class="skill-card-top">
         <div class="skill-row-icon">${url ? `<img src="${url}" alt="">` : ""}</div>
         <div class="skill-card-text"><div class="skill-card-name">${escapeHtml(skill.name || "")}</div>
-          <div class="skill-card-type" style="color:${SKILL_TYPE_COLORS[skill.type] || "var(--muted)"}">${escapeHtml((skill.type || "").toUpperCase())}</div></div>
+          <div class="skill-card-type">${escapeHtml((skill.type || "").toUpperCase())}</div></div>
       </div>
       <div class="skill-card-specs"></div>
     </div>
@@ -282,8 +281,8 @@ function clearDescription() {
   panel.querySelector(".desc-stats").innerHTML = "—";
 }
 
-function badge(text, color) {
-  return `<span class="type-badge" style="color:${color};border-color:${color}80;background:${color}29">${text}</span>`;
+function badge(text, typeClass) {
+  return `<span class="tag ${typeClass}">${text}</span>`;
 }
 
 function showDescription(skill) {
@@ -292,8 +291,8 @@ function showDescription(skill) {
   panel.querySelector(".desc-icon").innerHTML = url ? `<img src="${url}" alt="">` : "";
   panel.querySelector(".desc-title").textContent = skill.name || "";
   let badges = "";
-  if (skill.type) badges += badge(skill.type[0].toUpperCase() + skill.type.slice(1), SKILL_TYPE_COLORS[skill.type] || "#94a3b8");
-  if (skill.damageType === "physic" || skill.damageType === "magic") badges += badge(skill.damageType === "physic" ? "Physical" : "Magic", DAMAGE_TYPE_COLORS[skill.damageType]);
+  if (skill.type) badges += badge(skill.type[0].toUpperCase() + skill.type.slice(1), `skill-type-${skill.type}`);
+  if (skill.damageType === "physic" || skill.damageType === "magic") badges += badge(skill.damageType === "physic" ? "Physical" : "Magic", `dmg-${skill.damageType}`);
   panel.querySelector(".desc-badges").innerHTML = badges;
   refreshDescriptionPanel(skill);
 }
@@ -530,12 +529,12 @@ function draw() {
       <div class="skills-left">
         <div class="row controls">
           <input id="skill-search" type="text" class="grow" placeholder="${TEXT.search}" value="${escapeHtml(view.query)}">
-          ${SKILL_TYPES.map((t) => `<button class="type-filter ${view.types[t] ? "active" : ""}" data-type="${t}">${TEXT[t]}</button>`).join("")}
+          ${SKILL_TYPES.map((t) => `<button class="type-filter skill-type-${t} ${view.types[t] ? "active" : ""}" data-type="${t}">${TEXT[t]}</button>`).join("")}
           <button id="favorites-only" class="${view.favoritesOnly ? "active" : ""}">${TEXT.onlyFavorites}</button>
           <button id="show-hidden" title="${TEXT.hiddenTip}" hidden></button>
         </div>
         <div class="skill-cards">
-          ${SKILL_TYPES.map((t) => `<div class="skill-section" data-type="${t}"><div class="skill-section-header">${SECTION_LABELS[t]}</div><div class="skill-grid"></div></div>`).join("")}
+          ${SKILL_TYPES.map((t) => `<div class="skill-section skill-type-${t}" data-type="${t}"><div class="skill-section-header">${SECTION_LABELS[t]}</div><div class="skill-grid"></div></div>`).join("")}
         </div>
       </div>
       <div id="skill-desc" class="skills-right">
@@ -551,7 +550,7 @@ function draw() {
     </div>
     <div class="skills-priority" ${view.tab === "priority" ? "" : "hidden"}>
       <div class="muted hint">${TEXT.priorityHint}</div>
-      ${SKILL_TYPES.map((t) => `<div class="skill-section-header">${SECTION_LABELS[t]}</div><div class="priority-row" data-type="${t}"></div>`).join("")}
+      ${SKILL_TYPES.map((t) => `<div class="skill-section-header skill-type-${t}">${SECTION_LABELS[t]}</div><div class="priority-row skill-type-${t}" data-type="${t}"></div>`).join("")}
     </div>
   </div>`;
 
@@ -630,7 +629,7 @@ export function skillCardsHtml(classKey, buildName, { columns = 3 } = {}) {
       const specs = specsHtml(skill, ctx.effective(skill.id), ctx.chosen(skill.id), 14);
       html += `<div class="skill-card summary-skill-card${placed ? " placed" : ""}" data-skill-drag="${skill.id}" draggable="${draggable}">
         <div class="summary-skill-icon">${url ? `<img src="${url}" alt="">` : ""}</div>
-        <div class="summary-skill-text"><div class="row nowrap"><span class="summary-skill-name" style="color:${SKILL_TYPE_COLORS[skill.type]}">${escapeHtml(skill.name || "")}</span>
+        <div class="summary-skill-text"><div class="row nowrap"><span class="summary-skill-name skill-type-${skill.type}">${escapeHtml(skill.name || "")}</span>
           <span class="grow"></span><span class="section-label">Lv. ${ctx.effective(skill.id)}</span></div>
           ${specs ? `<div class="skill-card-specs">${specs}</div>` : ""}</div></div>`;
     }
@@ -639,7 +638,7 @@ export function skillCardsHtml(classKey, buildName, { columns = 3 } = {}) {
   return html;
 }
 
-// ── export image of the skill cards (the desktop's skills.png) ──────────────
+// ── export image of the skill cards ─────────────────────────────────────────
 
 function roundRectPath(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -719,7 +718,7 @@ function drawStar(ctx, cx, cy, size, color) {
 }
 
 // The skill cards of a class as one image, 1400 px wide, two columns per
-// section like the desktop export. Returned at once; `canvas.ready` resolves
+// section. Returned at once; `canvas.ready` resolves
 // once data and icons are drawn.
 export function renderSkillCards(classKey, buildName, { showHidden = false, scale = 1 } = {}) {
   const canvas = document.createElement("canvas");
@@ -736,7 +735,8 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
       for (const spec of specsInEffect(skill, ctx2.effective(skill.id), ctx2.chosen(skill.id)).applied) urls.push(specIconUrl(spec));
     }
     await loadIcons(urls);
-    const colors = { ...palette(), overlay: getComputedStyle(document.documentElement).getPropertyValue("--overlay").trim() || "#1c2740", secondary: "#a78bfa", warn: "#fbbf24" };
+    const colors = palette();
+    const typeColor = (type) => cssVar(`--skill-${type}`, colors.muted);
     const width = EXPORT_WIDTH, margin = 12, sectionGap = 12, gridGap = 10, rightW = 150, padX = 10, padY = 8;
     const cardW = (width - 2 * margin - gridGap * (CARD_COLUMNS - 1)) / CARD_COLUMNS;
     const specW = cardW - 2 * padX - rightW - 10;
@@ -748,7 +748,7 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
       const lines = [];
       if (applied.length) for (const spec of applied) {
         const wrapped = wrapText(measure, specLabel(spec), specW - 24);
-        wrapped.forEach((text, i) => lines.push({ text, icon: i === 0 ? iconImage(specIconUrl(spec)) : null, color: state === "chosen" ? "#0d9488" : colors.warn }));
+        wrapped.forEach((text, i) => lines.push({ text, icon: i === 0 ? iconImage(specIconUrl(spec)) : null, color: state === "chosen" ? cssVar("--spec-chosen", colors.accent) : colors.warn }));
       } else if (skill.type === "active" && unlocked.length) lines.push({ text: "No specialization chosen", color: colors.muted, italic: true });
       const hasWish = skill.type === "active" || skill.type === "passive";
       const ceiling = hasWish ? arcanaCeiling(skill.id, skill.type, usable, pools) : 0;
@@ -794,7 +794,7 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
       ctx.save();
       if (hidden) ctx.globalAlpha = 0.45;
       roundRectPath(ctx, x + 0.5, row.y + 0.5, cardW - 1, h - 1, 10);
-      ctx.fillStyle = "rgba(28, 39, 64, 0.6)";
+      ctx.fillStyle = colors.surface;
       ctx.strokeStyle = colors.border;
       ctx.lineWidth = 1;
       ctx.fill();
@@ -802,9 +802,9 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
       // icon box
       const ix = x + padX, iy = row.y + padY;
       roundRectPath(ctx, ix, iy, 40, 40, 8);
-      ctx.fillStyle = "rgba(22, 32, 54, 0.75)";
+      ctx.fillStyle = colors.overlay;
       ctx.fill();
-      ctx.strokeStyle = "rgba(34, 211, 238, 0.5)";
+      ctx.strokeStyle = typeColor(skill.type);
       ctx.lineWidth = 2;
       ctx.stroke();
       const icon = iconImage(skillIconUrl(skill));
@@ -817,7 +817,7 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
       ctx.fillText(skill.name || "", ix + 50, iy + 11);
       ctx.font = `bold 10px ${colors.font}`;
       if ("letterSpacing" in ctx) ctx.letterSpacing = "1px";
-      ctx.fillStyle = SKILL_TYPE_COLORS[skill.type] || colors.muted;
+      ctx.fillStyle = typeColor(skill.type);
       ctx.fillText((skill.type || "").toUpperCase(), ix + 50, iy + 29);
       if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
       let ly = iy + 40 + 6 + 10;
@@ -857,12 +857,12 @@ export function renderSkillCards(classKey, buildName, { showHidden = false, scal
           const total = 20 + 4 + hw + 4 + 20;
           const wx = rx + (rightW - total) / 2;
           drawCircleButton(ctx, wx + 10, wy, 10, colors.secondary, false, colors);
-          ctx.fillStyle = "rgba(148, 163, 184, 0.65)";
+          ctx.fillStyle = colors.muted;
           ctx.textAlign = "left";
           ctx.fillText(hint, wx + 24, wy);
           drawCircleButton(ctx, wx + total - 10, wy, 10, colors.secondary, true, colors);
         } else {
-          ctx.fillStyle = "rgba(148, 163, 184, 0.65)";
+          ctx.fillStyle = colors.muted;
           ctx.textAlign = "center";
           const lines = wrapText(ctx, "No available Arcana card can boost this skill for your class.", rightW);
           lines.forEach((text, i) => ctx.fillText(text, rx + rightW / 2, wy - 5 + i * 12));

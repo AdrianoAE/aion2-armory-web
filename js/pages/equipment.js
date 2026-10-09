@@ -1,6 +1,5 @@
-// Equipment page: the desktop Armory's Equipment tab (LoadoutWindow in
-// ItemDatabase/app.py) — equip sets, slot paperdoll, item picker, the
-// inline Equipment Item panel, Stat Values, Quick Select, the Property
+// Equipment page: equip sets, slot paperdoll, item picker, the inline
+// Equipment Item panel, Stat Values, Quick Select, the Property
 // Priority editor, EQ Priority and Build Compare.
 
 import { bp, save } from "../state.js";
@@ -132,8 +131,7 @@ function onDetailReady(itemId) {
 
 function draw() {
   if (!main || !D.data.loaded) return;
-  let html = `<div class="eq">
-    <div class="row eq-nav"><button data-action="nav-back">${T.nav_back}</button><h2>${T.equipment}</h2></div>`;
+  let html = `<div class="eq">`;
   if (ui.view !== "priority") html += topBar();
   if (ui.message) html += `<div class="card eq-message row"><span class="grow">${h(ui.message)}</span><button class="icon" data-action="message-close">✕</button></div>`;
   html += `<div class="eq-view">${{ compare: comparePage, priority: priorityPage, editor: editorPage }[ui.view]?.() ?? normalPage()}</div></div>`;
@@ -645,7 +643,7 @@ async function openQuickGear() {
   const dialog = showDialog(`<h2>${T.quick_equip_title}</h2>
     <div class="row"><div class="stack"><span class="eq-label">${T.race}</span><select data-q="race">${D.AION2_RACES.map((r) => `<option${r === st.race ? " selected" : ""}>${r}</option>`).join("")}</select></div>
       <div class="stack grow"><span class="eq-label">${T.gear_type_filter}</span><select data-q="tag">${tags.map((t) => `<option${t === st.tag ? " selected" : ""}>${h(t)}</option>`).join("")}</select></div></div>
-    <div class="row"><span class="eq-label">${T.rarity}</span><button data-q="grade" data-grade="All" class="active">${T.all}</button>${D.RARITY_ORDER.map((g) => `<button data-q="grade" data-grade="${g}" style="color:${D.GRADE_COLORS[g]}">${g}</button>`).join("")}</div>
+    <div class="row"><span class="eq-label">${T.rarity}</span><button data-q="grade" data-grade="All" class="active">${T.all}</button>${D.RARITY_ORDER.map((g) => `<button class="eq-grade-btn grade-${g}" data-q="grade" data-grade="${g}">${g}</button>`).join("")}</div>
     <div class="stack"><span class="eq-label">${T.item_set}</span><select data-q="tier"></select></div>
     <div class="row"><span class="eq-label">${T.default_enchant}</span><span class="grow"></span><span class="eq-enchant-value" data-q="enchant-value">+0</span></div>
     <input type="range" class="eq-enchant-slider" min="0" max="0" value="0" data-q="enchant">
@@ -816,7 +814,7 @@ function editorPage() {
   const skillOptions = [];
   const skillColor = {};
   for (const type of D.STAT_PRIORITY_CATEGORY_SKILL_TYPES[current] || []) {
-    for (const name of ed.skillNames[type] || []) if (!skillOptions.includes(name)) { skillOptions.push(name); skillColor[name] = type === "active" ? "var(--accent)" : "var(--secondary)"; }
+    for (const name of ed.skillNames[type] || []) if (!skillOptions.includes(name)) { skillOptions.push(name); skillColor[name] = `var(--skill-${type})`; }
   }
   const pool = D.data.statPriorityOptions[current] || [];
   const guide = (D.STAT_PRIORITY_CATEGORY_ORDER_OVERRIDE[current] || []).filter((n) => pool.includes(n));
@@ -905,7 +903,6 @@ function onClick(e) {
   const b = build();
   const builds = buildsOf(classKey());
   switch (action) {
-    case "nav-back": location.hash = "character"; return;
     case "message-close": ui.message = ""; draw(); return;
     case "compare-open": openCompare(); return;
     case "compare-close": ui.view = "normal"; draw(); return;
@@ -1079,7 +1076,7 @@ function onInput(e) {
 // --- exports for the Characters page -------------------------------------------
 export const ready = () => Promise.all([D.loadData(), loadArcanaData(), loadPantheonData(), skillsReady(), prepareDaevanion(bp().character_class)]);
 
-// Non-gear Stat Info sources of one equip set (app.py _refresh_stat_info).
+// Non-gear Stat Info sources of one equip set.
 function statExtras(setName) {
   const cls = classKey();
   const skillBuild = linkedSkillBuildName(cls, setName);

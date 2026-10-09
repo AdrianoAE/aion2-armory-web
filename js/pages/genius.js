@@ -1,13 +1,12 @@
 // Genius Insight: the Pet Genus system's 5 boards, 9 Lines each with a
 // property pick + rolled value + lock, named profiles, the Owned Effects
 // sidebar and the all-boards total. Account-wide state in
-// bp().genius_builds_data / current_genius_build_name. Desktop:
-// _build_genius_insight_tab and the _genius_* methods.
+// bp().genius_builds_data / current_genius_build_name.
 
 import { bp, save } from "../state.js";
 
 export const BOARDS = ["Cogni", "Fera", "Natura", "Varian", "Special"];
-const BOARD_COLORS = { Cogni: "#3ba7f2", Fera: "#ef4444", Natura: "#22c55e", Varian: "#f2b90c", Special: "#2dd4bf" };
+const BOARD_COLORS = Object.fromEntries(BOARDS.map((board) => [board, `var(--board-${board.toLowerCase()})`]));
 
 // (stat_key, label, min, max, is_percent)
 const COMMON = [
@@ -146,7 +145,7 @@ const esc = (text) => String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 
 // ---- state -----------------------------------------------------------------------
 
-// _merge_genius_build: a saved profile merged onto a fresh default.
+// A saved profile merged onto a fresh default.
 function mergeBuild(saved) {
   const merged = defaultState();
   for (const [board, lines] of Object.entries(saved || {})) {
@@ -179,7 +178,7 @@ function currentState() {
   return geniusBuilds()[bp().current_genius_build_name];
 }
 
-// _linked_genius_build_name_for: the profile an equip set counts.
+// The profile an equip set counts.
 export function linkedGeniusBuildName(classKey, equipSetName) {
   const builds = geniusBuilds();
   const equip = ((bp().equip_builds_data || {})[classKey] || {})[equipSetName] || {};
@@ -187,7 +186,7 @@ export function linkedGeniusBuildName(classKey, equipSetName) {
   return bp().current_genius_build_name in builds ? bp().current_genius_build_name : Object.keys(builds)[0];
 }
 
-// {stat_id: value} of one profile's Line picks (_genius_stat_totals_for).
+// {stat_id: value} of one profile's Line picks.
 export function geniusStatTotals(geniusBuildName) {
   const builds = geniusBuilds();
   const insight = builds[geniusBuildName];
@@ -353,13 +352,14 @@ function drawBoard() {
       <span class="line-index">${line}</span>
       <button type="button" class="lock" data-line="${line}" title="${T.lockTooltip}">${entry.locked ? "🔒" : "🔓"}</button>
       ${picker}
-      <span class="value-wrap"><input type="number" class="line-value" data-line="${line}" min="${lo}" max="${hi}" step="${pct ? 0.1 : 1}" value="${pct ? Number(entry.value).toFixed(1) : Math.round(entry.value)}" ${entry.locked ? "disabled" : ""}>${pct ? '<span class="suffix">%</span>' : ""}</span>
+      <span class="value-wrap"><input type="number" class="line-value${Number(entry.value) >= hi ? " at-max" : ""}" data-line="${line}" min="${lo}" max="${hi}" step="${pct ? 0.1 : 1}" value="${pct ? Number(entry.value).toFixed(1) : Math.round(entry.value)}" ${entry.locked ? "disabled" : ""}>${pct ? '<span class="suffix">%</span>' : ""}</span>
     </div>`);
   }
   const locked = allLocked(boardState, board);
-  panel.innerHTML = `<div class="row tabs-row">${BOARDS.map((b) => `<button type="button" class="board-tab${b === board ? " active" : ""}" data-board="${b}">${b}</button>`).join("")}</div>
+  panel.style.setProperty("--board", BOARD_COLORS[board]);
+  panel.innerHTML = `<div class="row tabs-row">${BOARDS.map((b) => `<button type="button" class="board-tab${b === board ? " active" : ""}" data-board="${b}" style="--board:${BOARD_COLORS[b]}">${b}</button>`).join("")}</div>
     <label class="row sync-row" title="${esc(T.syncTooltip)}"><input type="checkbox" class="sync" ${syncSameStat ? "checked" : ""}> ${T.sync}</label>
-    <div class="row head-row"><span class="board-title">${board} Insight</span><span class="grow"></span><span class="lvl-badge">Lv. 10 (MAX)</span></div>
+    <div class="row head-row"><span class="board-title">${board} Insight</span><span class="grow"></span><span class="tag success lvl-badge">Lv. 10 (MAX)</span></div>
     <div class="row section-row"><button type="button" class="lock master-lock" title="${T.lockAllTooltip}">${locked ? "🔒" : "🔓"}</button><span class="section-title">${T.analysis}</span></div>
     <div class="line-list">${rows.join("")}</div>
     <div class="genius-hint">${T.footnote}</div>`;

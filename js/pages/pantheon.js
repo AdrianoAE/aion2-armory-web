@@ -1,7 +1,6 @@
 // Pantheon: the 17-slot board (12 Artwork ring, 4 Statue ring, 1 Colossus),
 // the item browser with category/search/grade/Lord filters, and the Lord
-// Points panel. Account-wide state in bp().pantheon_slots. Desktop:
-// _build_pantheon_tab and the _pantheon_* methods.
+// Points panel. Account-wide state in bp().pantheon_slots.
 
 import { bp, save } from "../state.js";
 import { lordBarHtml, GRADE_COLORS } from "./arcana.js";
@@ -60,8 +59,8 @@ export function pantheonSlots() {
   return p.pantheon_slots;
 }
 
-// {Lord: points} across every filled slot (display names, as
-// _arcana_lord_stat_totals_detailed maps them). Requires the page's data;
+// {Lord: points} across every filled slot, keyed by display name like the
+// Arcana and gear Lord totals. Requires the page's data;
 // call loadPantheonData() first from another page.
 export function pantheonLordTotals() {
   const totals = {};
@@ -132,7 +131,7 @@ function slotHtml(slotId, prefix, size, radius, angleDeg) {
     const lines = Object.entries(pantheonData[String(itemId)] || {}).map(([k, v]) => `${LORD_DISPLAY[k] || k}: ${formatNumber(v)}`);
     title = [item.name, ...lines].join("\n");
   }
-  return `<button type="button" class="pantheon-slot ${kind}${activeSlot === slotId ? " active" : ""}" data-slot="${slotId}" title="${esc(title)}"
+  return `<button type="button" class="pantheon-slot ${kind}${activeSlot === slotId ? " active" : ""}${item ? " filled" : ""}" data-slot="${slotId}" title="${esc(title)}"
     style="left:${Math.round(x)}px;top:${Math.round(y)}px;width:${size}px;height:${size}px">${icon}</button>`;
 }
 
@@ -162,7 +161,7 @@ function draw() {
       <div class="pantheon-canvas-wrap"><div class="pantheon-canvas" style="width:${CANVAS_SIZE}px;height:${CANVAS_SIZE}px">${SLOT_DEFS.map((d) => slotHtml(...d)).join("")}</div></div>
       <div class="pantheon-panel lords">
         <div class="panel-title">${T.lordPoints}</div>
-        ${Object.values(LORD_DISPLAY).map((lord) => `<div class="row lord-row"><span class="lord-name">${lord}</span><span class="grow"></span><span class="lord-value">${formatNumber(totals[lord] || 0)}</span></div>`).join("")}
+        ${Object.values(LORD_DISPLAY).map((lord) => `<div class="row lord-row"><span class="lord-name">${lord}</span><span class="grow"></span><span class="lord-value${totals[lord] ? " has-points" : ""}">${formatNumber(totals[lord] || 0)}</span></div>`).join("")}
       </div>
     </div>
     ${lordBarHtml()}
