@@ -87,3 +87,8 @@
 
 .roster-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
 .roster-chips .tag { font-size: 11px; }
+
+.diff-set-totals { margin-bottom: 12px; }
+.diff-set-totals .diff-table th:first-child { text-align: left; }
+.diff-delta.up { color: var(--success); }
+.diff-delta.down { color: var(--danger); }

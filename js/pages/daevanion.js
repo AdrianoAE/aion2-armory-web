@@ -7,6 +7,8 @@
 // showTooltip()/hideTooltip(), boardTabsWidget().
 
 import { bp, onChange as onProfileChange, save } from "../state.js";
+import { builds as buildList, duplicateBuild, newBuild, presetsOfBuild } from "../builds.js";
+import { navigate } from "../app.js";
 import * as D from "../engine/daevanion.js";
 
 const VARIANT = "s";
@@ -904,7 +906,9 @@ function setButtonsHtml() {
     <button class="icon-btn" data-set="add" title="${T.add_new_build}">${ICONS.plus}</button>
     <button class="icon-btn" data-set="duplicate" title="${T.duplicate_current_build}">${ICONS.duplicate}</button>
     <button class="icon-btn" data-set="rename" title="${T.rename_current_build}">${ICONS.edit}</button>
-    <button class="icon-btn" data-set="delete" title="${T.delete_current_build}" ${names.length > 1 ? "" : "disabled"}>${ICONS.trash}</button>`;
+    <button class="icon-btn" data-set="delete" title="${T.delete_current_build}" ${names.length > 1 ? "" : "disabled"}>${ICONS.trash}</button>
+    <button class="daev-plan" data-set="plan" title="Start a new board set as a copy of this one, to plan the next step without touching it">Plan a new set…</button>
+    <button class="daev-plan" data-set="compare" title="Compare this set with another one: nodes, points, stats and skill bonuses side by side" ${names.length > 1 ? "" : "disabled"}>Compare…</button>`;
 }
 
 function switchSet(name) {
@@ -917,6 +921,34 @@ function switchSet(name) {
   draw();
 }
 
+// Picks another set and opens the Diff page for the two sets' presets.
+function compareDialog(className, current) {
+  const p = bp();
+  const others = Object.keys(buildsOf(className)).filter((n) => n !== current);
+  if (!others.length) return;
+  const presetOf = (name) => presetsOfBuild(p, className, name)[0] || null;
+  const dialog = document.createElement("dialog");
+  dialog.className = "builds-dialog daev-compare";
+  dialog.innerHTML = `<form method="dialog" class="stack">
+      <h3>Compare "${esc(current)}" with</h3>
+      <select class="daev-compare-pick">${others.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}</select>
+      <div class="muted small">The Diff page shows both sets board by board, with added nodes green and removed ones red, plus the points, stats and skill bonuses of each set.</div>
+      <div class="row builds-dialog-actions"><span class="grow"></span><button type="button" class="cancel">Cancel</button><button type="submit" class="primary">Compare</button></div>
+    </form>`;
+  document.body.appendChild(dialog);
+  let picked = null;
+  dialog.querySelector("form").addEventListener("submit", (e) => { e.preventDefault(); picked = dialog.querySelector(".daev-compare-pick").value; dialog.close(); });
+  dialog.querySelector(".cancel").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("close", () => {
+    dialog.remove();
+    if (!picked) return;
+    const a = presetOf(current), b = presetOf(picked);
+    if (!a || !b) { statusSet("One of the sets has no preset to compare; create one in the roster."); return; }
+    navigate(`diff/${encodeURIComponent(className)}/${encodeURIComponent(a)}/${encodeURIComponent(b)}`);
+  });
+  dialog.showModal();
+}
+
 function onSetAction(action) {
   const className = classLower();
   const builds = buildsOf(className);
@@ -924,15 +956,17 @@ function onSetAction(action) {
   if (action === "add") {
     const name = (prompt(T.name_colon) || "").trim();
     if (!name || builds[name]) return;
-    builds[name] = {};
+    if (newBuild(className, name) === false) return;
     switchSet(name);
-  } else if (action === "duplicate") {
-    const name = (prompt(T.name_colon, T.duplicate_default_name(current)) || "").trim();
+  } else if (action === "duplicate" || action === "plan") {
+    const name = (prompt(action === "plan" ? "Name of the planned set:" : T.name_colon, action === "plan" ? `${current} (plan)` : T.duplicate_default_name(current)) || "").trim();
     if (!name || builds[name]) return;
     const source = D.routeSettingsToJson(routeSettings());
-    builds[name] = JSON.parse(JSON.stringify(builds[current] || {}));
+    if (duplicateBuild(className, current, name) === false) return;
     bp().daevanion_build_settings[className][name] = D.routeSettingsFromJson(source);
     switchSet(name);
+  } else if (action === "compare") {
+    compareDialog(className, current);
   } else if (action === "rename") {
     const name = (prompt(T.name_colon, current) || "").trim();
     if (!name || name === current || builds[name] || !builds[current]) return;

@@ -89,3 +89,6 @@
 
 .daev-widget { width: 100%; }
 .daev-widget .daev-board-box { max-width: 100%; margin: 0 auto; }
+
+.daev-plan { font-size: 12px; padding: 3px 10px; }
+.daev-compare select { width: 100%; }

@@ -6,6 +6,8 @@ import { bp } from "../state.js";
 import { buildOfPreset, builds, currentPreset, diff } from "../builds.js";
 import { escapeHtml as esc } from "../app.js";
 import { data as skillData, ready as skillsReady } from "../engine/skills.js";
+import * as DV from "../engine/daevanion.js";
+import { daevanionScore } from "../engine/stats.js";
 import { QUICK_GEAR_SLOT_LABELS, SLOT_LABELS } from "./equipment_data.js";
 import { poolForLine } from "./genius.js";
 
@@ -138,10 +140,13 @@ async function fillDaevanion(section, cls, a, b, mine) {
   const boards = result.daevanion.boards;
   const note = section.querySelector(".diff-count");
   note.textContent = boards.length ? `${boards.length} board${boards.length === 1 ? "" : "s"} differ` : "";
-  if (!boards.length) { body.innerHTML = '<div class="muted small diff-none">No differences</div>'; return; }
   const p = bp();
   const sets = (p.daevanion_builds_data || {})[cls] || {};
-  const setA = sets[buildOfPreset(p, cls, a)] || {}, setB = sets[buildOfPreset(p, cls, b)] || {};
+  const nameA = buildOfPreset(p, cls, a), nameB = buildOfPreset(p, cls, b);
+  const setA = sets[nameA] || {}, setB = sets[nameB] || {};
+  body.innerHTML = "";
+  body.appendChild(setTotalsTable(variant, cls, [nameA, setA], [nameB, setB]));
+  if (!boards.length) { body.insertAdjacentHTML("beforeend", '<div class="muted small diff-none">No node differences</div>'); return; }
   const activeOf = (set, boardId) => {
     const ids = set[`s:${boardId}`];
     if (ids) return new Set(ids.map(String));
@@ -149,7 +154,6 @@ async function fillDaevanion(section, cls, a, b, mine) {
     const start = grid ? [...grid.values()].find((n) => n.g === "start") : null;
     return new Set(start ? [start.id] : []);
   };
-  body.innerHTML = "";
   for (const item of boards) {
     const board = variant.boards.find((x) => String(x.id) === String(item.board));
     if (!board) continue;
@@ -184,6 +188,52 @@ async function fillDaevanion(section, cls, a, b, mine) {
     }
     body.appendChild(card);
   }
+}
+
+// Points, Gear Score, stat totals and skill bonuses of two sets, side by side.
+function setTotalsTable(variant, cls, [nameA, setA], [nameB, setB]) {
+  const classKey = DV.skillsDataClassKey(cls);
+  const summarize = (set) => {
+    const stats = new Map();
+    let points = 0;
+    for (const board of DV.classBoards(variant, classKey)) {
+      const ids = set[`s:${board.id}`];
+      if (!ids) continue;
+      points += DV.spentCost(ids.map(String), variant.node_by_id);
+      for (const [label, value, isPercent] of DV.activeStatSummary(variant.node_by_id, ids.map(String))) {
+        const prev = stats.get(label);
+        stats.set(label, [(prev ? prev[0] : 0) + value, isPercent]);
+      }
+    }
+    const skills = DV.skillBonusFromBoards(variant, classKey, set, "s");
+    return { points, score: daevanionScore(set, variant.node_by_id), stats, skills };
+  };
+  const A = summarize(setA), B = summarize(setB);
+  const fmtStat = (value, isPercent) => (value == null ? "—" : `${Math.round(value * 10) / 10}${isPercent ? "%" : ""}`);
+  const deltaCell = (va, vb, isPercent) => {
+    const d = (vb || 0) - (va || 0);
+    if (!d) return '<td class="diff-delta muted">—</td>';
+    return `<td class="diff-delta ${d > 0 ? "up" : "down"}">${d > 0 ? "+" : ""}${fmtStat(d, isPercent)}</td>`;
+  };
+  const rows = [];
+  rows.push(`<tr><th>Points spent</th><td>${A.points}</td><td>${B.points}</td>${deltaCell(A.points, B.points)}</tr>`);
+  rows.push(`<tr><th>Gear Score from boards</th><td>${A.score}</td><td>${B.score}</td>${deltaCell(A.score, B.score)}</tr>`);
+  const labels = [...new Set([...A.stats.keys(), ...B.stats.keys()])].sort();
+  for (const label of labels) {
+    const sa = A.stats.get(label), sb = B.stats.get(label);
+    const isPercent = (sa || sb)[1];
+    rows.push(`<tr><td>${esc(label)}</td><td>${fmtStat(sa && sa[0], isPercent)}</td><td>${fmtStat(sb && sb[0], isPercent)}</td>${deltaCell(sa && sa[0], sb && sb[0], isPercent)}</tr>`);
+  }
+  const skillIds = [...new Set([...Object.keys(A.skills), ...Object.keys(B.skills)])];
+  const skillName = (id) => (skillData.byId && skillData.byId[id] && skillData.byId[id].name) || `Skill ${id}`;
+  skillIds.sort((x, y) => skillName(x).localeCompare(skillName(y)));
+  for (const id of skillIds) {
+    rows.push(`<tr><td>${esc(skillName(id))} <span class="muted small">skill level</span></td><td>+${A.skills[id] || 0}</td><td>+${B.skills[id] || 0}</td>${deltaCell(A.skills[id], B.skills[id])}</tr>`);
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "diff-set-totals";
+  wrap.innerHTML = `<table class="diff-table"><thead><tr><th>Set totals</th><th>A · ${esc(nameA)}</th><th>B · ${esc(nameB)}</th><th>B − A</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
+  return wrap;
 }
 
 // ── page ────────────────────────────────────────────────────────────────────
