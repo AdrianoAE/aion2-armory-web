@@ -45,7 +45,6 @@ export function bossCardHtml(status, { tracked = false, showDone = false } = {})
       <div class="tm-boss-actions">
         ${showDone ? `<label class="tm-done" title="Killed it: the mark clears by itself when the boss spawns again"><input type="checkbox" data-done="${esc(boss.id)}" ${done ? "checked" : ""}> Done</label>` : ""}
         <button type="button" class="tm-track" data-track="${esc(boss.id)}" aria-pressed="${tracked}" title="${tracked ? "Stop tracking" : "Track this boss"}">${tracked ? "★" : "☆"}</button>
-        <a class="tm-report" href="https://www.aion2timers.com/fieldboss" target="_blank" rel="noopener" title="Just killed ${esc(boss.name)}? Report it on aion2timers.com: their page shares the kill with your whole server and this feed picks it up within minutes. Reports only work from their site.">Report kill</a>
         ${map}
       </div>
     </div>
