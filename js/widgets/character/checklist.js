@@ -1,6 +1,6 @@
 import { characterWidget, escapeHtml, loadPage } from "./common.js";
 import { bp, plannerCharacterNamed, save } from "../../state.js";
-import { KIND_TITLES, ODYLE_MAX, characterTasks, durationText, isTaskDone, nextReset, odyleCapText, odyleEnergy } from "../../engine/planner.js";
+import { KIND_TITLES, NIGHTMARE_MAX, ODYLE_MAX, characterTasks, durationText, isTaskDone, nextReset, nightmareCapText, nightmareEntries, odyleCapText, odyleEnergy } from "../../engine/planner.js";
 
 const KINDS = ["daily", "weekly", "portals", "available"];
 
@@ -35,7 +35,10 @@ characterWidget({
     const odyle = planner.odyle[character.id];
     const cap = odyle ? odyleCapText(odyle, now) : "";
     const odyleLine = odyle ? `<div class="cw-odyle-line ${cap === "full" ? "full" : ""}"><span class="cw-odyle-label">Odyle</span><b>${odyleEnergy(Number(odyle.value), new Date(odyle.since), now)}/${ODYLE_MAX}</b>${cap ? `<span class="muted small">${cap}</span>` : ""}</div>` : "";
-    box.innerHTML = `${odyleLine}<div class="cw-kinds">${groups || '<div class="muted small">No character tasks.</div>'}</div><div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
+    const nightmare = (planner.nightmare || {})[character.id];
+    const nightmareCap = nightmare ? nightmareCapText(nightmare, now) : "";
+    const nightmareLine = nightmare ? `<div class="cw-odyle-line cw-nightmare-line ${nightmareCap === "full" ? "full" : ""}"><span class="cw-odyle-label">Nightmare</span><b>${nightmareEntries(nightmare.value, nightmare.since, now)}/${NIGHTMARE_MAX}</b>${nightmareCap ? `<span class="muted small">${nightmareCap}</span>` : ""}</div>` : "";
+    box.innerHTML = `${odyleLine}${nightmareLine}<div class="cw-kinds">${groups || '<div class="muted small">No character tasks.</div>'}</div><div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
     box.querySelector("[data-choose]").addEventListener("click", async () => {
       const page = await loadPage("checklist");
       await page.openCharacterTasksDialog(character.id, character.name);

@@ -6,6 +6,7 @@ import { bp, characters, newId, plannerCharacterNamed, plannerServer, save, sync
 import { isExcluded, setExcluded,
   KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, PLANNER_KINDS, durationText, isTaskDone, migratePlannerTasks,
   nextOdyleTick, nextReset, odyleCapText, odyleEnergy, taskProgress,
+  NIGHTMARE_MAX, NIGHTMARE_PER_DAY, nightmareCapText, nightmareEntries,
 } from "../engine/planner.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
@@ -149,6 +150,13 @@ function characterCard(planner, columns, now) {
     const cap = odyleCapText(planner.odyle[c.id], now);
     return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself">${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
   }).join("")}</tr>`;
+  planner.nightmare = planner.nightmare || {};
+  body += `<tr class="cl-odyle cl-nightmare"><th scope="row"><span class="cl-odyle-label">Nightmare entries</span> <span class="muted small">+${NIGHTMARE_PER_DAY} at the daily reset · max ${NIGHTMARE_MAX}</span></th>${columns.map((c) => {
+    const entry = planner.nightmare[c.id];
+    const value = entry ? nightmareEntries(entry.value, entry.since, now) : 0;
+    const cap = nightmareCapText(entry, now);
+    return `<td><input type="number" min="0" max="${NIGHTMARE_MAX}" value="${value}" data-nightmare="${c.id}" class="${value >= NIGHTMARE_MAX ? "near-cap" : ""}" title="Enter the entries you have now; it gains ${NIGHTMARE_PER_DAY} at every daily reset">${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
+  }).join("")}</tr>`;
   for (const kind of PLANNER_KINDS) {
     const kindTasks = tasks.filter((t) => t.kind === kind);
     if (!kindTasks.length && kind === "portals") continue;
@@ -223,6 +231,19 @@ export function draw() {
       const id = input.dataset.odyle;
       const value = Math.max(0, Math.min(ODYLE_MAX, Math.round(Number(input.value)) || 0));
       if (value !== odyleValue(planner, id, new Date())) { planner.odyle[id] = { value, since: new Date().toISOString() }; save(); }
+      draw();
+    });
+  });
+  root.querySelectorAll("[data-nightmare]").forEach((input) => {
+    input.addEventListener("focus", () => {
+      input.select();
+      input.addEventListener("mouseup", (e) => e.preventDefault(), { once: true });
+    });
+    input.addEventListener("change", () => {
+      const id = input.dataset.nightmare;
+      const value = Math.max(0, Math.min(NIGHTMARE_MAX, Math.round(Number(input.value)) || 0));
+      const entry = planner.nightmare[id];
+      if (!entry || value !== nightmareEntries(entry.value, entry.since, new Date())) { planner.nightmare[id] = { value, since: new Date().toISOString() }; save(); }
       draw();
     });
   });

@@ -87,6 +87,8 @@ export const SHOP_SPECIAL_TASK = "Buy Shop(H) → Special";
 export const KIND_TITLES = { daily: "Daily", weekly: "Weekly", portals: "Abyss portals", available: "Info" };
 
 const RENAMED_TASKS = { "buy shop odyle": SHOP_SPECIAL_TASK };
+// Info rows that became a counter (Nightmare entries) or were dropped.
+const REMOVED_TASKS = new Set(["nightmare", "expedition / transcendence"]);
 
 export function defaultPlannerTasks() {
   const tasks = (prefix, entries) => entries.map(([name, kind], i) => ({ id: `${prefix}${i + 1}`, name, kind }));
@@ -107,8 +109,6 @@ export function defaultPlannerTasks() {
       ["Craft Odyle (morph)", "weekly"],
       ["Ascension trial", "weekly"],
       ["Battlefield", "weekly"],
-      ["Nightmare", "available"],
-      ["Expedition / Transcendence", "available"],
       ["Abyss portals", "portals"],
     ]),
   };
@@ -171,6 +171,12 @@ export function migratePlannerTasks(planner) {
   planner.done = planner.done || {};
   for (const [scope, tasks] of Object.entries(planner.tasks || {})) {
     for (const task of [...tasks]) {
+      if (task.kind === "available" && REMOVED_TASKS.has((task.name || "").trim().toLowerCase())) {
+        tasks.splice(tasks.indexOf(task), 1);
+        for (const key of Object.keys(planner.done)) if (key.endsWith(":" + task.id)) delete planner.done[key];
+        changed = true;
+        continue;
+      }
       const label = RENAMED_TASKS[(task.name || "").trim().toLowerCase()];
       if (!label) continue;
       task.name = label;
@@ -205,5 +211,38 @@ export function odyleCapText(entry, now = new Date()) {
   if (odyleEnergy(value, since, now) >= ODYLE_MAX) return "full";
   const ticks = Math.ceil((ODYLE_MAX - value) / ODYLE_PER_TICK);
   const at = new Date(nextOdyleTick(since).getTime() + (ticks - 1) * ODYLE_TICK_HOURS * HOUR);
+  return `full in ${durationText(at - now)}`;
+}
+
+// Nightmare (solo boss) entries: +2 at every daily reset, held up to 14.
+export const NIGHTMARE_MAX = 14;
+export const NIGHTMARE_PER_DAY = 2;
+
+function dailyResetsSince(since, now) {
+  const resets = [];
+  let at = new Date(since);
+  if (Number.isNaN(at.getTime())) return resets;
+  for (let guard = 0; guard < 400; guard += 1) {
+    const next = nextReset("daily", at);
+    if (!next || next > now) break;
+    resets.push(next);
+    at = next;
+  }
+  return resets;
+}
+
+export function nightmareEntries(value, since, now = new Date()) {
+  const base = Math.max(0, Number(value) || 0);
+  return Math.min(NIGHTMARE_MAX, base + NIGHTMARE_PER_DAY * dailyResetsSince(since, now).length);
+}
+
+// "full" / "full in 1 d 4 h" / "" for a planner.nightmare entry {value, since}.
+export function nightmareCapText(entry, now = new Date()) {
+  if (!entry) return "";
+  const current = nightmareEntries(entry.value, entry.since, now);
+  if (current >= NIGHTMARE_MAX) return "full";
+  const resetsNeeded = Math.ceil((NIGHTMARE_MAX - current) / NIGHTMARE_PER_DAY);
+  let at = now;
+  for (let i = 0; i < resetsNeeded; i += 1) { at = nextReset("daily", at); if (!at) return ""; }
   return `full in ${durationText(at - now)}`;
 }

@@ -23,6 +23,7 @@ function defaultBuildPlanner() {
       tasks,
       done: {},
       odyle: {},
+      nightmare: {},
       excluded: {},
       next_id: 1,
       defaults_seen: Object.entries(tasks).flatMap(([scope, list]) => list.map((t) => `${scope}:${t.name}`)),

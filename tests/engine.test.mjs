@@ -215,3 +215,19 @@ test("every boss has a map or a page to open, and same-named bosses keep their o
   assert.notEqual(twins[0].page, twins[1].page);
   assert.notDeepEqual(twins[0].map_points, twins[1].map_points);
 });
+
+test("Nightmare entries gain 2 per daily reset up to 14, and the old info rows are dropped", async () => {
+  const planner = await import("../js/engine/planner.js");
+  const since = new Date(Date.UTC(2026, 9, 9, 8, 0));
+  assert.equal(planner.nightmareEntries(4, since, new Date(Date.UTC(2026, 9, 9, 8, 30))), 4);
+  assert.equal(planner.nightmareEntries(4, since, new Date(Date.UTC(2026, 9, 10, 8, 30))), 6);
+  assert.equal(planner.nightmareEntries(4, since, new Date(Date.UTC(2026, 9, 20, 8, 30))), 14);
+  assert.equal(planner.nightmareCapText({ value: 14, since }, new Date(Date.UTC(2026, 9, 9, 8, 30))), "full");
+  assert.match(planner.nightmareCapText({ value: 12, since }, new Date(Date.UTC(2026, 9, 9, 8, 30))), /^full in /);
+  const defaults = planner.defaultPlannerTasks();
+  assert.ok(!defaults.character.some((t) => /Nightmare|Expedition/.test(t.name)));
+  const old = { tasks: { character: [{ id: "c7", name: "Nightmare", kind: "available" }, { id: "c8", name: "Expedition / Transcendence", kind: "available" }, { id: "c1", name: "Farm", kind: "daily" }], server: [] }, done: { "ch1:c7": "2026-10-09T00:00:00Z" }, defaults_seen: [] };
+  assert.equal(planner.migratePlannerTasks(old), true);
+  assert.deepEqual(old.tasks.character.map((t) => t.id), ["c1"]);
+  assert.deepEqual(Object.keys(old.done), []);
+});
