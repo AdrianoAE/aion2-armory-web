@@ -133,3 +133,7 @@ dialog.tm-map-dialog.faction-asmo { --faction: var(--asmos); }
 .wa-pin .tm-boss-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .wa-pin .tm-boss-grid > * { flex: 0 0 380px; max-width: 100%; }
 .wa-pin .tm-feed-line { margin-bottom: 4px; }
+
+/* Heroic Artwork is orange in game, Unique is yellow */
+.tag.heroic { --tag: var(--heroic, #fb923c); }
+.tm-artwork.grade-heroic { border-color: color-mix(in srgb, var(--heroic, #fb923c) 60%, transparent); }

@@ -37,9 +37,9 @@ export function bossCardHtml(status, { tracked = false, showDone = false } = {})
     <div class="tm-boss-main">
       <div class="tm-boss-name" title="${esc(boss.name)}">${esc(boss.name)}</div>
       <div class="tm-boss-meta">${esc(boss.zone)} · Lv ${esc(boss.level)} · every ${esc(durationText((boss.cycle_minutes || 0) * 60000))}</div>
-      <div class="tm-boss-tags"><span class="tag ${faction}">${factionLabel(boss.faction)}</span>${art ? `<span class="tag warn">Artwork ${esc(art.grade || "")}</span>` : ""}${done ? '<span class="tag success">Done</span>' : ""}</div>
+      <div class="tm-boss-tags"><span class="tag ${faction}">${factionLabel(boss.faction)}</span>${art ? `<span class="tag ${String(art.grade || "").toLowerCase() === "heroic" ? "heroic" : "warn"}">Artwork ${esc(art.grade || "")}</span>` : ""}${done ? '<span class="tag success">Done</span>' : ""}</div>
     </div>
-    ${art && art.image ? `<img class="tm-artwork" src="${IMG}${esc(art.image)}" alt="${esc(art.name)}" data-artwork="${esc(boss.id)}" tabindex="0">` : ""}
+    ${art && art.image ? `<img class="tm-artwork grade-${esc(String((art && art.grade) || "").toLowerCase())}" src="${IMG}${esc(art.image)}" alt="${esc(art.name)}" data-artwork="${esc(boss.id)}" tabindex="0">` : ""}
     <div class="tm-boss-side">
       ${stateHtml(status)}
       <div class="tm-boss-actions">
