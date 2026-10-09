@@ -677,7 +677,8 @@ function linkedSetOf(classKeyAny) {
 // frame size in CSS px (a size the user dragged to wins); `onChange` gets
 // {board, key, spent, activeSet} when another tab is picked. Call
 // `el.destroy()` when the host unmounts.
-export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, preset = null } = {}) {
+// `fit`: the board follows the element's width instead of a stored, hand-resized size.
+export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, preset = null, fit = false } = {}) {
   const setOf = () => {
     if (!preset) return linkedSetOf(classKeyAny);
     const lower = String(classKeyAny || "").trim().toLowerCase();
@@ -689,8 +690,8 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, pres
   el.className = "daev-widget";
   el.innerHTML = `<div class="muted small">${T.loading}</div>`;
   const dataKey = D.skillsDataClassKey(String(classKeyAny || "").trim().toLowerCase());
-  let size = storedSide("widget") || clampSide(side);
-  let current = null, hoveredKey = null, alive = true, unsubscribe = null;
+  let size = fit ? clampSide(el.clientWidth || side) : (storedSide("widget") || clampSide(side));
+  let current = null, hoveredKey = null, alive = true, unsubscribe = null, observer = null;
   let tabs = null, box = null, canvasEl = null;
   const boards = () => D.classBoards(variant, dataKey);
   const boardNow = () => boards().find((b) => b.order === current) || null;
@@ -716,7 +717,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, pres
 
   function build() {
     el.innerHTML = `<div class="daev-tabs" role="tablist"></div>
-      <div class="daev-board-box" style="--daev-side: ${size}px"><div class="daev-canvas-frame"><canvas></canvas></div>${resizeHandleHtml()}</div>`;
+      <div class="daev-board-box" style="--daev-side: ${size}px"><div class="daev-canvas-frame"><canvas></canvas></div>${fit ? "" : resizeHandleHtml()}</div>`;
     tabs = el.querySelector(".daev-tabs");
     box = el.querySelector(".daev-board-box");
     canvasEl = el.querySelector("canvas");
@@ -752,11 +753,22 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, pres
     };
     canvasEl.addEventListener("mouseleave", leave);
     canvasEl.addEventListener("pointerleave", leave);
-    wireResize(el.querySelector(".daev-resize"), () => size, (next) => {
-      size = next;
-      box.style.setProperty("--daev-side", `${next}px`);
-      paint();
-    }, (final) => writeStore(SIZE_STORE, { widget: final }));
+    if (fit) {
+      observer = new ResizeObserver(() => {
+        const next = clampSide(Math.floor(el.clientWidth));
+        if (!el.clientWidth || next === size) return;
+        size = next;
+        box.style.setProperty("--daev-side", `${next}px`);
+        paint();
+      });
+      observer.observe(el);
+    } else {
+      wireResize(el.querySelector(".daev-resize"), () => size, (next) => {
+        size = next;
+        box.style.setProperty("--daev-side", `${next}px`);
+        paint();
+      }, (final) => writeStore(SIZE_STORE, { widget: final }));
+    }
     unsubscribe = onProfileChange(() => { if (tabs) render(); });
     render();
   }
@@ -765,6 +777,7 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, pres
   el.destroy = () => {
     alive = false;
     if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    if (observer) { observer.disconnect(); observer = null; }
     hideTooltip();
   };
   return el;

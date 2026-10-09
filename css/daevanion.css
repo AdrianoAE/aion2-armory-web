@@ -86,3 +86,6 @@
 .daev-tip .status[data-status="available"] { background: rgba(52, 211, 153, 0.14); color: var(--success, #34d399); }
 .daev-tip .status[data-status="locked"] { background: rgba(148, 163, 184, 0.12); color: var(--muted); }
 .daev-tip .status[data-status="no_points"] { background: rgba(248, 113, 113, 0.14); color: var(--danger); }
+
+.daev-widget { width: 100%; }
+.daev-widget .daev-board-box { max-width: 100%; margin: 0 auto; }
