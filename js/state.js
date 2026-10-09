@@ -30,7 +30,7 @@ function defaultBuildPlanner() {
     timers_region: DEFAULT_REGION,
     fieldboss_server: DEFAULT_SERVER,
     fieldboss_only_artwork: true,
-    fieldboss_tracked: ["elyos20"],
+    fieldboss_tracked: ["elyos20", "elyos24"],
     fieldboss_done: {},
     official_characters: {},
   };

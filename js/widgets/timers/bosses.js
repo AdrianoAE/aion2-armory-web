@@ -2,7 +2,7 @@
 // Asmodians apart, spawned first and then by time left.
 
 import { registerWidget } from "../../widgets.js";
-import { FACTIONS, bossStatuses, dropsYellowArtwork, isSoon, serverOptions, sortStatuses } from "../../engine/fieldboss.js";
+import { FACTIONS, bossStatuses, dropsArtwork, dropsYellowArtwork, isSoon, serverOptions, sortStatuses } from "../../engine/fieldboss.js";
 import { adoptShared, bosses, bossFeed, serverId, SHARED, sharedField, watch } from "./feed.js";
 import { bossCardHtml, feedLineHtml, wireBosses } from "./bosscard.js";
 
@@ -18,7 +18,8 @@ registerWidget({
   live: true,
   settings: [
     sharedField("server", { label: "Server", type: "select", options: serverOptions }),
-    sharedField("onlyArtwork", { label: "Only bosses that drop a yellow Artwork", type: "checkbox" }),
+    sharedField("onlyArtwork", { label: "Only bosses that drop an Artwork", type: "checkbox" }),
+    { key: "artworkGrade", label: "Which Artwork droppers", type: "select", options: [["any", "Any Artwork (Heroic and Unique)"], ["unique", "Unique (yellow) Artwork only"]], default: "any" },
     { key: "hours", label: "Show bosses spawned or spawning within", type: "select",
       options: [[1, "1 hour"], [2, "2 hours"], [3, "3 hours"], [4, "4 hours"], [6, "6 hours"], [8, "8 hours"], [12, "12 hours"], [24, "24 hours"], [0, "Any time (all bosses)"]], default: 1 },
     { key: "sort", label: "Sort by", type: "select", options: SORTS, default: "next" },
@@ -34,7 +35,9 @@ registerWidget({
     const now = ctx.now;
     const server = serverId();
     const feed = bossFeed(server);
-    const pool = SHARED.onlyArtwork.get() ? list.filter(dropsYellowArtwork) : list;
+    const trackedIds = new Set(SHARED.tracked.get());
+    const wanted = ctx.settings.artworkGrade === "unique" ? dropsYellowArtwork : dropsArtwork;
+    const pool = SHARED.onlyArtwork.get() ? list.filter((boss) => wanted(boss) || trackedIds.has(boss.id)) : list;
     const every = bossStatuses(pool, feed, now);
     const hours = Number(ctx.settings.hours ?? 1);
     const showAll = ctx.settings.show === "all" || hours <= 0;

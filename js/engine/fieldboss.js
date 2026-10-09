@@ -28,6 +28,11 @@ export function dropsYellowArtwork(boss) {
   return String((boss.artwork || {}).grade || "").toLowerCase() === "unique";
 }
 
+// Any Artwork at all: the two Gartua drop a Heroic one.
+export function dropsArtwork(boss) {
+  return !!(boss.artwork && boss.artwork.name);
+}
+
 const stamp = (value) => (value ? new Date(Number(value) * 1000) : null);
 
 export function bossStatuses(bosses, feed, now) {
