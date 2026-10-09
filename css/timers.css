@@ -137,3 +137,6 @@ dialog.tm-map-dialog.faction-asmo { --faction: var(--asmos); }
 /* Heroic Artwork is orange in game, Unique is yellow */
 .tag.heroic { --tag: var(--heroic, #fb923c); }
 .tm-artwork.grade-heroic { border-color: color-mix(in srgb, var(--heroic, #fb923c) 60%, transparent); }
+
+.tm-report { font-size: 11px; color: var(--muted); text-decoration: none; border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; white-space: nowrap; }
+.tm-report:hover { color: var(--accent); border-color: var(--accent); }
