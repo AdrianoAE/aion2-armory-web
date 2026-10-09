@@ -159,7 +159,7 @@ function characterCard(planner, columns, now) {
   }).join("")}</tr>`;
   for (const kind of PLANNER_KINDS) {
     const kindTasks = tasks.filter((t) => t.kind === kind);
-    if (!kindTasks.length && kind === "portals") continue;
+    if (!kindTasks.length && (kind === "portals" || kind === "available")) continue;
     body += `<tr class="cl-kind kind-${kind}"><th scope="rowgroup"><span class="cl-kind-name">${KIND_TITLES[kind]}</span>${resetSpan(kind, now, "resets in")}<button class="icon small" data-add="character:${kind}" title="Add a ${KIND_TITLES[kind].toLowerCase()} task for every character">+</button></th><td colspan="${span}"></td></tr>`;
     for (const task of kindTasks) {
       if (kind === "available") {
