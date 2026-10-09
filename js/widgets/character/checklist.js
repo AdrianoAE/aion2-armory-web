@@ -1,6 +1,6 @@
 import { characterWidget, escapeHtml, loadPage } from "./common.js";
 import { bp, plannerCharacterNamed, save } from "../../state.js";
-import { KIND_TITLES, characterTasks, durationText, isTaskDone, nextReset } from "../../engine/planner.js";
+import { KIND_TITLES, ODYLE_MAX, characterTasks, durationText, isTaskDone, nextReset, odyleCapText, odyleEnergy } from "../../engine/planner.js";
 
 const KINDS = ["daily", "weekly", "portals", "available"];
 
@@ -32,7 +32,10 @@ characterWidget({
       const resetText = reset ? `<span class="cw-kind-reset" title="Resets ${reset.toLocaleString()}">resets in ${durationText(reset - now)}</span>` : "";
       return `<div class="cw-kind cw-kind-${kind}"><div class="cw-kind-head"><span class="cw-kind-name">${KIND_TITLES[kind]}</span>${count}${resetText}</div>${rows}</div>`;
     }).join("");
-    box.innerHTML = `<div class="cw-kinds">${groups || '<div class="muted small">No character tasks.</div>'}</div><div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
+    const odyle = planner.odyle[character.id];
+    const cap = odyle ? odyleCapText(odyle, now) : "";
+    const odyleLine = odyle ? `<div class="cw-odyle-line ${cap === "full" ? "full" : ""}"><span class="cw-odyle-label">Odyle</span><b>${odyleEnergy(Number(odyle.value), new Date(odyle.since), now)}/${ODYLE_MAX}</b>${cap ? `<span class="muted small">${cap}</span>` : ""}</div>` : "";
+    box.innerHTML = `${odyleLine}<div class="cw-kinds">${groups || '<div class="muted small">No character tasks.</div>'}</div><div class="cw-task-foot"><button type="button" class="cw-link" data-choose>Choose tasks…</button></div>`;
     box.querySelector("[data-choose]").addEventListener("click", async () => {
       const page = await loadPage("checklist");
       await page.openCharacterTasksDialog(character.id, character.name);

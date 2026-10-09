@@ -5,7 +5,7 @@
 import { bp, characters, newId, plannerCharacterNamed, plannerServer, save, syncPlannerCharacters } from "../state.js";
 import { isExcluded, setExcluded,
   KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, PLANNER_KINDS, durationText, isTaskDone, migratePlannerTasks,
-  nextOdyleTick, nextReset, odyleEnergy, taskProgress,
+  nextOdyleTick, nextReset, odyleCapText, odyleEnergy, taskProgress,
 } from "../engine/planner.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
@@ -146,7 +146,8 @@ function characterCard(planner, columns, now) {
   }).join("");
   let body = `<tr class="cl-odyle"><th scope="row"><span class="cl-odyle-label">Odyle energy</span> <span class="muted small">+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))} · max ${ODYLE_MAX}</span></th>${columns.map((c) => {
     const value = odyleValue(planner, c.id, now);
-    return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself"></td>`;
+    const cap = odyleCapText(planner.odyle[c.id], now);
+    return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself">${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
   }).join("")}</tr>`;
   for (const kind of PLANNER_KINDS) {
     const kindTasks = tasks.filter((t) => t.kind === kind);

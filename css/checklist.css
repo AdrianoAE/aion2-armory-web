@@ -93,3 +93,6 @@
 .cl-dialog-kind.kind-weekly .cl-kind-name { color: var(--weekly, #fbbf24); }
 .cl-dialog-kind.kind-portals .cl-kind-name { color: var(--portals, #f472b6); }
 .cl-dialog-task { display: flex; align-items: center; gap: 8px; padding: 2px 0; cursor: pointer; }
+
+.cl-odyle-cap { margin-top: 3px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.cl-odyle-cap.full { color: var(--danger); font-weight: 600; }

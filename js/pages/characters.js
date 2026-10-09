@@ -188,7 +188,7 @@ function progressHtml(entry) {
   const progress = progressOf(entry.name);
   if (!progress) return "";
   const odyle = progress.odyle == null ? ""
-    : `<span class="tag ${{ full: "danger", high: "warn" }[odyleLevel(progress.odyle)] || "info"}" title="Odyle energy">Odyle ${progress.odyle}/${ODYLE_MAX}</span>`;
+    : `<span class="tag ${{ full: "danger", high: "warn" }[odyleLevel(progress.odyle)] || "info"}" title="Odyle energy${progress.odyleCap ? ` · ${progress.odyleCap}` : ""}">Odyle ${progress.odyle}/${ODYLE_MAX}${progress.odyleCap ? ` <span class="muted">· ${progress.odyleCap}</span>` : ""}</span>`;
   return odyle + kindChipsHtml(progress.kinds);
 }
 

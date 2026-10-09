@@ -195,3 +195,15 @@ export function migratePlannerTasks(planner) {
   }
   return changed;
 }
+
+// "full" / "full in 3 h 12 min" / "" for a planner.odyle entry {value, since}.
+export function odyleCapText(entry, now = new Date()) {
+  if (!entry) return "";
+  const value = Number(entry.value) || 0;
+  const since = new Date(entry.since);
+  if (Number.isNaN(since.getTime())) return "";
+  if (odyleEnergy(value, since, now) >= ODYLE_MAX) return "full";
+  const ticks = Math.ceil((ODYLE_MAX - value) / ODYLE_PER_TICK);
+  const at = new Date(nextOdyleTick(since).getTime() + (ticks - 1) * ODYLE_TICK_HOURS * HOUR);
+  return `full in ${durationText(at - now)}`;
+}

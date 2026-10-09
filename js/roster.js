@@ -204,7 +204,7 @@ export function renderRoster(page) {
     row.draggable = true;
     const progress = progressOf(entry.name);
     const odyleTag = progress && progress.odyle != null
-      ? `<span class="tag ${{ full: "danger", high: "warn" }[odyleLevel(progress.odyle)] || "info"}" title="Odyle energy">Odyle ${progress.odyle}/${ODYLE_MAX}</span>` : "";
+      ? `<span class="tag ${{ full: "danger", high: "warn" }[odyleLevel(progress.odyle)] || "info"}" title="Odyle energy${progress.odyleCap ? ` · ${progress.odyleCap}` : ""}">Odyle ${progress.odyle}/${ODYLE_MAX}</span>` : "";
     const chips = odyleTag + (progress ? kindChipsHtml(progress.kinds) : "");
     const cls = entry.class[0].toUpperCase() + entry.class.slice(1);
     row.innerHTML = `

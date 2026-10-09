@@ -6,7 +6,7 @@ import { registerWidget } from "../../widgets.js";
 import { bp, characters, currentCharacter, plannerCharacterNamed, selectCharacter } from "../../state.js";
 import { buildOfPreset, linkedSkillBuild } from "../../builds.js";
 import { escapeHtml, navigate } from "../../app.js";
-import { ODYLE_MAX, characterTasks, isTaskDone, odyleEnergy } from "../../engine/planner.js";
+import { ODYLE_MAX, characterTasks, isTaskDone, odyleCapText, odyleEnergy } from "../../engine/planner.js";
 
 export { escapeHtml, ODYLE_MAX };
 
@@ -66,7 +66,7 @@ export function progressOf(name, now = new Date()) {
   }
   const odyle = planner.odyle[character.id];
   const energy = odyle ? odyleEnergy(Number(odyle.value), new Date(odyle.since), now) : null;
-  return { odyle: energy, kinds };
+  return { odyle: energy, odyleCap: odyle ? odyleCapText(odyle, now) : "", kinds };
 }
 
 export function kindChipsHtml(kinds) {
