@@ -3,7 +3,7 @@
 // kind (CEST schedule); "Info" entries are reminders without a tick.
 
 import { bp, characters, newId, plannerCharacterNamed, plannerServer, save, syncPlannerCharacters } from "../state.js";
-import {
+import { isExcluded, setExcluded,
   KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, PLANNER_KINDS, durationText, isTaskDone, migratePlannerTasks,
   nextOdyleTick, nextReset, odyleEnergy, taskProgress,
 } from "../engine/planner.js";
@@ -141,7 +141,8 @@ function characterCard(planner, columns, now) {
     const complete = progress.total && progress.done === progress.total;
     return `<th class="cl-char cl-class-${escapeHtml(c.cls)}" scope="col">
       <div class="cl-char-name"><img class="class-icon" src="assets/class_icons/${escapeHtml(c.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></div>
-      <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div></th>`;
+      <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div>
+      <button class="icon small cl-char-tasks" data-char-tasks="${c.id}" title="Choose which tasks apply to ${escapeHtml(c.name)}">&#9881;</button></th>`;
   }).join("");
   let body = `<tr class="cl-odyle"><th scope="row"><span class="cl-odyle-label">Odyle energy</span> <span class="muted small">+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))} · max ${ODYLE_MAX}</span></th>${columns.map((c) => {
     const value = odyleValue(planner, c.id, now);
@@ -157,6 +158,7 @@ function characterCard(planner, columns, now) {
         continue;
       }
       body += `<tr class="cl-row kind-${kind}"><th scope="row"><span class="cl-task"><span class="cl-name">${escapeHtml(task.name)}</span>${menuButton("character", task)}</span></th>${columns.map((c) => {
+        if (isExcluded(planner, c.id, task.id)) return `<td class="excluded" title="${escapeHtml(c.name)} skips ${escapeHtml(task.name)}"><span class="cl-skip">—</span></td>`;
         const done = isTaskDone(planner, c.id, task, now);
         return `<td class="${done ? "done" : ""}"><input type="checkbox" data-task="${c.id}:${task.id}" ${done ? "checked" : ""} title="${escapeHtml(c.name)}: ${escapeHtml(task.name)}"></td>`;
       }).join("")}</tr>`;
@@ -233,6 +235,41 @@ export function draw() {
     if (task) tasksMenu(scope, task);
   }));
   root.querySelector("#cl-add-task").addEventListener("click", () => addTaskDialog());
+  root.querySelectorAll("[data-char-tasks]").forEach((btn) => btn.addEventListener("click", () => {
+    const column = columns.find((c) => c.id === btn.dataset.charTasks);
+    if (column) openCharacterTasksDialog(column.id, column.name).then((changed) => { if (changed) draw(); });
+  }));
+}
+
+// Which character tasks apply to one character. Resolves true when something changed.
+export function openCharacterTasksDialog(characterId, name) {
+  return new Promise((resolve) => {
+    const planner = bp().planner;
+    const dialog = document.createElement("dialog");
+    dialog.className = "cl-dialog";
+    const rows = PLANNER_KINDS.map((kind) => {
+      const tasks = planner.tasks.character.filter((t) => t.kind === kind);
+      if (!tasks.length) return "";
+      return `<div class="cl-dialog-kind kind-${kind}"><div class="cl-kind-name">${KIND_TITLES[kind]}</div>${tasks.map((t) => `<label class="cl-dialog-task"><input type="checkbox" data-apply="${escapeHtml(t.id)}" ${isExcluded(planner, characterId, t.id) ? "" : "checked"}> ${escapeHtml(t.name)}</label>`).join("")}</div>`;
+    }).join("");
+    dialog.innerHTML = `<form method="dialog" class="stack">
+      <h3>Tasks for ${escapeHtml(name)}</h3>
+      <div class="muted small">Untick a task this character does not do; it leaves the counts and reminders for ${escapeHtml(name)}.</div>
+      <div class="cl-dialog-kinds">${rows}</div>
+      <div class="row"><span class="grow"></span><button type="submit" class="primary">Done</button></div>
+    </form>`;
+    let changed = false;
+    dialog.addEventListener("change", (e) => {
+      const box = e.target.closest("[data-apply]");
+      if (!box) return;
+      setExcluded(planner, characterId, box.dataset.apply, !box.checked);
+      changed = true;
+      save();
+    });
+    dialog.addEventListener("close", () => { dialog.remove(); resolve(changed); });
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  });
 }
 
 export function mount(main) {

@@ -1,7 +1,7 @@
 // Alert rules as pure functions over plain data (settings, feeds, the
 // checklist), so Node tests cover them without a browser.
 
-import { ODYLE_MAX, ODYLE_PER_TICK, SHOP_SPECIAL_TASK, durationText, isTaskDone, nextOdyleTick, nextReset, odyleEnergy } from "../../engine/planner.js";
+import { ODYLE_MAX, ODYLE_PER_TICK, SHOP_SPECIAL_TASK, durationText, isExcluded, isTaskDone, nextOdyleTick, nextReset, odyleEnergy } from "../../engine/planner.js";
 import { occurrences } from "../../engine/timers.js";
 import { bossStatuses } from "../../engine/fieldboss.js";
 
@@ -223,7 +223,7 @@ export function shopSpecialPending(planner, scopes, now) {
   const names = [];
   for (const { scope, id, name } of scopes || []) {
     const task = ((planner.tasks || {})[scope] || []).find((t) => t.name === SHOP_SPECIAL_TASK);
-    if (task && !isTaskDone(planner, id, task, now)) names.push(name);
+    if (task && !isExcluded(planner, id, task.id) && !isTaskDone(planner, id, task, now)) names.push(name);
   }
   return names;
 }

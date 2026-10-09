@@ -2,7 +2,7 @@
 
 import { bp, currentCharacter, exportProfile, importProfile, onChange, plannerCharacterNamed, renameCharacter, save } from "./state.js";
 import { askCharacter, renderRoster } from "./roster.js";
-import { ODYLE_MAX, isDone, odyleEnergy } from "./engine/planner.js";
+import { ODYLE_MAX, characterTasks, isDone, odyleEnergy } from "./engine/planner.js";
 import { prefs, onPrefs } from "./ui.js";
 import { applyTheme } from "./theme.js";
 import "./notify.js";
@@ -84,7 +84,7 @@ export function progressLine(name) {
   const now = new Date();
   const parts = [];
   for (const kind of ["daily", "weekly", "portals"]) {
-    const tasks = planner.tasks.character.filter((t) => t.kind === kind);
+    const tasks = characterTasks(planner, character.id, kind);
     if (!tasks.length) continue;
     const done = tasks.filter((t) => isDone(kind, planner.done[`${character.id}:${t.id}`] ? new Date(planner.done[`${character.id}:${t.id}`]) : null, now)).length;
     parts.push(`${{ daily: "Daily", weekly: "Weekly", portals: "Portals" }[kind]} ${done}/${tasks.length}`);

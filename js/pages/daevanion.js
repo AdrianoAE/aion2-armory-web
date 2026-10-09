@@ -754,12 +754,17 @@ export function boardTabsWidget(classKeyAny, { side = 520, onChange = null, pres
     canvasEl.addEventListener("mouseleave", leave);
     canvasEl.addEventListener("pointerleave", leave);
     if (fit) {
+      let frame = 0;
       observer = new ResizeObserver(() => {
-        const next = clampSide(Math.floor(el.clientWidth));
-        if (!el.clientWidth || next === size) return;
-        size = next;
-        box.style.setProperty("--daev-side", `${next}px`);
-        paint();
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          const next = clampSide(Math.floor(el.clientWidth));
+          if (!alive || !el.clientWidth || next === size) return;
+          size = next;
+          box.style.setProperty("--daev-side", `${next}px`);
+          paint();
+        });
       });
       observer.observe(el);
     } else {

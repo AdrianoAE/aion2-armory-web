@@ -214,7 +214,13 @@ function fieldControl(field, value, options, onChange) {
 }
 
 function columnCount(grid) {
-  return getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length || 1;
+  const width = grid.getBoundingClientRect().width;
+  return width > 1000 ? 4 : width > 560 ? 2 : 1;
+}
+
+function colsOf(card) {
+  const match = /\bwa-c(\d)\b/.exec(card.className);
+  return match ? Number(match[1]) : 2;
 }
 
 function isEditing(el) {
@@ -346,6 +352,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       const grip = el.querySelector(".wa-grip");
       grip.addEventListener("pointerdown", (e) => startDrag(inst, e));
       grip.addEventListener("keydown", (e) => keyMove(inst, e));
+      cardObserver.observe(el);
       const handle = el.querySelector(".wa-resize");
       handle.addEventListener("pointerdown", (e) => startResize(inst, e));
       handle.addEventListener("dblclick", () => commitSize(inst, null, "auto"));
@@ -370,7 +377,9 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     inst.disposed = true;
     if (openPopup && inst.el.contains(openPopup.anchor)) closePopup();
     runCleanup(inst);
+    cardObserver.unobserve(inst.el);
     inst.el.remove();
+    requestLayout();
   }
 
   function applySize(inst, cols, rows) {
@@ -379,7 +388,46 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     const auto = rows === "auto" || inst.item.collapsed;
     el.classList.toggle("wa-auto", auto);
     el.style.maxHeight = auto ? "" : `${rows * UNIT + (rows - 1) * GAP}px`;
+    requestLayout();
   }
+
+  // Cards pack like masonry: in order, each one takes the lowest spot where
+  // its columns are free, so a card can sit under a shorter neighbour.
+  let layoutFrame = 0;
+  function requestLayout() {
+    if (layoutFrame || destroyed) return;
+    layoutFrame = requestAnimationFrame(() => { layoutFrame = 0; layoutCards(); });
+  }
+
+  function layoutCards() {
+    const cards = [...grid.children].filter((el) => el.classList.contains("wa-card"));
+    const n = columnCount(grid);
+    const width = grid.getBoundingClientRect().width;
+    if (!cards.length || !width) { grid.style.height = cards.length ? "" : "0px"; return; }
+    const colWidth = (width - (n - 1) * GAP) / n;
+    const bottoms = new Array(n).fill(0);
+    let height = 0;
+    for (const card of cards) {
+      const span = Math.min(colsOf(card), n);
+      let bestCol = 0, bestTop = Infinity;
+      for (let c = 0; c + span <= n; c += 1) {
+        const top = Math.max(...bottoms.slice(c, c + span));
+        if (top < bestTop) { bestTop = top; bestCol = c; }
+      }
+      const left = bestCol * (colWidth + GAP);
+      const w = span * colWidth + (span - 1) * GAP;
+      card.style.left = `${left}px`;
+      card.style.top = `${bestTop}px`;
+      card.style.width = `${w}px`;
+      const bottom = bestTop + card.offsetHeight + GAP;
+      for (let c = bestCol; c < bestCol + span; c += 1) bottoms[c] = bottom;
+      height = Math.max(height, bottom);
+    }
+    grid.style.height = `${Math.max(0, height - GAP)}px`;
+  }
+
+  const cardObserver = new ResizeObserver(() => requestLayout());
+  cardObserver.observe(grid);
 
   function applyChrome(inst) {
     if (inst.mode !== "grid") return;
@@ -424,6 +472,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       lists[mode].push(inst);
     }
     place(grid, lists.grid.map((i) => i.el));
+    requestLayout();
     place(docks.top.querySelector(".wa-dock-items"), lists.top.map((i) => i.el));
     place(docks.bottom.querySelector(".wa-dock-items"), lists.bottom.map((i) => i.el));
     const now = new Date();

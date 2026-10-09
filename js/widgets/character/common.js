@@ -6,7 +6,7 @@ import { registerWidget } from "../../widgets.js";
 import { bp, characters, currentCharacter, plannerCharacterNamed, selectCharacter } from "../../state.js";
 import { buildOfPreset, linkedSkillBuild } from "../../builds.js";
 import { escapeHtml, navigate } from "../../app.js";
-import { ODYLE_MAX, isTaskDone, odyleEnergy } from "../../engine/planner.js";
+import { ODYLE_MAX, characterTasks, isTaskDone, odyleEnergy } from "../../engine/planner.js";
 
 export { escapeHtml, ODYLE_MAX };
 
@@ -59,7 +59,7 @@ export function progressOf(name, now = new Date()) {
   const planner = bp().planner;
   const kinds = [];
   for (const kind of Object.keys(KIND_LABELS)) {
-    const tasks = planner.tasks.character.filter((t) => t.kind === kind);
+    const tasks = characterTasks(planner, character.id, kind);
     if (!tasks.length) continue;
     const done = tasks.filter((t) => isTaskDone(planner, character.id, t, now)).length;
     kinds.push({ kind, label: KIND_LABELS[kind], done, total: tasks.length });

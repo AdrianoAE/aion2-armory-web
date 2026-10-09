@@ -141,8 +141,25 @@ export function isTaskDone(planner, scopeId, task, now) {
   return isDone(task.kind, taskDoneAt(planner, scopeId, task.id), now);
 }
 
+// A character can opt out of any character task: planner.excluded[charId] = [taskId].
+export function isExcluded(planner, scopeId, taskId) {
+  const list = (planner.excluded || {})[scopeId];
+  return Array.isArray(list) && list.includes(taskId);
+}
+
+export function setExcluded(planner, scopeId, taskId, excluded) {
+  planner.excluded = planner.excluded || {};
+  const list = new Set(planner.excluded[scopeId] || []);
+  if (excluded) list.add(taskId); else list.delete(taskId);
+  if (list.size) planner.excluded[scopeId] = [...list]; else delete planner.excluded[scopeId];
+}
+
+export function characterTasks(planner, scopeId, kind = null) {
+  return (planner.tasks.character || []).filter((t) => (!kind || t.kind === kind) && !isExcluded(planner, scopeId, t.id));
+}
+
 export function taskProgress(planner, scopeId, tasks, now) {
-  const tracked = tasks.filter((t) => RESETS[t.kind]);
+  const tracked = tasks.filter((t) => RESETS[t.kind] && !isExcluded(planner, scopeId, t.id));
   return { done: tracked.filter((t) => isTaskDone(planner, scopeId, t, now)).length, total: tracked.length };
 }
 
