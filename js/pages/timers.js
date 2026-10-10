@@ -1,10 +1,11 @@
-// Timers: a widget area with the event timeline, the
+// Timers: a widget area with the event timeline, event countdowns, the
 // tracked bosses and the boss list. Importing this module registers those
 // widgets, which is how the Dashboard offers them too.
 
 import { mountArea } from "../widgets.js";
 import { onChange } from "../state.js";
 import "../widgets/timers/timeline.js";
+import "../widgets/timers/countdowns.js";
 import "../widgets/timers/tracked.js";
 import "../widgets/timers/bosses.js";
 
@@ -24,7 +25,7 @@ export function mount(main) {
   area = mountArea(main.querySelector(".tm-area"), "timers", {
     defaults: DEFAULTS,
     allowed: (id) => id.startsWith("timers."),
-    empty: "<b>No timers on this page.</b> Add the event timeline, your tracked bosses or the boss list.",
+    empty: "<b>No timers on this page.</b> Add the event timeline, event countdowns, your tracked bosses or the boss list.",
   });
   ticker = setInterval(() => area && area.refresh({ passive: true }), TICK_MS);
   stopWatching = onChange(() => area && area.refresh());
