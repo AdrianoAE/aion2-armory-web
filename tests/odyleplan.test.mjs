@@ -38,76 +38,63 @@ test("purchases only count in the week they were made", () => {
   assert.equal(plan.purchaseLimit("alt"), 4);
 });
 
-test("base energy goes first, additional fills the main's free cubes and the rest is kept", () => {
+test("the main counts at full use, extra energy beyond the weekly limits is kept", () => {
   const result = plan.planWeek({
     now: JUST_AFTER_RESET,
-    characters: [
-      { id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 0, purchasesLeft: 40 },
-      { id: "a", name: "Alt", role: "alt", itemLevel: 1000, base: 0, extra: 0, purchasesLeft: 8 },
-      { id: "o", name: "Off", role: "off", itemLevel: 3000, base: 800, extra: 0, purchasesLeft: 8 },
-    ],
+    characters: [{ id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 0, purchasesLeft: 40 }],
   });
-  const [main, alt] = result.rows;
-  assert.equal(result.rows.length, 2);
+  const [main] = result.rows;
   assert.equal(main.total, 840 + 1600);
-  assert.equal(main.cubes, 35);
-  assert.equal(main.fromExtra, 14);
-  assert.equal(main.transcendence, 14);
-  assert.equal(main.conquest, 21);
+  assert.deepEqual([main.cubes, main.transcendence, main.conquest, main.fromExtra], [35, 14, 21, 14]);
   assert.equal(main.stage.stage, 4);
   assert.equal(main.extraKept, 1600 - 14 * 40);
   assert.equal(main.baseLost, 0);
-  assert.equal(alt.transcendence, 0);
-  assert.equal(alt.conquest, 21);
-  assert.equal(alt.extraKept, 320);
-  assert.equal(result.averagePercent, 100);
 });
 
-test("runs past the Conquest cut go to Transcendence", () => {
+test("priority characters fill up in order, the other alts only clear their overflow", () => {
+  const result = plan.planWeek({
+    now: JUST_AFTER_RESET,
+    runsDone: { conquest: 60, transcendence: 0 },
+    characters: [
+      { id: "o", name: "Other", role: "alt", itemLevel: 1700, base: 800, extra: 200, purchasesLeft: 8 },
+      { id: "b", name: "Blessing", role: "priority", itemLevel: 1700, base: 0, extra: 400, purchasesLeft: 8 },
+      { id: "c", name: "Chanter", role: "priority", itemLevel: 1000, base: 0, extra: 0, purchasesLeft: 8 },
+      { id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 0, purchasesLeft: 40 },
+      { id: "x", name: "Resting", role: "off", itemLevel: 3000, base: 800, extra: 0, purchasesLeft: 8 },
+    ],
+  });
+  assert.deepEqual(result.rows.map((r) => r.name), ["Main", "Blessing", "Chanter", "Other"]);
+  const [main, blessing, chanter, other] = result.rows;
+  assert.deepEqual([main.conquest, main.transcendence], [21, 14]);
+  assert.deepEqual([blessing.conquest, blessing.transcendence, blessing.fromExtra], [21, 14, 14]);
+  assert.deepEqual([chanter.conquest, chanter.transcendence], [21, 0]);
+  assert.deepEqual([other.cubes, other.transcendence, other.conquest], [20, 14, 6]);
+  assert.equal(other.extraKept, 200 + 320);
+  assert.equal(other.baseAtReset, 840);
+  assert.deepEqual(result.after, { conquest: 129, transcendence: 42 });
+});
+
+test("priority characters past the Expedition cut go to Transcendence", () => {
   const result = plan.planWeek({
     now: NIGHT_BEFORE_RESET,
     runsDone: { conquest: 80, transcendence: 0 },
     characters: [
-      { id: "a", name: "A", role: "alt", itemLevel: 1700, base: 740, extra: 0, purchasesLeft: 0 },
-      { id: "b", name: "B", role: "alt", itemLevel: 1750, base: 740, extra: 0, purchasesLeft: 0 },
+      { id: "a", name: "A", role: "priority", itemLevel: 1700, base: 740, extra: 0, purchasesLeft: 0 },
+      { id: "b", name: "B", role: "priority", itemLevel: 1750, base: 740, extra: 0, purchasesLeft: 0 },
     ],
   });
   assert.deepEqual(result.planned, { conquest: 12, transcendence: 28 });
   assert.deepEqual(result.rows.map((r) => [r.conquest, r.transcendence]), [[6, 14], [6, 14]]);
-  assert.deepEqual(result.after, { conquest: 92, transcendence: 28 });
 });
 
-test("the main counts at full use, an alt keeps its additional energy once the Kina cut starts", () => {
-  const result = plan.planWeek({
-    now: JUST_AFTER_RESET,
-    runsDone: { conquest: 84, transcendence: 56 },
-    characters: [
-      { id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 400, purchasesLeft: 40 },
-      { id: "a", name: "Alt", role: "alt", itemLevel: 2600, base: 0, extra: 400, purchasesLeft: 8 },
-    ],
-  });
-  const [main, alt] = result.rows;
-  assert.deepEqual([main.conquest, main.transcendence, main.fromExtra], [21, 14, 14]);
-  assert.equal(main.extraKept, 2000 - 14 * 40);
-  assert.equal(alt.cubes, 21);
-  assert.equal(alt.fromExtra, 0);
-  assert.equal(alt.extraKept, 720);
-});
-
-test("alts adapt to the runs the main already takes", () => {
+test("an alt under the cap opens nothing and keeps its energy", () => {
   const result = plan.planWeek({
     now: NIGHT_BEFORE_RESET,
-    runsDone: { conquest: 60, transcendence: 0 },
-    characters: [
-      { id: "m", name: "Main", role: "main", itemLevel: 1700, base: 740, extra: 0, purchasesLeft: 0 },
-      { id: "a", name: "Alt", role: "alt", itemLevel: 1700, base: 740, extra: 0, purchasesLeft: 0 },
-    ],
+    characters: [{ id: "a", name: "Alt", role: "alt", itemLevel: 2000, base: 300, extra: 120, purchasesLeft: 0 }],
   });
-  const [main, alt] = result.rows;
-  assert.deepEqual([main.conquest, main.transcendence], [6, 14]);
-  assert.deepEqual([alt.conquest, alt.transcendence], [18, 2]);
-  assert.deepEqual(result.after, { conquest: 84, transcendence: 16 });
-  assert.equal(result.averagePercent, 100);
+  assert.equal(result.rows[0].cubes, 0);
+  assert.equal(result.rows[0].baseAtReset, 360);
+  assert.equal(result.rows[0].extraKept, 120);
 });
 
 test("base energy a character cannot spend is lost at the cap", () => {

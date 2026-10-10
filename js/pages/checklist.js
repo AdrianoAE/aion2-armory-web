@@ -145,16 +145,38 @@ function setOdyleExtra(planner, id, extra) {
   planner.odyle[id] = { ...entry, extra: Math.max(0, Math.round(extra)) };
 }
 
-// The main is the one marked so, else the first character still played.
+// The main is the one marked so, else the first played character that is not a priority one.
 function mainId(planner, columns) {
   const roles = planner.roles || {};
   const marked = columns.find((c) => roles[c.id] === "main");
-  return (marked || columns.find((c) => roles[c.id] !== "off") || {}).id || null;
+  const plain = columns.find((c) => roles[c.id] !== "off" && roles[c.id] !== "priority");
+  return (marked || plain || columns.find((c) => roles[c.id] !== "off") || {}).id || null;
 }
 
 function roleOf(planner, columns, id) {
   if (id === mainId(planner, columns)) return "main";
-  return (planner.roles || {})[id] === "off" ? "off" : "alt";
+  const role = (planner.roles || {})[id];
+  return role === "off" || role === "priority" ? role : "alt";
+}
+
+// The main, the priority characters in their order, the other alts, the ones not played.
+function planOrder(planner, columns) {
+  const order = planner.priority_order || [];
+  const rank = { main: 0, priority: 1, alt: 2, off: 3 };
+  const place = (id) => (order.includes(id) ? order.indexOf(id) : order.length + columns.findIndex((c) => c.id === id));
+  return [...columns].sort((a, b) => {
+    const ra = roleOf(planner, columns, a.id), rb = roleOf(planner, columns, b.id);
+    return rank[ra] - rank[rb] || (ra === "priority" ? place(a.id) - place(b.id) : 0) || columns.indexOf(a) - columns.indexOf(b);
+  });
+}
+
+function movePriority(planner, columns, id, step) {
+  const ids = planOrder(planner, columns).filter((c) => roleOf(planner, columns, c.id) === "priority").map((c) => c.id);
+  const at = ids.indexOf(id);
+  const to = at + step;
+  if (at < 0 || to < 0 || to >= ids.length) return;
+  [ids[at], ids[to]] = [ids[to], ids[at]];
+  planner.priority_order = ids;
 }
 
 function setRole(planner, columns, id, role) {
@@ -227,7 +249,7 @@ function characterCard(planner, columns, now) {
     const role = roleOf(planner, columns, c.id);
     return `<th class="cl-char cl-class-${escapeHtml(c.cls)}" scope="col">
       <div class="cl-char-name"><img class="class-icon" src="assets/class_icons/${escapeHtml(c.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></div>
-      ${role === "alt" ? "" : `<div class="cl-role role-${role}" title="${role === "main" ? "Does the server-wide tasks and buys the server's Odyle share" : "Left out of the Odyle plan"}">${ROLE_TITLES[role]}</div>`}
+      ${role === "alt" ? "" : `<div class="cl-role role-${role}" title="${{ main: "Does the server-wide tasks and buys the server's Odyle share", priority: "Opens as many cubes as it can, after the main", off: "Left out of the Odyle plan" }[role]}">${ROLE_TITLES[role]}</div>`}
       <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div>
       <button class="icon small cl-char-tasks" data-char-tasks="${c.id}" title="Choose which tasks apply to ${escapeHtml(c.name)}">&#9881;</button></th>`;
   }).join("");
@@ -278,7 +300,7 @@ const number = (n) => Math.round(n).toLocaleString();
 
 function planCharacters(planner, columns, now) {
   const purchaseTasks = planner.tasks.character.filter((t) => ODYLE_PURCHASE_TASKS.includes(t.name));
-  return columns.map((c) => {
+  return planOrder(planner, columns).map((c) => {
     const role = roleOf(planner, columns, c.id);
     const limit = limitFor(role);
     const purchasesLeft = purchaseTasks.filter((t) => !isExcluded(planner, c.id, t.id))
@@ -287,17 +309,22 @@ function planCharacters(planner, columns, now) {
   });
 }
 
-function planChips(row) {
+function planChips(row, rank) {
   const chips = [];
+  if (!row.fullUse && !row.cubes) {
+    if (row.baseLost >= ODYLE_PER_TICK) return `<span class="muted small">No cube to open: needs item level ${number(CONQUEST_TIERS[0].itemLevel)}</span>`;
+    return `<span class="muted small" title="Stays under the cap of ${ODYLE_MAX} by the reset, so nothing has to be spent">Nothing needed · ${number(row.baseAtReset)} at the reset</span>`;
+  }
   if (row.transcendence) chips.push(`<span class="cl-plan-chip transcendence" title="Transcendence stage ${row.stage.stage} (item level ${number(row.stage.itemLevel)}+)">Transcendence ★${row.stage.stage} × ${row.transcendence}</span>`);
   if (row.conquest) chips.push(`<span class="cl-plan-chip expedition" title="Expedition, Conquest: ${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
   if (!chips.length) {
     if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
     return `<span class="muted small">Not enough energy for a cube</span>`;
   }
-  if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every cube its energy pays for, and the alts adapt">Counted at full use</span>${chips.join("")}`;
   if (row.fromExtra) chips.push(`<span class="muted small" title="Cubes paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
-  return chips.join("");
+  if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every cube its energy pays for, and the others adapt">Counted at full use</span>${chips.join("")}`;
+  if (row.fullUse) return `<span class="cl-plan-counted priority" title="Opens every cube its energy pays for, after the main and the priority characters above it">#${rank} · as much as possible</span>${chips.join("")}`;
+  return `<span class="cl-plan-counted alt" title="Only the runs that keep its base energy under the cap of ${ODYLE_MAX} by the reset">Only the overflow</span>${chips.join("")}`;
 }
 
 function keptText(row) {
@@ -321,18 +348,22 @@ function planCard(planner, columns, now) {
   const result = planWeek({ characters: chars, runsDone: runs, now });
   const rows = new Map(result.rows.map((r) => [r.id, r]));
   const roleSelect = (c) => `<select data-role="${c.id}" aria-label="Role of ${escapeHtml(c.name)}">${ROLES.map((r) => `<option value="${r}" ${r === c.role ? "selected" : ""}>${ROLE_TITLES[r]}</option>`).join("")}</select>`;
-  const body = columns.map((column) => {
-    const c = chars.find((x) => x.id === column.id);
+  let rank = 0;
+  const priorityIds = chars.filter((x) => x.role === "priority").map((x) => x.id);
+  const body = chars.map((c) => {
+    const column = columns.find((x) => x.id === c.id);
+    const move = c.role === "priority" ? `<span class="cl-plan-move"><button type="button" class="icon small" data-prio-move="${c.id}:-1" title="Earlier" ${priorityIds[0] === c.id ? "disabled" : ""}>▲</button><button type="button" class="icon small" data-prio-move="${c.id}:1" title="Later" ${priorityIds[priorityIds.length - 1] === c.id ? "disabled" : ""}>▼</button></span>` : "";
     const manual = Number((planner.item_level || {})[c.id]) || "";
     const auto = autoItemLevel(column);
     const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}; a sync replaces a typed value` : "Enter the item level shown in game, or sync the character"}">${!manual && auto.value ? `<div class="muted small">${auto.source === "aion2.plaync.com" ? "synced" : "GearScore"}</div>` : ""}`;
-    const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span></th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
+    const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span>${move}</th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
     const row = rows.get(c.id);
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
     const cap = odyleCapText(planner.odyle[c.id], now);
     const odyle = `${number(row.base)}${row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : ""}${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}`;
     const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)} <span class="muted">(+${number(row.extraEnergy)})</span></span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
-    return `<tr>${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row)}</div></td><td>${keptText(row)}</td></tr>`;
+    if (row.fullUse && !row.main) rank += 1;
+    return `<tr class="cl-plan-${c.role}">${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row, rank)}</div></td><td>${keptText(row)}</td></tr>`;
   }).join("");
   const runInput = (mode, label) => `<label class="cl-plan-count">${label} <input type="number" min="0" value="${runs[mode]}" data-runs="${mode}"></label>`;
   return `<section class="card cl-plan">
@@ -350,11 +381,11 @@ function planCard(planner, columns, now) {
       <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
-    <div class="muted small cl-plan-note">The main does what it needs: it is counted at full use, every cube its base and additional energy pay for, and the alts adapt around it.
-      An alt spends its base energy first, because it stops refilling at ${ODYLE_MAX}; its additional energy (+N) never expires, so it only fills cubes that still pay full Kina and the rest waits for a later week.
-      Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
+    <div class="muted small cl-plan-note">The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), open every cube their base and additional energy pay for.
+      The other alts only open what keeps their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
+      Each character's runs go to Expedition or Transcendence, whichever pays more Kina after the runs counted before it. Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
       Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
-      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}; higher item levels get the Transcendence runs first.
+      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}.
       Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and cube limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
   </section>`;
 }
@@ -430,6 +461,12 @@ export function draw() {
       draw();
     });
   });
+  root.querySelectorAll("[data-prio-move]").forEach((button) => button.addEventListener("click", () => {
+    const [id, step] = button.dataset.prioMove.split(":");
+    movePriority(planner, columns, id, Number(step));
+    save();
+    draw();
+  }));
   root.querySelectorAll("[data-role]").forEach((select) => select.addEventListener("change", () => {
     setRole(planner, columns, select.dataset.role, select.value);
     save();
