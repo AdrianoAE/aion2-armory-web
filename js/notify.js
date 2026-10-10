@@ -123,13 +123,32 @@ export const SOUNDS = {
   },
 };
 
-export async function playSound(nameOrUrl) {
-  const name = nameOrUrl === undefined ? alertSettings().sound : nameOrUrl;
-  const url = name === "custom" ? alertSettings().customSoundUrl : SOUNDS[name] ? null : name;
-  if (url) {
-    if (!hasUserGesture()) return false;
-    try { await new Audio(url).play(); return true; } catch (e) { return playSound("chime"); }
-  }
+export const RICKROLL_CHANCE = 0.05;
+
+// [frequency in Hz, length in sixteenths], 0 Hz is a rest.
+const NEVER_GONNA_GIVE_YOU_UP = [
+  [311.13, 1], [349.23, 1], [415.3, 1], [349.23, 1], [523.25, 3], [523.25, 3], [466.16, 6],
+  [311.13, 1], [349.23, 1], [415.3, 1], [349.23, 1], [466.16, 3], [466.16, 3], [415.3, 3], [392, 1], [349.23, 2],
+  [311.13, 1], [349.23, 1], [415.3, 1], [349.23, 1], [415.3, 4], [466.16, 2], [392, 3], [349.23, 1], [311.13, 4],
+  [0, 2], [311.13, 2], [466.16, 4], [415.3, 8],
+];
+
+const RICKROLL = {
+  play(ctx, out, t) {
+    const sixteenth = 60 / 114 / 4;
+    let at = t;
+    for (const [freq, steps] of NEVER_GONNA_GIVE_YOU_UP) {
+      const length = steps * sixteenth;
+      if (freq) {
+        tone(ctx, out, { freq, at, length: length * 0.95, type: "triangle", peak: 0.2, attack: 0.008 });
+        tone(ctx, out, { freq, at, length: length * 0.95, type: "square", peak: 0.035, attack: 0.008 });
+      }
+      at += length;
+    }
+  },
+};
+
+async function playSynth(synth) {
   const ctx = audioContext();
   if (!ctx) return false;
   try {
@@ -138,9 +157,23 @@ export async function playSound(nameOrUrl) {
     const out = ctx.createGain();
     out.gain.value = 0.9;
     out.connect(ctx.destination);
-    (SOUNDS[name] || SOUNDS.chime).play(ctx, out, ctx.currentTime + 0.02);
+    synth.play(ctx, out, ctx.currentTime + 0.02);
     return true;
   } catch (e) { return false; }
+}
+
+export async function playSound(nameOrUrl) {
+  const name = nameOrUrl === undefined ? alertSettings().sound : nameOrUrl;
+  const url = name === "custom" ? alertSettings().customSoundUrl : SOUNDS[name] ? null : name;
+  if (url) {
+    if (!hasUserGesture()) return false;
+    try { await new Audio(url).play(); return true; } catch (e) { return playSound("chime"); }
+  }
+  return playSynth(SOUNDS[name] || SOUNDS.chime);
+}
+
+export function playAlertSound(nameOrUrl, roll = Math.random()) {
+  return roll < RICKROLL_CHANCE ? playSynth(RICKROLL) : playSound(nameOrUrl);
 }
 
 function unlockAudio() {
@@ -379,7 +412,7 @@ function present(settings, due, now) {
     showToast(message);
     browserNotify(settings, message);
   }
-  if (messages.length) playSound(settings.sound);
+  if (messages.length) playAlertSound(settings.sound);
 }
 
 let started = false;

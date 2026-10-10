@@ -1,6 +1,6 @@
 // timers.tracked: the bosses the player follows, soonest spawn first, with
-// Done marks that clear themselves on the next spawn. Pinned, it is one
-// line per boss with its next spawn.
+// Done marks that clear themselves on the next spawn. The cards always sit in
+// a single row that scrolls sideways.
 
 import { registerWidget } from "../../widgets.js";
 import { bossStatuses, isSoon, serverOptions, sortStatuses } from "../../engine/fieldboss.js";
@@ -53,10 +53,19 @@ registerWidget({
     let body;
     if (!all) body = '<div class="tm-empty">No bosses tracked yet. <button type="button" class="link" data-choose>Choose bosses</button> or star them in the boss list.</div>';
     else if (!statuses.length) body = `<div class="tm-empty">None of your ${all} tracked bosses spawns within ${Number(ctx.settings.hours) || 1} h.</div>`;
-    else body = `<div class="tm-boss-grid">${statuses.map((s) => bossCardHtml(s, { tracked: tracked.has(s.boss.id), showDone: true })).join("")}</div>`;
+    else body = `<div class="tm-boss-row">${statuses.map((s) => bossCardHtml(s, { tracked: tracked.has(s.boss.id), showDone: true })).join("")}</div>`;
     el.innerHTML = `${feedLineHtml(serverId(), ctx.now)}${body}`;
     const unwire = wireBosses(el);
-    return () => { unwatch(); unwire(); };
+    const row = el.querySelector(".tm-boss-row");
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const max = row.scrollWidth - row.clientWidth;
+      if (max <= 0 || (e.deltaY < 0 && row.scrollLeft <= 0) || (e.deltaY > 0 && row.scrollLeft >= max - 1)) return;
+      e.preventDefault();
+      row.scrollLeft += e.deltaY;
+    };
+    if (row) row.addEventListener("wheel", onWheel, { passive: false });
+    return () => { unwatch(); unwire(); if (row) row.removeEventListener("wheel", onWheel); };
   },
 });
 
