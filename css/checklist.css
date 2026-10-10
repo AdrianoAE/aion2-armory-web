@@ -127,3 +127,4 @@
 .cl-plan-off td, .cl-plan-off th { opacity: 0.6; }
 .cl-lost { color: var(--danger); font-weight: 600; }
 .cl-plan-note { margin-top: 8px; max-width: 900px; line-height: 1.5; }
+.cl-plan-counted { padding: 1px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); border: 1px dashed color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 999px; cursor: help; }

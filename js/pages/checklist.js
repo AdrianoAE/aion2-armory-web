@@ -295,6 +295,7 @@ function planChips(row) {
     if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
     return `<span class="muted small">Not enough energy for a cube</span>`;
   }
+  if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every cube its energy pays for, and the alts adapt">Counted at full use</span>${chips.join("")}`;
   if (row.fromExtra) chips.push(`<span class="muted small" title="Cubes paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
   return chips.join("");
 }
@@ -349,8 +350,9 @@ function planCard(planner, columns, now) {
       <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
-    <div class="muted small cl-plan-note">Base energy is spent first, because it stops refilling at ${ODYLE_MAX}. Additional energy (+N) never expires:
-      it only fills cubes that still pay full Kina, the main's first, and the rest waits for a later week, so always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
+    <div class="muted small cl-plan-note">The main does what it needs: it is counted at full use, every cube its base and additional energy pay for, and the alts adapt around it.
+      An alt spends its base energy first, because it stops refilling at ${ODYLE_MAX}; its additional energy (+N) never expires, so it only fills cubes that still pay full Kina and the rest waits for a later week.
+      Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
       Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
       Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}; higher item levels get the Transcendence runs first.
       Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and cube limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
