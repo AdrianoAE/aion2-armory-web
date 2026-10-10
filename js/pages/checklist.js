@@ -290,18 +290,20 @@ function planCharacters(planner, columns, now) {
 function planChips(row) {
   const chips = [];
   if (row.transcendence) chips.push(`<span class="cl-plan-chip transcendence" title="Transcendence stage ${row.stage.stage} (item level ${number(row.stage.itemLevel)}+)">Transcendence ★${row.stage.stage} × ${row.transcendence}</span>`);
-  if (row.conquest) chips.push(`<span class="cl-plan-chip conquest" title="${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
+  if (row.conquest) chips.push(`<span class="cl-plan-chip expedition" title="Expedition, Conquest: ${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
   if (!chips.length) {
     if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
     return `<span class="muted small">Not enough energy for a cube</span>`;
   }
+  if (row.fromExtra) chips.push(`<span class="muted small" title="Cubes paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
   return chips.join("");
 }
 
-function spareText(row) {
-  if (row.leftover < CUBE_COST) return '<span class="muted">—</span>';
-  const skip = row.skipPurchases ? `<div class="small">buy ${row.skipPurchases} fewer</div>` : "";
-  return `<span class="cl-spare" title="Energy the weekly cube limits leave unused">${number(row.leftover)}</span>${skip}`;
+function keptText(row) {
+  const parts = [];
+  if (row.baseLost >= ODYLE_PER_TICK) parts.push(`<div class="cl-lost" title="Base energy the weekly cube limits leave unspent stops refilling at ${ODYLE_MAX}">loses ${number(row.baseLost)} to the cap</div>`);
+  if (row.extraKept > 0) parts.push(`<div class="muted" title="Additional energy never expires: it waits for a week with free cubes at full Kina">(+${number(row.extraKept)}) kept</div>`);
+  return parts.join("") || '<span class="muted">—</span>';
 }
 
 function cutText(mode, after) {
@@ -326,31 +328,32 @@ function planCard(planner, columns, now) {
     const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span></th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
     const row = rows.get(c.id);
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
-    const extra = row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : "";
-    const week = `<span title="Now ${number(row.energy)} · refills +${number(row.regen)} before the reset${row.buyable ? ` · +${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.total)}</span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
-    return `<tr>${head}<td>${number(row.base)}${extra}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row)}</div></td><td>${spareText(row)}</td></tr>`;
+    const cap = odyleCapText(planner.odyle[c.id], now);
+    const odyle = `${number(row.base)}${row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : ""}${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}`;
+    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)} <span class="muted">(+${number(row.extraEnergy)})</span></span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
+    return `<tr>${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row)}</div></td><td>${keptText(row)}</td></tr>`;
   }).join("");
   const runInput = (mode, label) => `<label class="cl-plan-count">${label} <input type="number" min="0" value="${runs[mode]}" data-runs="${mode}"></label>`;
   return `<section class="card cl-plan">
     <div class="cl-card-head"><h2>Odyle plan</h2><span class="muted small">until the weekly reset ${escapeHtml(capMoment(result.reset, now))}, in ${durationText(result.reset - now)} · every character still refills +${result.regen}</span></div>
     <div class="cl-plan-server">
-      <span class="muted small">Server runs this week, from <i>Weekly Cumulative Play Reward</i> on the dungeon page:</span>
-      ${runInput("conquest", "Conquest")}${runInput("transcendence", "Transcendence")}
+      <span class="muted small">Server play counts this week, from <i>Cumulative Play Reward</i> in the dungeon window:</span>
+      ${runInput("conquest", "Expedition")}${runInput("transcendence", "Transcendence")}
     </div>
     <div class="cl-plan-summary">
-      <span class="cl-plan-chip conquest">Conquest +${result.planned.conquest} → ${result.after.conquest} runs</span><span class="muted small">${cutText("conquest", result.after.conquest)}</span>
-      <span class="cl-plan-chip transcendence">Transcendence +${result.planned.transcendence} → ${result.after.transcendence} runs</span><span class="muted small">${cutText("transcendence", result.after.transcendence)}</span>
+      <span class="cl-plan-chip expedition">Expedition +${result.planned.conquest} → ${result.after.conquest}</span><span class="muted small">${cutText("conquest", result.after.conquest)}</span>
+      <span class="cl-plan-chip transcendence">Transcendence +${result.planned.transcendence} → ${result.after.transcendence}</span><span class="muted small">${cutText("transcendence", result.after.transcendence)}</span>
       ${result.planned.conquest + result.planned.transcendence ? `<span class="small">Kina on these runs: <b>${result.averagePercent}%</b> on average</span>` : ""}
     </div>
     <div class="cl-scroll"><table class="cl-plan-grid">
-      <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Spare</th></tr></thead>
+      <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
-    <div class="muted small cl-plan-note">Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Conquest and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
-      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((s) => number(s.itemLevel)).join(" / ")}.
-      Runs fill Conquest and Transcendence so the server's Kina cut bites as late as possible; higher item levels get the Transcendence runs first.
-      The main buys and crafts ${purchaseLimit("main")} Energy crystals each, alts ${purchaseLimit("alt")}, at +${ENERGY_PER_ITEM} each.
-      Figures from the Fextralife wiki and DaevaGuides; check the in-game entry window.</div>
+    <div class="muted small cl-plan-note">Base energy is spent first, because it stops refilling at ${ODYLE_MAX}. Additional energy (+N) never expires:
+      it only fills cubes that still pay full Kina, the main's first, and the rest waits for a later week, so always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
+      Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
+      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}; higher item levels get the Transcendence runs first.
+      Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and cube limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
   </section>`;
 }
 

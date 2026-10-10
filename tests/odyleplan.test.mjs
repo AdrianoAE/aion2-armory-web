@@ -38,7 +38,7 @@ test("purchases only count in the week they were made", () => {
   assert.equal(plan.purchaseLimit("alt"), 4);
 });
 
-test("weekly cube limits cap each character and leave the spare purchases", () => {
+test("base energy goes first, additional fills the main's free cubes and the rest is kept", () => {
   const result = plan.planWeek({
     now: JUST_AFTER_RESET,
     characters: [
@@ -50,14 +50,16 @@ test("weekly cube limits cap each character and leave the spare purchases", () =
   const [main, alt] = result.rows;
   assert.equal(result.rows.length, 2);
   assert.equal(main.total, 840 + 1600);
-  assert.equal(main.usable, 35);
+  assert.equal(main.cubes, 35);
+  assert.equal(main.fromExtra, 14);
   assert.equal(main.transcendence, 14);
   assert.equal(main.conquest, 21);
   assert.equal(main.stage.stage, 4);
-  assert.equal(main.skipPurchases, 26);
+  assert.equal(main.extraKept, 1600 - 14 * 40);
+  assert.equal(main.baseLost, 0);
   assert.equal(alt.transcendence, 0);
   assert.equal(alt.conquest, 21);
-  assert.equal(alt.skipPurchases, 8);
+  assert.equal(alt.extraKept, 320);
   assert.equal(result.averagePercent, 100);
 });
 
@@ -73,4 +75,25 @@ test("runs past the Conquest cut go to Transcendence", () => {
   assert.deepEqual(result.planned, { conquest: 12, transcendence: 28 });
   assert.deepEqual(result.rows.map((r) => [r.conquest, r.transcendence]), [[6, 14], [6, 14]]);
   assert.deepEqual(result.after, { conquest: 92, transcendence: 28 });
+});
+
+test("additional energy waits once the Kina cut starts", () => {
+  const result = plan.planWeek({
+    now: JUST_AFTER_RESET,
+    runsDone: { conquest: 84, transcendence: 56 },
+    characters: [{ id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 400, purchasesLeft: 40 }],
+  });
+  const [main] = result.rows;
+  assert.equal(main.cubes, 21);
+  assert.equal(main.fromExtra, 0);
+  assert.equal(main.extraKept, 2000);
+});
+
+test("base energy a character cannot spend is lost at the cap", () => {
+  const result = plan.planWeek({
+    now: JUST_AFTER_RESET,
+    characters: [{ id: "a", name: "Low", role: "alt", itemLevel: 500, base: 800, extra: 0, purchasesLeft: 0 }],
+  });
+  assert.equal(result.rows[0].cubes, 0);
+  assert.equal(result.rows[0].baseLost, 800);
 });

@@ -113,7 +113,7 @@
 .cl-plan-count { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
 .cl-plan-count input { width: 70px; }
 .cl-plan-chip { --pc: var(--accent); display: inline-block; padding: 1px 9px; font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--pc); border: 1px solid color-mix(in srgb, var(--pc) 45%, transparent); background: color-mix(in srgb, var(--pc) 12%, transparent); border-radius: 999px; cursor: help; }
-.cl-plan-chip.conquest { --pc: var(--asmos, #a78bfa); }
+.cl-plan-chip.expedition { --pc: var(--asmos, #a78bfa); }
 .cl-plan-chip.transcendence { --pc: var(--portals, #f472b6); }
 .cl-plan-grid { width: 100%; border-collapse: collapse; }
 .cl-plan-grid th, .cl-plan-grid td { padding: 5px 8px; text-align: left; white-space: nowrap; vertical-align: middle; border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent); }
@@ -125,5 +125,5 @@
 .cl-plan-grid input { width: 84px; }
 .cl-plan-runs { display: flex; flex-wrap: wrap; gap: 4px; }
 .cl-plan-off td, .cl-plan-off th { opacity: 0.6; }
-.cl-spare { color: var(--warn); font-weight: 600; }
+.cl-lost { color: var(--danger); font-weight: 600; }
 .cl-plan-note { margin-top: 8px; max-width: 900px; line-height: 1.5; }

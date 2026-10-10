@@ -1,8 +1,9 @@
 // Odyle plan: how many reward cubes each character can still open before the
-// weekly reset, and whether each goes to Conquest or Transcendence so the
-// server's Kina cut (Cumulative Play Reward Adjustment) costs the least.
-// Numbers from aion2.wiki.fextralife.com and daevaguides.com, 2026-10; the
-// Kina cut table from r/Aion2.
+// weekly reset, and whether each goes to an Expedition (Conquest) or to
+// Transcendence so the server's Kina cut (Cumulative Play Reward Adjustment)
+// costs the least. Entry item levels, cube cost and weekly cube limits from
+// aion2.wiki.fextralife.com and daevaguides.com, 2026-10; the Kina cut table
+// from the game's own Cumulative Play Reward Adjustment window.
 
 import { ODYLE_MAX, ODYLE_PER_TICK, lastReset, nextOdyleTick, nextReset } from "./planner.js";
 
@@ -70,6 +71,9 @@ export function regenUntil(now, until) {
   return ticks * ODYLE_PER_TICK;
 }
 
+// Base energy is spent first: it stops refilling at the cap. Additional
+// energy never expires, so it only fills cubes that still pay full Kina
+// (the main's first) and the rest waits for a later week.
 // characters: [{ id, name, role, itemLevel, base, extra, purchasesLeft }]
 // runsDone: the server's { conquest, transcendence } counts this week.
 export function planWeek({ characters, runsDone = {}, now = new Date() }) {
@@ -78,18 +82,21 @@ export function planWeek({ characters, runsDone = {}, now = new Date() }) {
   const done = { conquest: Math.max(0, Number(runsDone.conquest) || 0), transcendence: Math.max(0, Number(runsDone.transcendence) || 0) };
   const rows = characters.filter((c) => c.role !== "off").map((c) => {
     const itemLevel = Number(c.itemLevel) || 0;
+    const base = Math.max(0, Math.min(ODYLE_MAX, c.base || 0));
+    const extra = Math.max(0, c.extra || 0);
     const buyable = Math.max(0, c.purchasesLeft || 0) * ENERGY_PER_ITEM;
-    const energy = Math.max(0, Math.min(ODYLE_MAX, c.base || 0)) + Math.max(0, c.extra || 0);
-    const total = energy + regen + buyable;
+    const baseEnergy = base + regen;
+    const extraEnergy = extra + buyable;
     const tier = conquestTier(itemLevel);
     const stage = transcendenceStage(itemLevel);
-    const cubes = Math.floor(total / CUBE_COST);
-    const usable = Math.min(cubes, (tier ? WEEKLY_CUBES.conquest : 0) + (stage ? WEEKLY_CUBES.transcendence : 0));
+    const capacity = (tier ? WEEKLY_CUBES.conquest : 0) + (stage ? WEEKLY_CUBES.transcendence : 0);
+    const usable = Math.min(capacity, Math.floor(baseEnergy / CUBE_COST));
     return {
-      ...c, itemLevel, energy, regen, buyable, total, tier, stage, cubes, usable,
+      ...c, itemLevel, base, extra, regen, buyable, baseEnergy, extraEnergy, total: baseEnergy + extraEnergy, tier, stage, usable,
+      extraRoom: Math.min(capacity, Math.floor((baseEnergy + extraEnergy) / CUBE_COST)) - usable,
       tLow: stage ? Math.max(0, usable - (tier ? WEEKLY_CUBES.conquest : 0)) : 0,
       tHigh: stage ? Math.min(usable, WEEKLY_CUBES.transcendence) : 0,
-      conquest: 0, transcendence: 0,
+      conquest: 0, transcendence: 0, fromExtra: 0,
     };
   });
 
@@ -110,16 +117,35 @@ export function planWeek({ characters, runsDone = {}, now = new Date() }) {
     r.transcendence += more;
     left -= more;
   }
-  for (const r of rows) {
-    r.conquest = r.usable - r.transcendence;
-    r.leftover = r.total - r.usable * CUBE_COST;
-    r.skipPurchases = Math.min(Math.max(0, r.purchasesLeft || 0), Math.floor(r.leftover / ENERGY_PER_ITEM));
-  }
+  for (const r of rows) r.conquest = r.usable - r.transcendence;
 
   const planned = { conquest: runs - bestT, transcendence: bestT };
+  const fullKina = (mode) => kinaPercent(mode, done[mode] + planned[mode]) === 100;
+  const extraOrder = [...rows].sort((a, b) => (b.role === "main") - (a.role === "main") || b.itemLevel - a.itemLevel);
+  for (const r of extraOrder) {
+    while (r.fromExtra < r.extraRoom) {
+      let mode = null;
+      if (r.stage && r.transcendence < WEEKLY_CUBES.transcendence && fullKina("transcendence")) mode = "transcendence";
+      else if (r.tier && r.conquest < WEEKLY_CUBES.conquest && fullKina("conquest")) mode = "conquest";
+      if (!mode) break;
+      r[mode] += 1;
+      planned[mode] += 1;
+      r.fromExtra += 1;
+    }
+  }
+
+  for (const r of rows) {
+    const spent = (r.conquest + r.transcendence) * CUBE_COST;
+    r.cubes = r.conquest + r.transcendence;
+    r.extraKept = r.extraEnergy - Math.max(0, spent - r.baseEnergy);
+    r.baseLost = Math.max(0, r.baseEnergy - Math.min(spent, r.baseEnergy) - ODYLE_MAX);
+  }
+
+  const total = planned.conquest + planned.transcendence;
+  const kina = kinaTotal("conquest", done.conquest, planned.conquest) + kinaTotal("transcendence", done.transcendence, planned.transcendence);
   return {
     reset, regen, done, planned, rows,
     after: { conquest: done.conquest + planned.conquest, transcendence: done.transcendence + planned.transcendence },
-    averagePercent: runs ? Math.round(bestValue / runs) : 0,
+    averagePercent: total ? Math.round(kina / total) : 0,
   };
 }
