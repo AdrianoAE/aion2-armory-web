@@ -286,10 +286,11 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     dock.innerHTML = `<div class="wa-dock-hint">Drop here to pin to the ${position}</div><div class="wa-dock-items"></div>`;
     docks[position] = dock;
   }
-  if (scroller) {
-    scroller.prepend(docks.top);
-    scroller.append(docks.bottom);
-    scroller.classList.add("wa-host");
+  const hostTop = scroller && document.getElementById("dock-top");
+  const hostBottom = scroller && document.getElementById("dock-bottom");
+  if (hostTop && hostBottom) {
+    hostTop.append(docks.top);
+    hostBottom.append(docks.bottom);
   } else {
     root.prepend(docks.top);
     root.append(docks.bottom);
@@ -830,7 +831,6 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
     window.removeEventListener("themechange", onTheme);
     root.remove();
     Object.values(docks).forEach((d) => d.remove());
-    if (scroller && !scroller.querySelector(".wa-dock")) scroller.classList.remove("wa-host");
   }
 
   sync();
