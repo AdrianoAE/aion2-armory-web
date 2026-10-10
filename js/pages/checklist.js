@@ -140,6 +140,13 @@ function odyleExtra(planner, id) {
   return Math.max(0, Math.round(Number((planner.odyle[id] || {}).extra) || 0));
 }
 
+// A character that neither buys nor crafts Energy crystals has no additional
+// energy to track, unless some is still left from before.
+function tracksExtra(planner, id) {
+  const buys = planner.tasks.character.some((t) => ODYLE_PURCHASE_TASKS.includes(t.name) && !isExcluded(planner, id, t.id));
+  return buys || odyleExtra(planner, id) > 0;
+}
+
 function setOdyleExtra(planner, id, extra) {
   const entry = planner.odyle[id] || { value: 0, since: new Date().toISOString() };
   planner.odyle[id] = { ...entry, extra: Math.max(0, Math.round(extra)) };
@@ -256,8 +263,11 @@ function characterCard(planner, columns, now) {
   let body = `<tr class="cl-odyle"><th scope="row"><span class="cl-odyle-label">Odyle energy</span> <span class="muted small">+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))} · max ${ODYLE_MAX}</span></th>${columns.map((c) => {
     const value = odyleValue(planner, c.id, now);
     const cap = odyleCapText(planner.odyle[c.id], now);
+    const extra = tracksExtra(planner, c.id)
+      ? `<span class="cl-extra-wrap" title="Additional energy, the game's (+N): from Energy crystals and crafting, it does not refill">(+<input type="number" min="0" value="${odyleExtra(planner, c.id)}" data-odyle-extra="${c.id}" class="cl-extra">)</span>`
+      : "";
     return `<td><div class="cl-odyle-pair"><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself">
-        <span class="cl-extra-wrap" title="Additional energy, the game's (+N): from Energy crystals and crafting, it does not refill">(+<input type="number" min="0" value="${odyleExtra(planner, c.id)}" data-odyle-extra="${c.id}" class="cl-extra">)</span></div>${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
+        ${extra}</div>${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
   }).join("")}</tr>`;
   planner.nightmare = planner.nightmare || {};
   body += `<tr class="cl-odyle cl-nightmare"><th scope="row"><span class="cl-odyle-label">Nightmare entries</span> <span class="muted small">+${NIGHTMARE_PER_DAY} at the daily reset · max ${NIGHTMARE_MAX}</span></th>${columns.map((c) => {
@@ -361,7 +371,7 @@ function planCard(planner, columns, now) {
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
     const cap = odyleCapText(planner.odyle[c.id], now);
     const odyle = `${number(row.base)}${row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : ""}${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}`;
-    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)} <span class="muted">(+${number(row.extraEnergy)})</span></span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
+    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)}${row.extraEnergy ? ` <span class="muted">(+${number(row.extraEnergy)})</span>` : ""}</span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
     if (row.fullUse && !row.main) rank += 1;
     return `<tr class="cl-plan-${c.role}">${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row, rank)}</div></td><td>${keptText(row)}</td></tr>`;
   }).join("");
