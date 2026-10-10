@@ -132,8 +132,8 @@ dialog.tm-map-dialog.faction-asmo { --faction: var(--asmos); }
 .wa-pin .tm-boss-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .wa-pin .tm-boss-grid > * { flex: 0 0 380px; max-width: 100%; }
 .tm-boss-row { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding-bottom: 2px; }
-.tm-boss-row > * { flex: 0 0 min(340px, 100%); }
-.wa-pin .tm-boss-row > * { flex-basis: min(380px, 100%); }
+.tm-boss-row > * { flex: 0 0 min(300px, 100%); }
+.wa-pin .tm-boss-row > * { flex-basis: min(330px, 100%); }
 .wa-pin .tm-feed-line { margin-bottom: 4px; }
 
 /* Heroic Artwork is orange in game, Unique is yellow */

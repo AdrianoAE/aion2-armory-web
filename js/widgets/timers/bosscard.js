@@ -43,10 +43,10 @@ export function bossCardHtml(status, { tracked = false, showDone = false } = {})
     <div class="tm-boss-side">
       ${stateHtml(status)}
       <div class="tm-boss-actions">
-        ${showDone ? `<label class="tm-done" title="Killed it: the mark clears by itself when the boss spawns again"><input type="checkbox" data-done="${esc(boss.id)}" ${done ? "checked" : ""}> Done</label>` : ""}
         <button type="button" class="tm-track" data-track="${esc(boss.id)}" aria-pressed="${tracked}" title="${tracked ? "Stop tracking" : "Track this boss"}">${tracked ? "★" : "☆"}</button>
         ${map}
       </div>
+      ${showDone ? `<label class="tm-done" title="Killed it: the mark clears by itself when the boss spawns again"><input type="checkbox" data-done="${esc(boss.id)}" ${done ? "checked" : ""}> Done</label>` : ""}
     </div>
   </div>`;
 }
