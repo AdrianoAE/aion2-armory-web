@@ -121,10 +121,23 @@ canvas.tm-timeline { display: block; width: 100%; }
 .tm-cd-sub { font-size: 11.5px; color: var(--muted); }
 .tm-cd.running .tm-cd-sub { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--kind); }
 .tm-cd-time { flex: none; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tm-cd { flex-wrap: wrap; }
+.tm-cd-strip { flex-basis: 100%; display: flex; }
+.tm-cd-strip .tm-strip { flex: 1; width: auto; max-width: none; margin: 0; }
+
+/* an event's upcoming times, now at the left edge */
+.tm-strip { display: inline-flex; flex-direction: column; gap: 1px; width: 260px; max-width: 40vw; margin-left: 10px; vertical-align: middle; }
+.tm-strip-track { position: relative; height: 12px; overflow: hidden; background: var(--track); border-left: 2px solid var(--accent); border-radius: 0 3px 3px 0; }
+.tm-strip-tick { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid-line); }
+.tm-strip-block { position: absolute; top: 2px; bottom: 2px; min-width: 3px; border-radius: 2px; background: color-mix(in srgb, var(--kind) 40%, transparent); }
+.tm-strip-block.running { background: color-mix(in srgb, var(--kind) 75%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 45%, transparent); }
+.tm-strip-portal { position: absolute; top: 2px; bottom: 2px; min-width: 2px; border-radius: 2px; background: var(--kind); }
+.tm-strip-mark { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--kind); }
+.tm-strip-labels { position: relative; height: 11px; font-size: 9.5px; line-height: 11px; font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tm-strip-labels span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
 .wa-pin[data-widget="timers.countdowns"] { flex: 0 1 auto; }
 .wa-pin[data-widget="timers.countdowns"] .wa-pin-title { max-width: 16em; }
 .wa-pin[data-widget="timers.countdowns"] .wa-pin-body { overflow: hidden; }
-.wa-pin[data-item^="timers.countdowns#event-"] [data-act="settings"],
 .wa-pin[data-item^="timers.countdowns#event-"] [data-act="unpin"] span { display: none; }
 /* pinned events: their own row under the other pinned widgets */
 .wa-dock-items > [data-item^="timers.countdowns#event-"] { order: 2; align-self: flex-start; }
