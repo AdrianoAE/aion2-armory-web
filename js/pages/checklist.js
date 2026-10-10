@@ -325,7 +325,7 @@ function planCard(planner, columns, now) {
     const c = chars.find((x) => x.id === column.id);
     const manual = Number((planner.item_level || {})[c.id]) || "";
     const auto = autoItemLevel(column);
-    const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}` : "Enter the item level shown in game"}">`;
+    const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}; a sync replaces a typed value` : "Enter the item level shown in game, or sync the character"}">${!manual && auto.value ? `<div class="muted small">${auto.source === "aion2.plaync.com" ? "synced" : "GearScore"}</div>` : ""}`;
     const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span></th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
     const row = rows.get(c.id);
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;

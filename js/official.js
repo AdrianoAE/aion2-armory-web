@@ -2,7 +2,7 @@
 // the search / pick / progress / summary dialog and the profile writes.
 
 import { prefs } from "./ui.js";
-import { addCharacter, bp, characters, currentCharacter, save, selectCharacter } from "./state.js";
+import { addCharacter, bp, characters, currentCharacter, plannerCharacterNamed, save, selectCharacter } from "./state.js";
 import { daevanionSetsOf, equipSetsOf, linkedSkillBuild, buildOfPreset, renamePresetIn, selectPresetIn, skillBuildsOf, uniqueName } from "./builds.js";
 import { data as skillsData, emptyBuildState, emptyLayout, ready as skillsReady, skillBonusFromBoards, skillBuild } from "./engine/skills.js";
 import { data as equipmentData, detailCache, loadData, rememberItem, rememberSheet } from "./pages/equipment_data.js";
@@ -209,6 +209,8 @@ function writeImport(p, target, who, result) {
     region: who.region, serverId: who.serverId, serverName: who.serverName || profile.serverName || "",
     characterId: who.characterId, level: Number(profile.characterLevel) || null, itemLevel: result.itemLevel, importedAt: new Date().toISOString(),
   };
+  const plannerEntry = result.itemLevel ? plannerCharacterNamed(target.name) : null;
+  if (plannerEntry && p.planner && p.planner.item_level) delete p.planner.item_level[plannerEntry.id];
   selectPresetIn(p, cls, presetName);
   save();
   return { presetName, buildName, skillName, skills, updatedBoards, arcanaCount };

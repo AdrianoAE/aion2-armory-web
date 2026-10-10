@@ -1,4 +1,5 @@
 import { characterWidget, className, escapeHtml, kindChipsHtml, loadPage, ODYLE_MAX, odyleLevel, progressOf, targetOf } from "./common.js";
+import { bp } from "../../state.js";
 
 let gearScoreOf = null;
 
@@ -8,6 +9,12 @@ function loadGearScore() {
     gearScoreOf.catch(() => { gearScoreOf = null; });
   }
   return gearScoreOf;
+}
+
+function itemLevelHtml(target) {
+  const synced = (bp().official_characters || {})[target.entry && target.entry.key];
+  if (!synced || !Number(synced.itemLevel)) return "";
+  return `<div class="cw-ilvl" title="Item level in game, from aion2.plaync.com · last sync ${escapeHtml(new Date(synced.importedAt).toLocaleString())}"><span class="muted">Item level</span> <b>${Number(synced.itemLevel).toLocaleString()}</b></div>`;
 }
 
 function odyleHtml(energy) {
@@ -34,7 +41,7 @@ characterWidget({
         <img class="cw-class-icon" src="assets/class_icons/${escapeHtml(target.cls)}.png" alt="" title="${escapeHtml(className(target.cls))}">
         <div class="cw-id-text"><div class="cw-name">${escapeHtml(target.name || "Unnamed")}</div>
           <div class="cw-build muted small" title="Build · Preset">${escapeHtml(className(target.cls))}${build ? ` · ${escapeHtml(build)}` : ""}</div></div>
-        <div class="cw-gs" title="GearScore"><span class="muted">GS</span> <b class="cw-gs-value">…</b></div>
+        ${itemLevelHtml(target)}<div class="cw-gs" title="GearScore calculated from this preset"><span class="muted">GS</span> <b class="cw-gs-value">…</b></div>
       </div>
       ${odyleHtml(progress.odyle)}
       ${progress.kinds.length ? `<div class="cw-chips">${kindChipsHtml(progress.kinds)}</div>` : ""}`;

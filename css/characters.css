@@ -103,3 +103,6 @@
 .cw-odyle-line.full b { color: var(--danger); }
 
 .cw-nightmare-line .cw-odyle-label { color: var(--secondary); }
+.cw-ilvl { flex: none; font-size: 12px; text-align: right; white-space: nowrap; cursor: help; }
+.cw-ilvl b { color: var(--accent); font-size: 14px; }
+.cw-ilvl + .cw-gs { opacity: 0.75; }

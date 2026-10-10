@@ -193,3 +193,4 @@
   .eq-columns { grid-template-columns: 172px minmax(0, 1fr); }
   .eq-col-right { grid-column: 1 / -1; }
 }
+.eq-ilvl { color: var(--fg); font-weight: 700; cursor: help; }

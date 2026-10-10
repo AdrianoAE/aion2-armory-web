@@ -2,7 +2,7 @@
 // Equipment Item panel, Stat Values, Quick Select, the Property
 // Priority editor, EQ Priority and Build Compare.
 
-import { bp, save } from "../state.js";
+import { bp, currentCharacter, save } from "../state.js";
 import * as D from "./equipment_data.js";
 import {
   ARMOR_CATEGORIES, BELT_CATEGORY, DEFENSE_STAT_ID, HP_STAT_ID, SCALING_STAT_ID, RUNE_PVE_ITEM_ID, RUNE_PVP_ITEM_ID,
@@ -262,7 +262,7 @@ function statValues() {
   }
   return `<div class="eq-stats">
     <h2>${T.stat_values}</h2>
-    <div class="eq-gearscore" data-gearscore title="${h(gearScoreTitle(gearParts))}">GearScore: ${fmt(gearscore)}</div>
+    <div class="eq-gearscore" data-gearscore title="${h(gearScoreTitle(gearParts))}">GearScore: ${fmt(gearscore)}${syncedItemLevelHtml()}</div>
     ${iconPanel}
     <div class="eq-tabs">${tabs.map(([key, label]) => `<button data-action="stat-tab" data-tab="${key}"${ui.statTab === key ? ' class="active"' : ""}>${label}</button>`).join("")}</div>
     <div class="eq-tab-body card">${body}</div>
@@ -1110,6 +1110,12 @@ export function gearScoreParts(classKey, setName) {
   return { items, daevanion, arcana, total: items + daevanion + arcana };
 }
 
+function syncedItemLevelHtml(key = (currentCharacter() || {}).key) {
+  const synced = key && (bp().official_characters || {})[key];
+  if (!synced || !Number(synced.itemLevel)) return "";
+  return ` <span class="eq-ilvl" title="Item level in game, from aion2.plaync.com · last sync ${h(new Date(synced.importedAt).toLocaleString())}">· in game ${fmt(Number(synced.itemLevel))}</span>`;
+}
+
 export function gearScore(classKey, setName) {
   const parts = gearScoreParts(classKey, setName);
   return parts ? parts.total : 0;
@@ -1130,5 +1136,6 @@ export function equipmentSummaryHtml(classKey, setName) {
     return `<span class="eq-summary-slot" title="${h(item ? item.name || "" : T.slot_empty_tooltip(slotLabel(slotId)))}">${item ? iconHtml(item, "small") : placeholderHtml(slotId)}${level ? `<span class="eq-summary-enchant">+${level}</span>` : ""}</span>`;
   }).join("");
   const parts = gearScoreParts(classKey, setName);
-  return `<div class="eq-summary"><div class="eq-summary-slots">${cells}</div><div class="eq-gearscore" title="${h(gearScoreTitle(parts))}">GearScore: ${fmt(parts.total)}</div></div>`;
+  const key = b.character_name ? `${String(classKey).toLowerCase()}|${String(b.character_name).trim().toLowerCase()}` : null;
+  return `<div class="eq-summary"><div class="eq-summary-slots">${cells}</div><div class="eq-gearscore" title="${h(gearScoreTitle(parts))}">GearScore: ${fmt(parts.total)}${syncedItemLevelHtml(key)}</div></div>`;
 }
