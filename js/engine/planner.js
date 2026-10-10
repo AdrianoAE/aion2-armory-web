@@ -109,6 +109,7 @@ export function defaultPlannerTasks() {
       ["Craft Odyle (morph)", "weekly"],
       ["Ascension trial", "weekly"],
       ["Battlefield", "weekly"],
+      ["Abyss silver medals", "weekly"],
       ["Abyss portals", "portals"],
     ]),
   };
