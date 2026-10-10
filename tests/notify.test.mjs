@@ -141,7 +141,6 @@ test("Odyle reaches the threshold and the cap on the 3-hour ticks", () => {
 
 test("weekly reminder opens hoursBefore the Wednesday reset while the shop task is unticked", () => {
   const tasks = defaultPlannerTasks();
-  const shopServer = tasks.server.find((t) => t.name === SHOP_SPECIAL_TASK);
   const shopChar = tasks.character.find((t) => t.name === SHOP_SPECIAL_TASK);
   const reset = utc(2026, 9, 14, 9, 0);
   const planner = { tasks, done: { [`ch1:${shopChar.id}`]: utc(2026, 9, 8, 12).toISOString() }, odyle: {} };
@@ -151,12 +150,11 @@ test("weekly reminder opens hoursBefore the Wednesday reset while the shop task 
   const alert = core.weeklyAlert(planner, scopes, s, before);
   assert.deepEqual(alert.at, reset);
   assert.deepEqual(alert.fireAt, utc(2026, 9, 13, 21, 0));
-  assert.deepEqual(alert.pending, ["My server", "Solenne"]);
+  assert.deepEqual(alert.pending, ["Solenne"]);
   assert.equal(core.dueAlerts([alert], before).length, 0);
   const inside = utc(2026, 9, 13, 22, 0);
   assert.equal(core.dueAlerts([core.weeklyAlert(planner, scopes, s, inside)], inside).length, 1);
-  assert.equal(core.alertText(alert, inside).body, `Weekly resets in 11 h — ${SHOP_SPECIAL_TASK} not done for: My server, Solenne`);
-  planner.done[`sv1:${shopServer.id}`] = inside.toISOString();
+  assert.equal(core.alertText(alert, inside).body, `Weekly resets in 11 h — ${SHOP_SPECIAL_TASK} not done for: Solenne`);
   planner.done[`ch2:${shopChar.id}`] = inside.toISOString();
   assert.equal(core.weeklyAlert(planner, scopes, s, inside), null);
 });

@@ -96,3 +96,34 @@
 
 .cl-odyle-cap { margin-top: 3px; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .cl-odyle-cap.full { color: var(--danger); font-weight: 600; }
+
+.cl-role { display: inline-block; margin-top: 2px; padding: 0 7px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 999px; }
+.cl-role.role-main { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.cl-role.role-off { color: var(--muted); border: 1px solid var(--border); }
+.cl-odyle-pair { display: inline-flex; align-items: center; gap: 4px; }
+.cl-extra-wrap { display: inline-flex; align-items: center; color: var(--muted); font-size: 12px; cursor: help; }
+.cl-odyle input.cl-extra { width: 58px; margin: 0 1px; }
+.cl-buy input { width: 52px; }
+.cl-buy-limit { margin-left: 3px; font-size: 12px; color: var(--muted); }
+.cl-row td.cl-buy.done { background: color-mix(in srgb, var(--kc) 13%, transparent); }
+
+/* Odyle plan */
+.cl-plan { margin-top: 10px; max-width: 1180px; }
+.cl-plan-server, .cl-plan-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 8px; }
+.cl-plan-count { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.cl-plan-count input { width: 70px; }
+.cl-plan-chip { --pc: var(--accent); display: inline-block; padding: 1px 9px; font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--pc); border: 1px solid color-mix(in srgb, var(--pc) 45%, transparent); background: color-mix(in srgb, var(--pc) 12%, transparent); border-radius: 999px; cursor: help; }
+.cl-plan-chip.conquest { --pc: var(--asmos, #a78bfa); }
+.cl-plan-chip.transcendence { --pc: var(--portals, #f472b6); }
+.cl-plan-grid { width: 100%; border-collapse: collapse; }
+.cl-plan-grid th, .cl-plan-grid td { padding: 5px 8px; text-align: left; white-space: nowrap; vertical-align: middle; border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent); }
+.cl-plan-grid thead th { font-size: 12px; font-weight: 600; color: var(--muted); }
+.cl-plan-grid tbody th { font-weight: 600; }
+.cl-plan-name { display: inline-flex; align-items: center; gap: 6px; color: var(--cc, var(--fg)); }
+.cl-plan-name .class-icon { width: 20px; height: 20px; }
+.cl-plan-grid select { padding: 2px 6px; font-size: 13px; }
+.cl-plan-grid input { width: 84px; }
+.cl-plan-runs { display: flex; flex-wrap: wrap; gap: 4px; }
+.cl-plan-off td, .cl-plan-off th { opacity: 0.6; }
+.cl-spare { color: var(--warn); font-weight: 600; }
+.cl-plan-note { margin-top: 8px; max-width: 900px; line-height: 1.5; }

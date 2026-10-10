@@ -64,10 +64,12 @@ test("durations read as days, hours and minutes", () => {
   assert.equal(planner.durationText((2 * 24 + 4) * 3600000 + 5 * 60000), "2 d 4 h");
 });
 
-test("default tasks use the Buy Shop(H) → Special label on both scopes", () => {
+test("default tasks keep shop and craft per character, the server card keeps its ids", () => {
   const tasks = planner.defaultPlannerTasks();
   assert.equal(planner.SHOP_SPECIAL_TASK, "Buy Shop(H) → Special");
-  assert.deepEqual(tasks.server.find((t) => t.id === "s2"), { id: "s2", name: "Buy Shop(H) → Special", kind: "weekly" });
+  assert.deepEqual(tasks.server.map((t) => t.id), ["s1", "s4", "s5", "s6", "s7"]);
+  assert.ok(!tasks.server.some((t) => planner.ODYLE_PURCHASE_TASKS.includes(t.name)));
+  assert.deepEqual(tasks.character.find((t) => t.id === "c4"), { id: "c4", name: planner.CRAFT_ODYLE_TASK, kind: "weekly" });
   assert.deepEqual(tasks.character.find((t) => t.id === "c3"), { id: "c3", name: "Buy Shop(H) → Special", kind: "weekly" });
   assert.ok(!JSON.stringify(tasks).includes("Buy shop Odyle"));
 });
@@ -83,10 +85,10 @@ test("the old shop label is renamed in place, ticks kept, merge copies folded in
   });
   const p = saved();
   assert.equal(planner.migratePlannerTasks(p), true);
-  assert.deepEqual(p.tasks.server[1], { id: "s2", name: "Buy Shop(H) → Special", kind: "weekly" });
+  assert.deepEqual(p.tasks.server, [{ id: "s1", name: "Duty", kind: "daily" }]);
   assert.deepEqual(p.tasks.character, [{ id: "c2", name: "Buy Shop(H) → Special", kind: "weekly" }]);
-  assert.deepEqual(p.done, { "sv1:s2": "2026-10-08T22:31:45Z", "ch1:c2": "2026-10-09T10:00:00Z", "ch2:c2": "2026-10-09T11:00:00Z" });
-  assert.ok(p.defaults_seen.includes("server:Buy Shop(H) → Special") && p.defaults_seen.includes("character:Buy Shop(H) → Special"));
+  assert.deepEqual(p.done, { "ch1:c2": "2026-10-09T10:00:00Z", "ch2:c2": "2026-10-09T11:00:00Z" });
+  assert.ok(p.defaults_seen.includes("character:Buy Shop(H) → Special"));
   assert.equal(planner.migratePlannerTasks(p), false);
   const fresh = { tasks: planner.defaultPlannerTasks(), done: {}, defaults_seen: [] };
   planner.migratePlannerTasks(fresh);

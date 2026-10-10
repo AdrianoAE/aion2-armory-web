@@ -84,11 +84,15 @@ export function nextOdyleTick(now) {
 }
 
 export const SHOP_SPECIAL_TASK = "Buy Shop(H) → Special";
+export const CRAFT_ODYLE_TASK = "Craft Odyle (morph)";
+export const ODYLE_PURCHASE_TASKS = [SHOP_SPECIAL_TASK, CRAFT_ODYLE_TASK];
 export const KIND_TITLES = { daily: "Daily", weekly: "Weekly", portals: "Abyss portals", available: "Info" };
 
 const RENAMED_TASKS = { "buy shop odyle": SHOP_SPECIAL_TASK };
 // Info rows that became a counter (Nightmare entries) or were dropped.
 const REMOVED_TASKS = new Set(["nightmare", "expedition / transcendence"]);
+// The main character buys and crafts the server's share, so these left the server card.
+const REMOVED_SERVER_TASKS = new Set(ODYLE_PURCHASE_TASKS.map((name) => name.toLowerCase()));
 
 export function defaultPlannerTasks() {
   const tasks = (prefix, entries) => entries.map(([name, kind], i) => ({ id: `${prefix}${i + 1}`, name, kind }));
@@ -96,17 +100,17 @@ export function defaultPlannerTasks() {
     server: tasks("s", [
       ["Duty", "daily"],
       [SHOP_SPECIAL_TASK, "weekly"],
-      ["Craft Odyle (morph)", "weekly"],
+      [CRAFT_ODYLE_TASK, "weekly"],
       ["Daily dungeon", "weekly"],
       ["Command scrolls (Verteron and Abyss)", "weekly"],
       ["Shugo", "available"],
       ["Dimensional boss", "available"],
-    ]),
+    ]).filter((t) => !REMOVED_SERVER_TASKS.has(t.name.toLowerCase())),
     character: tasks("c", [
       ["Farm 1M Kinah", "daily"],
       ["Supply request", "daily"],
       [SHOP_SPECIAL_TASK, "weekly"],
-      ["Craft Odyle (morph)", "weekly"],
+      [CRAFT_ODYLE_TASK, "weekly"],
       ["Ascension trial", "weekly"],
       ["Battlefield", "weekly"],
       ["Abyss silver medals", "weekly"],
@@ -190,6 +194,13 @@ export function migratePlannerTasks(planner) {
           delete planner.done[key];
         }
         tasks.splice(tasks.indexOf(copy), 1);
+      }
+    }
+    if (scope === "server") {
+      for (const task of tasks.filter((t) => REMOVED_SERVER_TASKS.has((t.name || "").trim().toLowerCase()))) {
+        tasks.splice(tasks.indexOf(task), 1);
+        for (const key of Object.keys(planner.done)) if (key.endsWith(":" + task.id)) delete planner.done[key];
+        changed = true;
       }
     }
     for (const label of new Set(Object.values(RENAMED_TASKS))) {

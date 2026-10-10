@@ -1,13 +1,18 @@
-// Checklist: server-wide tasks, per-character tasks with Odyle energy.
-// Ticks are stored with their time and count until the next reset of their
-// kind (CEST schedule); "Info" entries are reminders without a tick.
+// Checklist: server-wide tasks, per-character tasks with Odyle energy, and
+// the week's Odyle plan. Ticks are stored with their time and count until the
+// next reset of their kind (CEST schedule); "Info" entries are reminders
+// without a tick. The main character does the server-wide share.
 
 import { bp, characters, newId, plannerCharacterNamed, plannerServer, save, syncPlannerCharacters } from "../state.js";
 import { isExcluded, setExcluded,
-  KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, PLANNER_KINDS, durationText, isTaskDone, migratePlannerTasks,
+  KIND_TITLES, ODYLE_MAX, ODYLE_PER_TICK, ODYLE_PURCHASE_TASKS, PLANNER_KINDS, capMoment, durationText, isTaskDone, lastReset, migratePlannerTasks,
   nextOdyleTick, nextReset, odyleCapText, odyleEnergy, taskProgress,
   NIGHTMARE_MAX, NIGHTMARE_PER_DAY, nightmareCapText, nightmareEntries,
 } from "../engine/planner.js";
+import {
+  CONQUEST_TIERS, CUBE_COST, ENERGY_PER_ITEM, KINA_CUTS, ROLES, ROLE_TITLES, TRANSCENDENCE_STAGES, WEEKLY_CUBES,
+  kinaPercent, planWeek, purchaseLimit, purchasesThisWeek,
+} from "../engine/odyleplan.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
 
@@ -121,7 +126,7 @@ function rosterColumns() {
     const character = entry.name && plannerCharacterNamed(entry.name);
     if (!character || seen.has(character.id)) continue;
     seen.add(character.id);
-    columns.push({ id: character.id, name: character.name, cls: entry.class });
+    columns.push({ id: character.id, name: character.name, cls: entry.class, key: entry.key, preset: entry.preset });
   }
   return columns;
 }
@@ -129,6 +134,85 @@ function rosterColumns() {
 function odyleValue(planner, id, now) {
   const entry = planner.odyle[id];
   return entry ? odyleEnergy(Number(entry.value), new Date(entry.since), now) : 0;
+}
+
+function odyleExtra(planner, id) {
+  return Math.max(0, Math.round(Number((planner.odyle[id] || {}).extra) || 0));
+}
+
+function setOdyleExtra(planner, id, extra) {
+  const entry = planner.odyle[id] || { value: 0, since: new Date().toISOString() };
+  planner.odyle[id] = { ...entry, extra: Math.max(0, Math.round(extra)) };
+}
+
+// The main is the one marked so, else the first character still played.
+function mainId(planner, columns) {
+  const roles = planner.roles || {};
+  const marked = columns.find((c) => roles[c.id] === "main");
+  return (marked || columns.find((c) => roles[c.id] !== "off") || {}).id || null;
+}
+
+function roleOf(planner, columns, id) {
+  if (id === mainId(planner, columns)) return "main";
+  return (planner.roles || {})[id] === "off" ? "off" : "alt";
+}
+
+function setRole(planner, columns, id, role) {
+  planner.roles = planner.roles || {};
+  if (role === "main") for (const c of columns) if (planner.roles[c.id] === "main") planner.roles[c.id] = "alt";
+  planner.roles[id] = role;
+}
+
+const limitFor = (role) => purchaseLimit(role === "main" ? "main" : "alt");
+
+// A tick from before the counters means everything was bought.
+function purchaseCount(planner, id, task, limit, now) {
+  const entry = (planner.purchases || {})[`${id}:${task.id}`];
+  if (entry && new Date(entry.at) >= lastReset("weekly", now)) return Math.min(limit, purchasesThisWeek(entry, now));
+  return isTaskDone(planner, id, task, now) ? limit : 0;
+}
+
+function setPurchaseCount(planner, id, task, limit, count) {
+  const now = new Date();
+  const before = purchaseCount(planner, id, task, limit, now);
+  const key = `${id}:${task.id}`;
+  planner.purchases = planner.purchases || {};
+  planner.purchases[key] = { count, at: now.toISOString() };
+  setOdyleExtra(planner, id, odyleExtra(planner, id) + (count - before) * ENERGY_PER_ITEM);
+  if (count >= limit) planner.done[key] = now.toISOString();
+  else delete planner.done[key];
+}
+
+function weekRuns(planner, now) {
+  const entry = planner.week_runs;
+  if (!entry || !entry.at || new Date(entry.at) < lastReset("weekly", now)) return { conquest: 0, transcendence: 0 };
+  return { conquest: Math.max(0, Number(entry.conquest) || 0), transcendence: Math.max(0, Number(entry.transcendence) || 0) };
+}
+
+let gearScoreOf = null;
+let gearScoreLoading = false;
+
+function loadGearScore() {
+  if (gearScoreOf || gearScoreLoading) return;
+  gearScoreLoading = true;
+  import("./equipment.js").then(async (mod) => { await mod.ready(); gearScoreOf = mod.gearScore; if (root && !editing()) draw(); })
+    .catch(() => { gearScoreLoading = false; });
+}
+
+function autoItemLevel(column) {
+  const official = (bp().official_characters || {})[column.key];
+  if (official && Number(official.itemLevel)) return { value: Number(official.itemLevel), source: "aion2.plaync.com" };
+  if (gearScoreOf) {
+    const gs = Math.round(gearScoreOf(column.cls, column.preset) || 0);
+    if (gs) return { value: gs, source: "GearScore of the current preset" };
+  }
+  loadGearScore();
+  return { value: 0, source: "" };
+}
+
+function itemLevelOf(planner, column) {
+  const manual = Number((planner.item_level || {})[column.id]);
+  return manual > 0 ? manual : autoItemLevel(column).value;
 }
 
 function characterCard(planner, columns, now) {
@@ -140,15 +224,18 @@ function characterCard(planner, columns, now) {
   const head = columns.map((c) => {
     const progress = taskProgress(planner, c.id, tasks, now);
     const complete = progress.total && progress.done === progress.total;
+    const role = roleOf(planner, columns, c.id);
     return `<th class="cl-char cl-class-${escapeHtml(c.cls)}" scope="col">
       <div class="cl-char-name"><img class="class-icon" src="assets/class_icons/${escapeHtml(c.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></div>
+      ${role === "alt" ? "" : `<div class="cl-role role-${role}" title="${role === "main" ? "Does the server-wide tasks and buys the server's Odyle share" : "Left out of the Odyle plan"}">${ROLE_TITLES[role]}</div>`}
       <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div>
       <button class="icon small cl-char-tasks" data-char-tasks="${c.id}" title="Choose which tasks apply to ${escapeHtml(c.name)}">&#9881;</button></th>`;
   }).join("");
   let body = `<tr class="cl-odyle"><th scope="row"><span class="cl-odyle-label">Odyle energy</span> <span class="muted small">+${ODYLE_PER_TICK} at ${localClock(nextOdyleTick(now))} · max ${ODYLE_MAX}</span></th>${columns.map((c) => {
     const value = odyleValue(planner, c.id, now);
     const cap = odyleCapText(planner.odyle[c.id], now);
-    return `<td><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself">${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
+    return `<td><div class="cl-odyle-pair"><input type="number" min="0" max="${ODYLE_MAX}" value="${value}" data-odyle="${c.id}" class="${value >= ODYLE_MAX * ODYLE_WARN ? "near-cap" : ""}" title="Enter the current value; it keeps counting up by itself">
+        <span class="cl-extra-wrap" title="Additional energy, the game's (+N): from Energy crystals and crafting, it does not refill">(+<input type="number" min="0" value="${odyleExtra(planner, c.id)}" data-odyle-extra="${c.id}" class="cl-extra">)</span></div>${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}</td>`;
   }).join("")}</tr>`;
   planner.nightmare = planner.nightmare || {};
   body += `<tr class="cl-odyle cl-nightmare"><th scope="row"><span class="cl-odyle-label">Nightmare entries</span> <span class="muted small">+${NIGHTMARE_PER_DAY} at the daily reset · max ${NIGHTMARE_MAX}</span></th>${columns.map((c) => {
@@ -168,6 +255,11 @@ function characterCard(planner, columns, now) {
       }
       body += `<tr class="cl-row kind-${kind}"><th scope="row"><span class="cl-task"><span class="cl-name">${escapeHtml(task.name)}</span>${menuButton("character", task)}</span></th>${columns.map((c) => {
         if (isExcluded(planner, c.id, task.id)) return `<td class="excluded" title="${escapeHtml(c.name)} skips ${escapeHtml(task.name)}"><span class="cl-skip">—</span></td>`;
+        if (ODYLE_PURCHASE_TASKS.includes(task.name)) {
+          const limit = limitFor(roleOf(planner, columns, c.id));
+          const count = purchaseCount(planner, c.id, task, limit, now);
+          return `<td class="cl-buy${count >= limit ? " done" : ""}"><input type="number" min="0" max="${limit}" value="${count}" data-buy="${c.id}:${task.id}" data-limit="${limit}" title="${escapeHtml(c.name)}: ${escapeHtml(task.name)}, ${limit} a week, +${ENERGY_PER_ITEM} Odyle each"><span class="cl-buy-limit">/${limit}</span></td>`;
+        }
         const done = isTaskDone(planner, c.id, task, now);
         return `<td class="${done ? "done" : ""}"><input type="checkbox" data-task="${c.id}:${task.id}" ${done ? "checked" : ""} title="${escapeHtml(c.name)}: ${escapeHtml(task.name)}"></td>`;
       }).join("")}</tr>`;
@@ -179,6 +271,86 @@ function characterCard(planner, columns, now) {
       <thead><tr><th class="cl-corner" scope="col"><h2>Characters</h2></th>${head}</tr></thead>
       <tbody>${body}</tbody>
     </table></div>
+  </section>`;
+}
+
+const number = (n) => Math.round(n).toLocaleString();
+
+function planCharacters(planner, columns, now) {
+  const purchaseTasks = planner.tasks.character.filter((t) => ODYLE_PURCHASE_TASKS.includes(t.name));
+  return columns.map((c) => {
+    const role = roleOf(planner, columns, c.id);
+    const limit = limitFor(role);
+    const purchasesLeft = purchaseTasks.filter((t) => !isExcluded(planner, c.id, t.id))
+      .reduce((sum, t) => sum + limit - purchaseCount(planner, c.id, t, limit, now), 0);
+    return { id: c.id, name: c.name, role, itemLevel: itemLevelOf(planner, c), base: odyleValue(planner, c.id, now), extra: odyleExtra(planner, c.id), purchasesLeft };
+  });
+}
+
+function planChips(row) {
+  const chips = [];
+  if (row.transcendence) chips.push(`<span class="cl-plan-chip transcendence" title="Transcendence stage ${row.stage.stage} (item level ${number(row.stage.itemLevel)}+)">Transcendence ★${row.stage.stage} × ${row.transcendence}</span>`);
+  if (row.conquest) chips.push(`<span class="cl-plan-chip conquest" title="${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
+  if (!chips.length) {
+    if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
+    return `<span class="muted small">Not enough energy for a cube</span>`;
+  }
+  return chips.join("");
+}
+
+function spareText(row) {
+  if (row.leftover < CUBE_COST) return '<span class="muted">—</span>';
+  const skip = row.skipPurchases ? `<div class="small">buy ${row.skipPurchases} fewer</div>` : "";
+  return `<span class="cl-spare" title="Energy the weekly cube limits leave unused">${number(row.leftover)}</span>${skip}`;
+}
+
+function cutText(mode, after) {
+  const share = kinaPercent(mode, after);
+  const next = KINA_CUTS[mode].find(([at]) => at > after);
+  if (share === 100 && next) return `${next[0] - after} more at full Kina`;
+  return `further runs pay ${share}% Kina${next ? ` until run ${next[0]}` : ""}`;
+}
+
+function planCard(planner, columns, now) {
+  if (!columns.length) return "";
+  const chars = planCharacters(planner, columns, now);
+  const runs = weekRuns(planner, now);
+  const result = planWeek({ characters: chars, runsDone: runs, now });
+  const rows = new Map(result.rows.map((r) => [r.id, r]));
+  const roleSelect = (c) => `<select data-role="${c.id}" aria-label="Role of ${escapeHtml(c.name)}">${ROLES.map((r) => `<option value="${r}" ${r === c.role ? "selected" : ""}>${ROLE_TITLES[r]}</option>`).join("")}</select>`;
+  const body = columns.map((column) => {
+    const c = chars.find((x) => x.id === column.id);
+    const manual = Number((planner.item_level || {})[c.id]) || "";
+    const auto = autoItemLevel(column);
+    const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}` : "Enter the item level shown in game"}">`;
+    const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span></th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
+    const row = rows.get(c.id);
+    if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
+    const extra = row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : "";
+    const week = `<span title="Now ${number(row.energy)} · refills +${number(row.regen)} before the reset${row.buyable ? ` · +${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.total)}</span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
+    return `<tr>${head}<td>${number(row.base)}${extra}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row)}</div></td><td>${spareText(row)}</td></tr>`;
+  }).join("");
+  const runInput = (mode, label) => `<label class="cl-plan-count">${label} <input type="number" min="0" value="${runs[mode]}" data-runs="${mode}"></label>`;
+  return `<section class="card cl-plan">
+    <div class="cl-card-head"><h2>Odyle plan</h2><span class="muted small">until the weekly reset ${escapeHtml(capMoment(result.reset, now))}, in ${durationText(result.reset - now)} · every character still refills +${result.regen}</span></div>
+    <div class="cl-plan-server">
+      <span class="muted small">Server runs this week, from <i>Weekly Cumulative Play Reward</i> on the dungeon page:</span>
+      ${runInput("conquest", "Conquest")}${runInput("transcendence", "Transcendence")}
+    </div>
+    <div class="cl-plan-summary">
+      <span class="cl-plan-chip conquest">Conquest +${result.planned.conquest} → ${result.after.conquest} runs</span><span class="muted small">${cutText("conquest", result.after.conquest)}</span>
+      <span class="cl-plan-chip transcendence">Transcendence +${result.planned.transcendence} → ${result.after.transcendence} runs</span><span class="muted small">${cutText("transcendence", result.after.transcendence)}</span>
+      ${result.planned.conquest + result.planned.transcendence ? `<span class="small">Kina on these runs: <b>${result.averagePercent}%</b> on average</span>` : ""}
+    </div>
+    <div class="cl-scroll"><table class="cl-plan-grid">
+      <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Spare</th></tr></thead>
+      <tbody>${body}</tbody>
+    </table></div>
+    <div class="muted small cl-plan-note">Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Conquest and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
+      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((s) => number(s.itemLevel)).join(" / ")}.
+      Runs fill Conquest and Transcendence so the server's Kina cut bites as late as possible; higher item levels get the Transcendence runs first.
+      The main buys and crafts ${purchaseLimit("main")} Energy crystals each, alts ${purchaseLimit("alt")}, at +${ENERGY_PER_ITEM} each.
+      Figures from the Fextralife wiki and DaevaGuides; check the in-game entry window.</div>
   </section>`;
 }
 
@@ -213,9 +385,10 @@ export function draw() {
       <span class="grow"></span>
       <button id="cl-add-task" class="active">Add task</button>
     </div>
-    <div class="muted small cl-help">Tick what you have done; ticks clear at the game's reset times, shown in your local time zone. Odyle energy: enter a character's current value and it keeps counting up by itself.</div>
+    <div class="muted small cl-help">Tick what you have done; ticks clear at the game's reset times, shown in your local time zone. Odyle energy: enter a character's current value and it keeps counting up by itself; the (+N) beside it is the additional energy, which grows as you log shop and craft purchases.</div>
     ${serverCard(planner, server, now)}
-    ${characterCard(planner, columns, now)}`;
+    ${characterCard(planner, columns, now)}
+    ${planCard(planner, columns, now)}`;
   const scroller = root.querySelector(".cl-scroll");
   if (scroller) scroller.scrollLeft = scrollLeft;
   root.querySelectorAll("[data-task]").forEach((box) => box.addEventListener("change", (e) => {
@@ -230,7 +403,48 @@ export function draw() {
     input.addEventListener("change", () => {
       const id = input.dataset.odyle;
       const value = Math.max(0, Math.min(ODYLE_MAX, Math.round(Number(input.value)) || 0));
-      if (value !== odyleValue(planner, id, new Date())) { planner.odyle[id] = { value, since: new Date().toISOString() }; save(); }
+      if (value !== odyleValue(planner, id, new Date())) { planner.odyle[id] = { ...planner.odyle[id], value, since: new Date().toISOString() }; save(); }
+      draw();
+    });
+  });
+  const selectOnFocus = (input) => input.addEventListener("focus", () => {
+    input.select();
+    input.addEventListener("mouseup", (e) => e.preventDefault(), { once: true });
+  });
+  const wholeNumber = (input, max = Infinity) => Math.max(0, Math.min(max, Math.round(Number(input.value)) || 0));
+  root.querySelectorAll("[data-odyle-extra]").forEach((input) => {
+    selectOnFocus(input);
+    input.addEventListener("change", () => { setOdyleExtra(planner, input.dataset.odyleExtra, wholeNumber(input)); save(); draw(); });
+  });
+  root.querySelectorAll("[data-buy]").forEach((input) => {
+    selectOnFocus(input);
+    input.addEventListener("change", () => {
+      const [id, taskId] = input.dataset.buy.split(":");
+      const task = planner.tasks.character.find((t) => t.id === taskId);
+      if (task) { setPurchaseCount(planner, id, task, Number(input.dataset.limit), wholeNumber(input, Number(input.dataset.limit))); save(); }
+      draw();
+    });
+  });
+  root.querySelectorAll("[data-role]").forEach((select) => select.addEventListener("change", () => {
+    setRole(planner, columns, select.dataset.role, select.value);
+    save();
+    draw();
+  }));
+  root.querySelectorAll("[data-ilvl]").forEach((input) => {
+    selectOnFocus(input);
+    input.addEventListener("change", () => {
+      planner.item_level = planner.item_level || {};
+      const value = wholeNumber(input);
+      if (value) planner.item_level[input.dataset.ilvl] = value; else delete planner.item_level[input.dataset.ilvl];
+      save();
+      draw();
+    });
+  });
+  root.querySelectorAll("[data-runs]").forEach((input) => {
+    selectOnFocus(input);
+    input.addEventListener("change", () => {
+      planner.week_runs = { ...weekRuns(planner, new Date()), [input.dataset.runs]: wholeNumber(input), at: new Date().toISOString() };
+      save();
       draw();
     });
   });
