@@ -126,6 +126,7 @@ function show(el, ctx, { compact }) {
     return unwatch;
   }
   const named = !pinnedTitle(ctx.settings);
+  ctx.setAccent(!named && phases.length === 1 ? kindOf(phases[0].event).accent : null);
   const hours = RANGES.includes(Number(ctx.settings.hours)) ? Number(ctx.settings.hours) : 6;
   const withStrip = ctx.settings.display !== "countdown";
   const fill = () => {

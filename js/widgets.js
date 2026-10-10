@@ -339,6 +339,7 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
       areaId,
       widgetId: inst.item.id,
       pinned: inst.mode === "grid" ? null : inst.mode,
+      setAccent: (accent) => inst.el.style.setProperty("--wa-accent", accentValue(accent || inst.def.accent)),
     };
     const fn = inst.mode !== "grid" && typeof inst.def.compact === "function" ? inst.def.compact : inst.def.render;
     try {
