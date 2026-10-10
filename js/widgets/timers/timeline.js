@@ -1,6 +1,6 @@
 // timers.timeline: every scheduled event of the region on one canvas, from
 // now to the chosen range ahead; hovering a name or a block shows the
-// event's card.
+// event's card; the pin beside a name pins that event's countdown alone.
 
 import { registerWidget } from "../../widgets.js";
 import { dayWord, isRunning, localClock, nextOccurrence, occurrences, regionEvents } from "../../engine/timers.js";
@@ -8,9 +8,12 @@ import { countdown } from "../../engine/planner.js";
 import { adoptShared, currentRegion, esc, kindOf, regionOptions, schedule, setRegion, sharedField, watch } from "./feed.js";
 import { hideHover, placeHover, showHover } from "./hovercard.js";
 import { eventHoverHtml } from "./eventinfo.js";
+import { isEventPinned, toggleEventPin } from "./countdowns.js";
+import { onPrefs } from "../../ui.js";
 
 const RANGES = [1, 2, 4, 6, 8, 12, 24, 48];
 const HOUR = 3600 * 1000;
+const PIN_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 1.8 14.2 6l-1.7.6-2.6 2.6.4 3-1.3 1.3L5.5 10 2 13.5M5.5 10 2.5 7l1.3-1.3 3 .4 2.6-2.6z"/></svg>';
 
 let probe = null;
 function rgb(token) {
@@ -94,7 +97,7 @@ function draw(canvas, rows, now, hours) {
     ctx.fillStyle = paint(C.fg);
     ctx.font = `600 12px ${font}`;
     ctx.textAlign = "left";
-    ctx.fillText(fit(ctx, `${row.event.icon ? row.event.icon + " " : ""}${row.event.name}`, LABEL - 22), 14, top + ROW / 2 + 4);
+    ctx.fillText(fit(ctx, `${row.event.icon ? row.event.icon + " " : ""}${row.event.name}`, LABEL - 42), 14, top + ROW / 2 + 4);
     if (!row.occurrences.length) {
       ctx.fillStyle = paint(C.muted);
       ctx.font = `11px ${font}`;
@@ -148,7 +151,8 @@ function legendHtml(region, data) {
     <div class="tm-hc-head"><b>Reading the timeline</b></div>
     <div class="tm-hc-desc">Each row is an event, coloured by its kind. A solid block is running now, a pale block is coming up; the Rift's
       first 10 minutes (portal open) are drawn stronger. A dashed line with a diamond is a reset or a one-off moment.
-      Hover a name or a block for its details. Times are in your local time zone.</div>
+      Hover a name or a block for its details; the pin beside a name keeps that event's countdown in the top bar.
+      Times are in your local time zone.</div>
     ${region.note ? `<div class="tm-hc-rule">${esc(region.note)}</div>` : ""}
     <div class="tm-hc-rule muted">Schedule from shugo.gg, updated ${esc(data.updatedAt || "?")}.</div>
   </div>`;
@@ -184,9 +188,31 @@ registerWidget({
         <span class="grow"></span>
         <span class="tm-legend" tabindex="0" data-legend>How to read this</span>
       </div>
-      <div class="tm-canvas-wrap"><canvas class="tm-timeline" role="img" aria-label="Event timeline for the next ${hours} hours"></canvas></div>`;
+      <div class="tm-canvas-wrap"><canvas class="tm-timeline" role="img" aria-label="Event timeline for the next ${hours} hours"></canvas>
+        <div class="tm-row-pins">${rows.map((row) => `<button type="button" class="tm-row-pin" data-pin-event="${esc(row.event.id)}">${PIN_ICON}</button>`).join("")}</div></div>`;
     const canvas = el.querySelector("canvas");
+    const pins = [...el.querySelectorAll(".tm-row-pin")];
+    const placePins = (g) => pins.forEach((pin, i) => {
+      pin.style.left = `${g.LABEL - 28}px`;
+      pin.style.top = `${g.TOP + i * g.ROW + (g.ROW - 22) / 2}px`;
+    });
+    const markPins = () => pins.forEach((pin, i) => {
+      const name = rows[i].event.name;
+      const pinned = isEventPinned(ctx.areaId, rows[i].event.id);
+      pin.setAttribute("aria-pressed", String(pinned));
+      pin.title = pinned ? `Unpin the ${name} countdown from the top bar` : `Pin the ${name} countdown to the top bar`;
+      pin.setAttribute("aria-label", `${pinned ? "Unpin" : "Pin"} ${name}`);
+    });
     let geom = draw(canvas, rows, now, hours);
+    placePins(geom);
+    markPins();
+    const unlistenPrefs = onPrefs(markPins);
+    el.querySelector(".tm-row-pins").addEventListener("click", (e) => {
+      const pin = e.target.closest("[data-pin-event]");
+      const row = pin && rows.find((r) => r.event.id === pin.dataset.pinEvent);
+      if (!row) return;
+      toggleEventPin(ctx.areaId, row.event);
+    });
     const owner = {};
 
     el.querySelector("[data-region]").addEventListener("change", (e) => { e.target.blur(); setRegion(e.target.value); ctx.refresh(); });
@@ -230,7 +256,7 @@ registerWidget({
     let frame = 0;
     const redraw = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => { if (canvas.isConnected) geom = draw(canvas, rows, now, hours); });
+      frame = requestAnimationFrame(() => { if (canvas.isConnected) { geom = draw(canvas, rows, now, hours); placePins(geom); } });
     };
     const resize = new ResizeObserver(() => {
       const w = canvas.parentElement && canvas.parentElement.clientWidth;
@@ -241,6 +267,7 @@ registerWidget({
 
     return () => {
       unwatch();
+      unlistenPrefs();
       resize.disconnect();
       cancelAnimationFrame(frame);
       window.removeEventListener("themechange", redraw);

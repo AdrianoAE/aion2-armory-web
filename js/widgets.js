@@ -105,6 +105,29 @@ export function widgetSettings(areaId, widgetId) {
   return mergedSettings(defOf(widgetId), item && item.settings);
 }
 
+export function areaItem(areaId, widgetId) {
+  return readItems(areaId).find((i) => i.id === widgetId) || null;
+}
+
+export function pinItem(areaId, widgetId, { settings = {}, pinned = "top" } = {}) {
+  const items = readItems(areaId);
+  const item = items.find((i) => i.id === widgetId);
+  if (item) {
+    item.pinned = pinned;
+    item.settings = { ...item.settings, ...settings };
+  } else items.push(normalizeItem({ id: widgetId, pinned, settings }));
+  writeItems(areaId, items);
+}
+
+export function removeItem(areaId, widgetId) {
+  const items = readItems(areaId);
+  const index = items.findIndex((i) => i.id === widgetId);
+  if (index < 0) return false;
+  items.splice(index, 1);
+  writeItems(areaId, items);
+  return true;
+}
+
 export function setWidgetSetting(areaId, widgetId, key, value) {
   const items = readItems(areaId);
   const item = items.find((i) => i.id === widgetId);
@@ -338,10 +361,11 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
 
   function createInstance(item, def, mode) {
     const inst = { item, def, mode, cleanup: null, token: 0, dirty: true, disposed: false };
-    const title = esc(def.title || def.id);
+    const title = esc((typeof def.titleFor === "function" && def.titleFor(mergedSettings(def, item.settings))) || def.title || def.id);
     const gear = def.settings && def.settings.length ? toolButton("settings", ICON.gear, "Settings") : "";
     const el = document.createElement(mode === "grid" ? "section" : "div");
     el.dataset.widget = def.id;
+    el.dataset.item = item.id;
     el.style.setProperty("--wa-accent", accentValue(def.accent));
     if (mode === "grid") {
       el.className = "wa-card";
@@ -509,7 +533,10 @@ export function mountArea(container, areaId, { defaults = [], allowed = () => tr
         item.pinned = action === "pin-top" ? "top" : "bottom";
         item.collapsed = false;
         items.push(item);
-      } else if (action === "unpin") item.pinned = null;
+      } else if (action === "unpin") {
+        if (typeof inst.def.removeOnUnpin === "function" && inst.def.removeOnUnpin(item)) items.splice(index, 1);
+        else item.pinned = null;
+      }
       else if (action === "collapse") item.collapsed = !item.collapsed;
       else if (action === "remove") items.splice(index, 1);
       else return false;

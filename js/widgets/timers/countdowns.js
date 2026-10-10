@@ -1,13 +1,27 @@
 // timers.countdowns: live countdowns for the events the player picks, the
-// Spacetime Rift by default. Pinned, it is one line per event.
+// Spacetime Rift by default. Pinned, it is one line per event. The timeline's
+// pin buttons add one copy per event, titled with the event's name.
 
-import { registerWidget } from "../../widgets.js";
+import { areaItem, pinItem, registerWidget, removeItem } from "../../widgets.js";
 import { dayWord, isRunning, localClock, nextOccurrence, regionEvents } from "../../engine/timers.js";
 import { adoptShared, currentRegion, esc, kindOf, loadSchedule, openSettings, regionOptions, schedule, sharedField, until, watch } from "./feed.js";
 import { hoverable } from "./hovercard.js";
 import { eventHoverHtml } from "./eventinfo.js";
 
 const DAY = 24 * 3600 * 1000;
+
+const eventPinId = (eventId) => `timers.countdowns#event-${eventId}`;
+const pinnedTitle = (settings) => (Array.isArray(settings.events) && settings.events.length === 1 && settings.titleOf === settings.events[0] ? settings.title : "");
+
+export function isEventPinned(areaId, eventId) {
+  return !!areaItem(areaId, eventPinId(eventId));
+}
+
+export function toggleEventPin(areaId, event) {
+  if (removeItem(areaId, eventPinId(event.id))) return false;
+  pinItem(areaId, eventPinId(event.id), { settings: { events: [event.id], title: event.name, titleOf: event.id } });
+  return true;
+}
 
 function eventOptions() {
   return loadSchedule().then((data) => data.events.map((e) => [e.id, `${e.icon ? e.icon + " " : ""}${e.name}`]));
@@ -54,9 +68,10 @@ function cardHtml(p) {
   </div>`;
 }
 
-function lineHtml(p) {
+function lineHtml(p, { named = true } = {}) {
   const kind = kindOf(p.event);
-  return `<span class="tm-compact-item" data-event="${esc(p.event.id)}" style="--kind: var(${kind.accent})">${p.running ? `<span class="tm-running">${esc(p.label)}</span> ` : ""}<b>${esc(p.event.icon ? `${p.event.icon} ` : "")}${esc(p.event.name)}</b> ${esc(p.verb)} ${until(p.at, { done: "now" })}${p.running ? "" : ` <span class="muted">· ${esc(p.label)}</span>`}</span>`;
+  const name = named ? `${p.event.icon ? `${p.event.icon} ` : ""}${p.event.name}` : "";
+  return `<span class="tm-compact-item" data-event="${esc(p.event.id)}" style="--kind: var(${kind.accent})">${p.running ? `<span class="tm-running">${esc(p.label)}</span> ` : ""}${name ? `<b>${esc(name)}</b> ` : ""}${esc(p.verb)} ${until(p.at, { done: "now" })}${p.running ? "" : ` <span class="muted">· ${esc(p.label)}</span>`}</span>`;
 }
 
 function show(el, ctx, { compact }) {
@@ -73,8 +88,9 @@ function show(el, ctx, { compact }) {
     el.querySelector("[data-choose]").addEventListener("click", () => openSettings(el));
     return unwatch;
   }
+  const named = !pinnedTitle(ctx.settings);
   el.innerHTML = compact
-    ? `<div class="tm-compact-row">${phases.map(lineHtml).join("")}</div>`
+    ? `<div class="tm-compact-row">${phases.map((p) => lineHtml(p, { named })).join("")}</div>`
     : `<div class="tm-cd-list">${phases.map(cardHtml).join("")}</div>`;
   const unhover = hoverable(el, "[data-event]", (target) => {
     const p = phases.find((x) => x.event.id === target.dataset.event);
@@ -92,6 +108,8 @@ registerWidget({
   accent: "portals",
   defaultSize: { cols: 2, rows: "auto" },
   live: true,
+  titleFor: pinnedTitle,
+  removeOnUnpin: (item) => item.id.startsWith(eventPinId("")),
   settings: [
     sharedField("region", { label: "Region", type: "select", options: regionOptions }),
     { key: "events", label: "Events", type: "multiselect", options: eventOptions, default: ["rift"] },

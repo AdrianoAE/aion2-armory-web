@@ -5,6 +5,14 @@
 .tm-legend { cursor: help; color: var(--muted); border-bottom: 1px dotted var(--muted); font-size: 12px; }
 .tm-legend:hover, .tm-legend:focus-visible { color: var(--fg); outline: none; }
 .tm-canvas-wrap { position: relative; min-width: 0; }
+.tm-row-pins { position: absolute; inset: 0; pointer-events: none; }
+.tm-row-pin { position: absolute; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; pointer-events: auto; cursor: pointer; opacity: 0;
+  color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 6px; transition: opacity 0.12s; }
+.tm-row-pin svg { width: 14px; height: 14px; }
+.tm-canvas-wrap:hover .tm-row-pin, .tm-row-pin:focus-visible { opacity: 0.75; }
+.tm-row-pin:hover { opacity: 1; color: var(--fg); background: var(--overlay); border-color: var(--border); }
+.tm-row-pin[aria-pressed="true"] { opacity: 1; color: var(--accent); }
+@media (hover: none) { .tm-row-pin { opacity: 0.6; } }
 canvas.tm-timeline { display: block; width: 100%; }
 
 /* hover card */
@@ -113,6 +121,11 @@ canvas.tm-timeline { display: block; width: 100%; }
 .tm-cd-sub { font-size: 11.5px; color: var(--muted); }
 .tm-cd.running .tm-cd-sub { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--kind); }
 .tm-cd-time { flex: none; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wa-pin[data-widget="timers.countdowns"] { flex: 0 1 auto; }
+.wa-pin[data-widget="timers.countdowns"] .wa-pin-title { max-width: 16em; }
+.wa-pin[data-widget="timers.countdowns"] .wa-pin-body { overflow: hidden; }
+.wa-pin[data-item^="timers.countdowns#event-"] [data-act="settings"],
+.wa-pin[data-item^="timers.countdowns#event-"] [data-act="unpin"] span { display: none; }
 
 /* map dialog */
 dialog.tm-map-dialog { --faction: var(--elyos); width: min(1040px, 94vw); max-width: 94vw; max-height: 92vh; padding: 14px 16px; overflow: auto; border-top: 3px solid var(--faction); }
