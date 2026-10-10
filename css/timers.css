@@ -126,6 +126,9 @@ canvas.tm-timeline { display: block; width: 100%; }
 .wa-pin[data-widget="timers.countdowns"] .wa-pin-body { overflow: hidden; }
 .wa-pin[data-item^="timers.countdowns#event-"] [data-act="settings"],
 .wa-pin[data-item^="timers.countdowns#event-"] [data-act="unpin"] span { display: none; }
+/* pinned events: their own row under the other pinned widgets */
+.wa-dock-items > [data-item^="timers.countdowns#event-"] { order: 2; align-self: flex-start; }
+.wa-dock-items:has(> .wa-pin:not([data-item^="timers.countdowns#event-"])):has(> [data-item^="timers.countdowns#event-"])::after { content: ""; order: 1; flex-basis: 100%; height: 0; margin-top: -8px; }
 
 /* map dialog */
 dialog.tm-map-dialog { --faction: var(--elyos); width: min(1040px, 94vw); max-width: 94vw; max-height: 92vh; padding: 14px 16px; overflow: auto; border-top: 3px solid var(--faction); }
