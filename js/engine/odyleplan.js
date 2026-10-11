@@ -7,7 +7,9 @@
 
 import { ODYLE_MAX, ODYLE_PER_TICK, lastReset, nextOdyleTick, nextReset } from "./planner.js";
 
-export const CUBE_COST = 40;
+// Every character has the subscription: a run opens the cube with the second
+// reward too, so it always takes 80 Odyle.
+export const RUN_COST = 80;
 export const ENERGY_PER_ITEM = 40;
 export const PURCHASE_LIMITS = { main: 20, alt: 4 };
 export const ROLES = ["main", "priority", "alt", "off"];
@@ -95,11 +97,11 @@ export function planWeek({ characters, runsDone = {}, now = new Date() }) {
     const tier = conquestTier(itemLevel);
     const stage = transcendenceStage(itemLevel);
     const capacity = (tier ? WEEKLY_CUBES.conquest : 0) + (stage ? WEEKLY_CUBES.transcendence : 0);
-    const baseCubes = Math.min(capacity, Math.floor(baseEnergy / CUBE_COST));
+    const baseCubes = Math.min(capacity, Math.floor(baseEnergy / RUN_COST));
     const overflow = Math.max(0, baseEnergy - ODYLE_MAX);
     const cubes = c.role === "alt"
-      ? Math.min(capacity, Math.ceil(overflow / CUBE_COST))
-      : Math.min(capacity, Math.floor((baseEnergy + extraEnergy) / CUBE_COST));
+      ? Math.min(capacity, Math.ceil(overflow / RUN_COST))
+      : Math.min(capacity, Math.floor((baseEnergy + extraEnergy) / RUN_COST));
     return {
       ...c, index, itemLevel, base, extra, regen, buyable, baseEnergy, extraEnergy, total: baseEnergy + extraEnergy, tier, stage,
       main: c.role === "main", fullUse: c.role !== "alt", cubes, fromExtra: Math.max(0, cubes - baseCubes), conquest: 0, transcendence: 0,
@@ -123,7 +125,7 @@ export function planWeek({ characters, runsDone = {}, now = new Date() }) {
     r.kina = kinaTotal("conquest", counted.conquest, r.conquest) + kinaTotal("transcendence", counted.transcendence, r.transcendence);
     counted.conquest += r.conquest;
     counted.transcendence += r.transcendence;
-    const spent = r.cubes * CUBE_COST;
+    const spent = r.cubes * RUN_COST;
     r.extraKept = r.extraEnergy - Math.max(0, spent - r.baseEnergy);
     r.baseLost = Math.max(0, r.baseEnergy - Math.min(spent, r.baseEnergy) - ODYLE_MAX);
     r.baseAtReset = Math.min(ODYLE_MAX, Math.max(0, r.baseEnergy - spent));

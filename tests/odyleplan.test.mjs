@@ -38,16 +38,16 @@ test("purchases only count in the week they were made", () => {
   assert.equal(plan.purchaseLimit("alt"), 4);
 });
 
-test("the main counts at full use, extra energy beyond the weekly limits is kept", () => {
+test("the main counts at full use at 80 Odyle a run", () => {
   const result = plan.planWeek({
     now: JUST_AFTER_RESET,
     characters: [{ id: "m", name: "Main", role: "main", itemLevel: 2600, base: 0, extra: 0, purchasesLeft: 40 }],
   });
   const [main] = result.rows;
   assert.equal(main.total, 840 + 1600);
-  assert.deepEqual([main.cubes, main.transcendence, main.conquest, main.fromExtra], [35, 14, 21, 14]);
+  assert.deepEqual([main.cubes, main.transcendence, main.conquest, main.fromExtra], [30, 14, 16, 20]);
   assert.equal(main.stage.stage, 4);
-  assert.equal(main.extraKept, 1600 - 14 * 40);
+  assert.equal(main.extraKept, 1600 - (30 * 80 - 840));
   assert.equal(main.baseLost, 0);
 });
 
@@ -65,13 +65,13 @@ test("priority characters fill up in order, the other alts only clear their over
   });
   assert.deepEqual(result.rows.map((r) => r.name), ["Main", "Blessing", "Chanter", "Other"]);
   const [main, blessing, chanter, other] = result.rows;
-  assert.deepEqual([main.conquest, main.transcendence], [21, 14]);
-  assert.deepEqual([blessing.conquest, blessing.transcendence, blessing.fromExtra], [21, 14, 14]);
-  assert.deepEqual([chanter.conquest, chanter.transcendence], [21, 0]);
-  assert.deepEqual([other.cubes, other.transcendence, other.conquest], [20, 14, 6]);
+  assert.deepEqual([main.conquest, main.transcendence], [16, 14]);
+  assert.deepEqual([blessing.conquest, blessing.transcendence, blessing.fromExtra], [8, 11, 9]);
+  assert.deepEqual([chanter.conquest, chanter.transcendence], [14, 0]);
+  assert.deepEqual([other.cubes, other.transcendence, other.conquest], [10, 10, 0]);
   assert.equal(other.extraKept, 200 + 320);
   assert.equal(other.baseAtReset, 840);
-  assert.deepEqual(result.after, { conquest: 129, transcendence: 42 });
+  assert.deepEqual(result.after, { conquest: 98, transcendence: 35 });
 });
 
 test("priority characters past the Expedition cut go to Transcendence", () => {
@@ -83,8 +83,8 @@ test("priority characters past the Expedition cut go to Transcendence", () => {
       { id: "b", name: "B", role: "priority", itemLevel: 1750, base: 740, extra: 0, purchasesLeft: 0 },
     ],
   });
-  assert.deepEqual(result.planned, { conquest: 12, transcendence: 28 });
-  assert.deepEqual(result.rows.map((r) => [r.conquest, r.transcendence]), [[6, 14], [6, 14]]);
+  assert.deepEqual(result.planned, { conquest: 4, transcendence: 16 });
+  assert.deepEqual(result.rows.map((r) => [r.conquest, r.transcendence]), [[4, 6], [0, 10]]);
 });
 
 test("an alt under the cap opens nothing and keeps its energy", () => {

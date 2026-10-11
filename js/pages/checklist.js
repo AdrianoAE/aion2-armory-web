@@ -10,7 +10,7 @@ import { isExcluded, setExcluded,
   NIGHTMARE_MAX, NIGHTMARE_PER_DAY, nightmareCapText, nightmareEntries,
 } from "../engine/planner.js";
 import {
-  CONQUEST_TIERS, CUBE_COST, ENERGY_PER_ITEM, KINA_CUTS, ROLES, ROLE_TITLES, TRANSCENDENCE_STAGES, WEEKLY_CUBES,
+  CONQUEST_TIERS, ENERGY_PER_ITEM, RUN_COST, KINA_CUTS, ROLES, ROLE_TITLES, TRANSCENDENCE_STAGES, WEEKLY_CUBES,
   kinaPercent, planWeek, purchaseLimit, purchasesThisWeek,
 } from "../engine/odyleplan.js";
 import { localClock } from "../engine/timers.js";
@@ -256,7 +256,7 @@ function characterCard(planner, columns, now) {
     const role = roleOf(planner, columns, c.id);
     return `<th class="cl-char cl-class-${escapeHtml(c.cls)}" scope="col">
       <div class="cl-char-name"><img class="class-icon" src="assets/class_icons/${escapeHtml(c.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></div>
-      ${role === "alt" ? "" : `<div class="cl-role role-${role}" title="${{ main: "Does the server-wide tasks and buys the server's Odyle share", priority: "Opens as many cubes as it can, after the main", off: "Left out of the Odyle plan" }[role]}">${ROLE_TITLES[role]}</div>`}
+      ${role === "alt" ? "" : `<div class="cl-role role-${role}" title="${{ main: "Does the server-wide tasks and buys the server's Odyle share", priority: "Does as many runs as it can, after the main", off: "Left out of the Odyle plan" }[role]}">${ROLE_TITLES[role]}</div>`}
       <div class="cl-char-progress${complete ? " complete" : ""}">Done ${progress.done}/${progress.total}</div>
       <button class="icon small cl-char-tasks" data-char-tasks="${c.id}" title="Choose which tasks apply to ${escapeHtml(c.name)}">&#9881;</button></th>`;
   }).join("");
@@ -322,25 +322,25 @@ function planCharacters(planner, columns, now) {
 function planChips(row, rank) {
   const chips = [];
   if (!row.fullUse && !row.cubes) {
-    if (row.baseLost >= ODYLE_PER_TICK) return `<span class="muted small">No cube to open: needs item level ${number(CONQUEST_TIERS[0].itemLevel)}</span>`;
+    if (row.baseLost >= ODYLE_PER_TICK) return `<span class="muted small">No run possible: needs item level ${number(CONQUEST_TIERS[0].itemLevel)}</span>`;
     return `<span class="muted small" title="Stays under the cap of ${ODYLE_MAX} by the reset, so nothing has to be spent">Nothing needed · ${number(row.baseAtReset)} at the reset</span>`;
   }
   if (row.transcendence) chips.push(`<span class="cl-plan-chip transcendence" title="Transcendence stage ${row.stage.stage} (item level ${number(row.stage.itemLevel)}+)">Transcendence ★${row.stage.stage} × ${row.transcendence}</span>`);
   if (row.conquest) chips.push(`<span class="cl-plan-chip expedition" title="Expedition, Conquest: ${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
   if (!chips.length) {
     if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
-    return `<span class="muted small">Not enough energy for a cube</span>`;
+    return `<span class="muted small">Not enough energy for a run</span>`;
   }
   if (row.fromExtra) chips.push(`<span class="muted small" title="Cubes paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
-  if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every cube its energy pays for, and the others adapt">Counted at full use</span>${chips.join("")}`;
-  if (row.fullUse) return `<span class="cl-plan-counted priority" title="Opens every cube its energy pays for, after the main and the priority characters above it">#${rank} · as much as possible</span>${chips.join("")}`;
+  if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every run its energy pays for, and the others adapt">Counted at full use</span>${chips.join("")}`;
+  if (row.fullUse) return `<span class="cl-plan-counted priority" title="Does every run its energy pays for, after the main and the priority characters above it">#${rank} · as much as possible</span>${chips.join("")}`;
   return `<span class="cl-plan-counted alt" title="Only the runs that keep its base energy under the cap of ${ODYLE_MAX} by the reset">Only the overflow</span>${chips.join("")}`;
 }
 
 function keptText(row) {
   const parts = [];
-  if (row.baseLost >= ODYLE_PER_TICK) parts.push(`<div class="cl-lost" title="Base energy the weekly cube limits leave unspent stops refilling at ${ODYLE_MAX}">loses ${number(row.baseLost)} to the cap</div>`);
-  if (row.extraKept > 0) parts.push(`<div class="muted" title="Additional energy never expires: it waits for a week with free cubes at full Kina">(+${number(row.extraKept)}) kept</div>`);
+  if (row.baseLost >= ODYLE_PER_TICK) parts.push(`<div class="cl-lost" title="Base energy the weekly run limits leave unspent stops refilling at ${ODYLE_MAX}">loses ${number(row.baseLost)} to the cap</div>`);
+  if (row.extraKept > 0) parts.push(`<div class="muted" title="Additional energy never expires: it waits for a later week">(+${number(row.extraKept)}) kept</div>`);
   return parts.join("") || '<span class="muted">—</span>';
 }
 
@@ -371,7 +371,7 @@ function planCard(planner, columns, now) {
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
     const cap = odyleCapText(planner.odyle[c.id], now);
     const odyle = `${number(row.base)}${row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : ""}${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}`;
-    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)}${row.extraEnergy ? ` <span class="muted">(+${number(row.extraEnergy)})</span>` : ""}</span><div class="muted small">${row.cubes} cube${row.cubes === 1 ? "" : "s"}</div>`;
+    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)}${row.extraEnergy ? ` <span class="muted">(+${number(row.extraEnergy)})</span>` : ""}</span><div class="muted small">${row.cubes} run${row.cubes === 1 ? "" : "s"}</div>`;
     if (row.fullUse && !row.main) rank += 1;
     return `<tr class="cl-plan-${c.role}">${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row, rank)}</div></td><td>${keptText(row)}</td></tr>`;
   }).join("");
@@ -391,12 +391,12 @@ function planCard(planner, columns, now) {
       <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
-    <div class="muted small cl-plan-note">The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), open every cube their base and additional energy pay for.
-      The other alts only open what keeps their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
+    <div class="muted small cl-plan-note">The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), do every run their base and additional energy pay for.
+      The other alts only do the runs that keep their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
       Each character's runs go to Expedition or Transcendence, whichever pays more Kina after the runs counted before it. Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
-      Every cube costs ${CUBE_COST} Odyle; a character opens at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence cubes a week.
+      Every run costs ${RUN_COST} Odyle, the subscription's double reward; a character does at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence runs a week.
       Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}.
-      Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and cube limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
+      Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and run limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
   </section>`;
 }
 
