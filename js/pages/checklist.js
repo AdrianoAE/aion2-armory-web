@@ -376,15 +376,15 @@ function planCard(planner, columns, now) {
     const move = c.role === "priority" ? `<span class="cl-plan-move"><button type="button" class="icon small" data-prio-move="${c.id}:-1" title="Earlier" ${priorityIds[0] === c.id ? "disabled" : ""}>▲</button><button type="button" class="icon small" data-prio-move="${c.id}:1" title="Later" ${priorityIds[priorityIds.length - 1] === c.id ? "disabled" : ""}>▼</button></span>` : "";
     const manual = Number((planner.item_level || {})[c.id]) || "";
     const auto = autoItemLevel(column);
-    const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}; a sync replaces a typed value` : "Enter the item level shown in game, or sync the character"}">${!manual && auto.value ? `<div class="muted small">${auto.source === "aion2.plaync.com" ? "synced" : "GearScore"}</div>` : ""}`;
+    const ilvl = `<input type="number" min="0" step="1" value="${manual}" placeholder="${auto.value || "item level"}" data-ilvl="${c.id}" title="${auto.value ? `Empty uses ${number(auto.value)} from the ${escapeHtml(auto.source)}; a sync replaces a typed value` : "Enter the item level shown in game, or sync the character"}">`;
     const head = `<th scope="row"><span class="cl-plan-name cl-class-${escapeHtml(column.cls)}"><img class="class-icon" src="assets/class_icons/${escapeHtml(column.cls)}.png" alt=""><span>${escapeHtml(c.name)}</span></span>${move}</th><td>${roleSelect(c)}</td><td>${ilvl}</td>`;
     const row = rows.get(c.id);
     if (!row) return `<tr class="cl-plan-off">${head}<td colspan="4" class="muted small">Left out of the plan</td></tr>`;
     const cap = odyleCapText(planner.odyle[c.id], now);
     const odyle = `${number(row.base)}${row.extra ? ` <span class="muted">(+${number(row.extra)})</span>` : ""}${cap ? `<div class="cl-odyle-cap ${cap === "full" ? "full" : ""}">${cap}</div>` : ""}`;
-    const week = `<span title="Base ${number(row.base)} + ${number(row.regen)} refill before the reset · additional ${number(row.extra)}${row.buyable ? ` + ${number(row.buyable)} from ${row.purchasesLeft} purchases left` : ""}">${number(row.baseEnergy)}${row.extraEnergy ? ` <span class="muted">(+${number(row.extraEnergy)})</span>` : ""}</span><div class="muted small">${row.cubes} run${row.cubes === 1 ? "" : "s"}</div>`;
+    const runs = `<span class="cl-plan-runcount">${row.cubes}</span>`;
     if (row.fullUse && !row.main) rank += 1;
-    return `<tr class="cl-plan-${c.role}">${head}<td>${odyle}</td><td>${week}</td><td><div class="cl-plan-runs">${planChips(row, rank)}</div></td><td>${keptText(row)}</td></tr>`;
+    return `<tr class="cl-plan-${c.role}">${head}<td>${odyle}</td><td>${runs}</td><td><div class="cl-plan-runs">${planChips(row, rank)}</div></td><td>${keptText(row)}</td></tr>`;
   }).join("");
   const runInput = (mode, label) => `<label class="cl-plan-count">${label} <input type="number" min="0" value="${runs[mode]}" data-runs="${mode}"></label>`;
   return `<section class="card cl-plan">
@@ -399,7 +399,7 @@ function planCard(planner, columns, now) {
       ${result.planned.conquest + result.planned.transcendence ? `<span class="small">Kina on these runs: <b>${result.averagePercent}%</b> on average</span>` : ""}
     </div>
     <div class="cl-scroll"><table class="cl-plan-grid">
-      <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
+      <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">Runs</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
   </section>`;

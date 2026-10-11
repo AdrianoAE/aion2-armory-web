@@ -109,7 +109,8 @@
 .cl-row td.cl-buy.done { background: color-mix(in srgb, var(--kc) 13%, transparent); }
 
 /* Odyle plan */
-.cl-plan { margin-top: 10px; max-width: 1180px; }
+.cl-plan { margin-top: 10px; }
+.cl-plan-runcount { font-weight: 700; font-variant-numeric: tabular-nums; }
 .cl-plan-server, .cl-plan-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 8px; }
 .cl-plan-count { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
 .cl-plan-count input { width: 70px; }
