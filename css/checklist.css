@@ -135,3 +135,8 @@
 .cl-plan-move { display: inline-flex; gap: 2px; margin-left: 6px; vertical-align: middle; }
 .cl-plan-move button { padding: 0 5px; font-size: 10px; line-height: 1.6; }
 .cl-plan-move button:disabled { opacity: 0.3; }
+
+/* number boxes on this page are typed into, never stepped */
+:is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+:is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"]::-webkit-inner-spin-button,
+:is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
