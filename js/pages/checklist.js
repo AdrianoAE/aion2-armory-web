@@ -15,6 +15,7 @@ import {
 } from "../engine/odyleplan.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
+import { hint } from "../hint.js";
 
 const REFRESH_MS = 30000;
 const ODYLE_WARN = 0.9;
@@ -351,6 +352,16 @@ function cutText(mode, after) {
   return `further runs pay ${share}% Kina${next ? ` until run ${next[0]}` : ""}`;
 }
 
+function planHint() {
+  return hint(`The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), do every run their base and additional energy pay for. The other alts only do the runs that keep their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
+
+Each character's runs go to Expedition or Transcendence, whichever pays more Kina after the runs counted before it. Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
+
+Every run costs ${RUN_COST} Odyle, the subscription's double reward; a character does at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence runs a week. Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}.
+
+Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and run limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.`);
+}
+
 function planCard(planner, columns, now) {
   if (!columns.length) return "";
   const chars = planCharacters(planner, columns, now);
@@ -377,9 +388,9 @@ function planCard(planner, columns, now) {
   }).join("");
   const runInput = (mode, label) => `<label class="cl-plan-count">${label} <input type="number" min="0" value="${runs[mode]}" data-runs="${mode}"></label>`;
   return `<section class="card cl-plan">
-    <div class="cl-card-head"><h2>Odyle plan</h2><span class="muted small">until the weekly reset ${escapeHtml(capMoment(result.reset, now))}, in ${durationText(result.reset - now)} · every character still refills +${result.regen}</span></div>
+    <div class="cl-card-head"><h2>Odyle plan${planHint()}</h2><span class="muted small">until the weekly reset ${escapeHtml(capMoment(result.reset, now))}, in ${durationText(result.reset - now)} · every character still refills +${result.regen}</span></div>
     <div class="cl-plan-server">
-      <span class="muted small">Server play counts this week, from <i>Cumulative Play Reward</i> in the dungeon window:</span>
+      <span class="muted small">Server play counts this week${hint("Copy them from Cumulative Play Reward in each dungeon window. They reset with the weekly reset; the plan counts its runs on top of them.")}</span>
       ${runInput("conquest", "Expedition")}${runInput("transcendence", "Transcendence")}
     </div>
     <div class="cl-plan-summary">
@@ -391,12 +402,6 @@ function planCard(planner, columns, now) {
       <thead><tr><th scope="col">Character</th><th scope="col">Role</th><th scope="col">Item level</th><th scope="col">Odyle now</th><th scope="col">For the week</th><th scope="col">Plan</th><th scope="col">Left after</th></tr></thead>
       <tbody>${body}</tbody>
     </table></div>
-    <div class="muted small cl-plan-note">The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), do every run their base and additional energy pay for.
-      The other alts only do the runs that keep their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
-      Each character's runs go to Expedition or Transcendence, whichever pays more Kina after the runs counted before it. Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
-      Every run costs ${RUN_COST} Odyle, the subscription's double reward; a character does at most ${WEEKLY_CUBES.conquest} Expedition and ${WEEKLY_CUBES.transcendence} Transcendence runs a week.
-      Conquest ★1–★3 needs item level ${CONQUEST_TIERS.map((t) => number(t.itemLevel)).join(" / ")}, Transcendence ★1–★4 ${TRANSCENDENCE_STAGES.map((st) => number(st.itemLevel)).join(" / ")}.
-      Kina cut from the game's Cumulative Play Reward Adjustment; entry levels and run limits from the Fextralife wiki and DaevaGuides, so check the in-game entry window.</div>
   </section>`;
 }
 
@@ -426,12 +431,11 @@ export function draw() {
   const scrollLeft = root.querySelector(".cl-scroll")?.scrollLeft || 0;
   root.innerHTML = `
     <div class="cl-title row">
-      <h1>Checklist</h1>
+      <h1>Checklist${hint("Tick what you have done; ticks clear at the game's reset times, shown in your local time zone.\n\nOdyle energy: enter a character's current value and it keeps counting up by itself. The (+N) beside it is the additional energy, which grows as you log shop and craft purchases.")}</h1>
       <span class="cl-chips">${RESET_KINDS.map((k) => `<span class="cl-chip kind-${k}">${resetSpan(k, now, `${KIND_TITLES[k]} resets in`)}</span>`).join("")}</span>
       <span class="grow"></span>
       <button id="cl-add-task" class="active">Add task</button>
     </div>
-    <div class="muted small cl-help">Tick what you have done; ticks clear at the game's reset times, shown in your local time zone. Odyle energy: enter a character's current value and it keeps counting up by itself; the (+N) beside it is the additional energy, which grows as you log shop and craft purchases.</div>
     ${serverCard(planner, server, now)}
     ${characterCard(planner, columns, now)}
     ${planCard(planner, columns, now)}`;
@@ -541,8 +545,7 @@ export function openCharacterTasksDialog(characterId, name) {
       return `<div class="cl-dialog-kind kind-${kind}"><div class="cl-kind-name">${KIND_TITLES[kind]}</div>${tasks.map((t) => `<label class="cl-dialog-task"><input type="checkbox" data-apply="${escapeHtml(t.id)}" ${isExcluded(planner, characterId, t.id) ? "" : "checked"}> ${escapeHtml(t.name)}</label>`).join("")}</div>`;
     }).join("");
     dialog.innerHTML = `<form method="dialog" class="stack">
-      <h3>Tasks for ${escapeHtml(name)}</h3>
-      <div class="muted small">Untick a task this character does not do; it leaves the counts and reminders for ${escapeHtml(name)}.</div>
+      <h3>Tasks for ${escapeHtml(name)}${hint(`Untick a task this character does not do; it leaves the counts and reminders for ${name}.`)}</h3>
       <div class="cl-dialog-kinds">${rows}</div>
       <div class="row"><span class="grow"></span><button type="submit" class="primary">Done</button></div>
     </form>`;

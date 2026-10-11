@@ -4,6 +4,7 @@
 
 import { mountArea } from "../widgets.js";
 import { onChange } from "../state.js";
+import { hint } from "../hint.js";
 import "../widgets/timers/timeline.js";
 import "../widgets/timers/countdowns.js";
 import "../widgets/timers/tracked.js";
@@ -21,7 +22,7 @@ let ticker = null;
 let stopWatching = null;
 
 export function mount(main) {
-  main.innerHTML = `<div class="row page-head"><h1>Timers</h1><span class="muted small">Events, resets and field boss spawns in your local time. Hover an event for its details; the gear on a widget holds its options.</span></div><div class="tm-area"></div>`;
+  main.innerHTML = `<div class="row page-head"><h1>Timers${hint("Events, resets and field boss spawns in your local time. Hover an event for its details; the gear on a widget holds its options.")}</h1></div><div class="tm-area"></div>`;
   area = mountArea(main.querySelector(".tm-area"), "timers", {
     defaults: DEFAULTS,
     allowed: (id) => id.startsWith("timers."),

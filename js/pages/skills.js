@@ -2,6 +2,7 @@
 // (level counters, Arcana wish, specializations in effect, star, hide), the
 // description panel, the Priority List, and the skill points header.
 
+import { hint } from "../hint.js";
 import { bp, onChange, save } from "../state.js";
 import {
   MONOLITH_MAX_LEVEL, SECTION_LABELS, SKILLPOINTS_BASE_AT_LEVEL_45, SKILL_LEVEL_BASE_CAP, SKILL_TYPES,
@@ -524,7 +525,7 @@ function draw() {
       <button id="arcana-calculator" class="gap-left" disabled>${TEXT.calculator}</button>
     </div>
     <div class="row builds-row">${buildsRowHtml()}</div>
-    <div class="tabs"><button data-tab="description" class="${view.tab === "description" ? "active" : ""}">${TEXT.tabDescription}</button><button data-tab="priority" class="${view.tab === "priority" ? "active" : ""}">${TEXT.tabPriority}</button></div>
+    <div class="tabs"><button data-tab="description" class="${view.tab === "description" ? "active" : ""}">${TEXT.tabDescription}</button><button data-tab="priority" class="${view.tab === "priority" ? "active" : ""}">${TEXT.tabPriority}</button>${hint(TEXT.priorityHint)}</div>
     <div class="skills-description" ${view.tab === "description" ? "" : "hidden"}>
       <div class="skills-left">
         <div class="row controls">
@@ -549,7 +550,6 @@ function draw() {
       </div>
     </div>
     <div class="skills-priority" ${view.tab === "priority" ? "" : "hidden"}>
-      <div class="muted hint">${TEXT.priorityHint}</div>
       ${SKILL_TYPES.map((t) => `<div class="skill-section-header skill-type-${t}">${SECTION_LABELS[t]}</div><div class="priority-row skill-type-${t}" data-type="${t}"></div>`).join("")}
     </div>
   </div>`;

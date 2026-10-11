@@ -2,6 +2,7 @@
 // row being the key row) and the macro chain, stored per skill build, with
 // drag-and-drop from the Active / Stigma palettes.
 
+import { hint } from "../hint.js";
 import { bp, onChange, save } from "../state.js";
 import {
   DEFAULT_SKILL_BAR_KEYS, KEY_ROW, MOUSE_KEY_LABELS, SKILL_LAYOUT_COLS, SKILL_LAYOUT_ROWS, SKILL_MACRO_MAX, barContents, currentSkillBuildName, data,
@@ -647,8 +648,7 @@ function refreshPalettes() {
 
 export function mount(main) {
   main.innerHTML = `<div class="layout-page">
-    <div class="row"><h2>${TEXT.title}</h2><span class="grow"></span><span id="layout-build-label" class="section-label"></span></div>
-    <div class="muted hint">${TEXT.hint}</div>
+    <div class="row"><h2>${TEXT.title}${hint(TEXT.hint)}</h2><span class="grow"></span><span id="layout-build-label" class="section-label"></span></div>
     <div id="layout-bar"></div>
     ${["active", "stigma"].map((type) => `<div class="section-label">${TEXT.sections[type]}</div><div class="skill-palette" data-type="${type}"></div>`).join("")}
   </div>`;

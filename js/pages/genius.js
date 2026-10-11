@@ -3,6 +3,7 @@
 // sidebar and the all-boards total. Account-wide state in
 // bp().genius_builds_data / current_genius_build_name.
 
+import { hint } from "../hint.js";
 import { bp, save } from "../state.js";
 
 export const BOARDS = ["Cogni", "Fera", "Natura", "Varian", "Special"];
@@ -313,15 +314,16 @@ function tileGrid(rows, { plainNames = false, boardColorLast = null } = {}) {
 function drawOwned() {
   const panel = root.querySelector(".genius-panel.owned");
   let body;
+  let modeNote;
   if (ownedMode === "total") {
-    body = OWNED_TOTAL_GROUPS.map(([title, rows]) => `<div class="owned-group-title">${title}</div>${tileGrid(rows, { plainNames: title !== "Board Damage Boost" })}`).join("")
-      + `<div class="owned-total-note">${T.ownedTotalNote}</div><div class="disclaimer">${T.provenance}</div>`;
+    body = OWNED_TOTAL_GROUPS.map(([title, rows]) => `<div class="owned-group-title">${title}</div>${tileGrid(rows, { plainNames: title !== "Board Damage Boost" })}`).join("");
+    modeNote = `${T.ownedTotalNote}\n\n${T.provenance}`;
   } else {
-    body = Object.entries(OWNED_PETS_EXAMPLE).map(([board, [, rows]]) => `<div class="pet-title${board === activeBoard ? " active" : ""}" style="color:${BOARD_COLORS[board]}">${T.perBoard(board)}</div>${tileGrid(rows, { boardColorLast: BOARD_COLORS[board] })}`).join("")
-      + `<div class="genius-hint">${T.specialNote}</div><div class="genius-hint">${T.petNote}</div>`;
+    body = Object.entries(OWNED_PETS_EXAMPLE).map(([board, [, rows]]) => `<div class="pet-title${board === activeBoard ? " active" : ""}" style="color:${BOARD_COLORS[board]}">${T.perBoard(board)}</div>${tileGrid(rows, { boardColorLast: BOARD_COLORS[board] })}`).join("");
+    modeNote = `${T.specialNote}\n\n${T.petNote}`;
   }
-  panel.innerHTML = `<div class="section-title">${T.ownedTitle}</div><div class="genius-hint">${T.ownedHint}</div>
-    <div class="row seg-row"><button type="button" class="seg${ownedMode === "total" ? " active" : ""}" data-mode="total">${T.total}</button><button type="button" class="seg${ownedMode === "individual" ? " active" : ""}" data-mode="individual">${T.individual}</button></div>
+  panel.innerHTML = `<div class="section-title">${T.ownedTitle}${hint(T.ownedHint)}</div>
+    <div class="row seg-row"><button type="button" class="seg${ownedMode === "total" ? " active" : ""}" data-mode="total">${T.total}</button><button type="button" class="seg${ownedMode === "individual" ? " active" : ""}" data-mode="individual">${T.individual}</button>${hint(modeNote)}</div>
     <div class="owned-body">${body}</div>`;
   panel.querySelectorAll(".seg").forEach((b) => b.addEventListener("click", () => { ownedMode = b.dataset.mode; drawOwned(); }));
 }
@@ -360,9 +362,8 @@ function drawBoard() {
   panel.innerHTML = `<div class="row tabs-row">${BOARDS.map((b) => `<button type="button" class="board-tab${b === board ? " active" : ""}" data-board="${b}" style="--board:${BOARD_COLORS[b]}">${b}</button>`).join("")}</div>
     <label class="row sync-row" title="${esc(T.syncTooltip)}"><input type="checkbox" class="sync" ${syncSameStat ? "checked" : ""}> ${T.sync}</label>
     <div class="row head-row"><span class="board-title">${board} Insight</span><span class="grow"></span><span class="tag success lvl-badge">Lv. 10 (MAX)</span></div>
-    <div class="row section-row"><button type="button" class="lock master-lock" title="${T.lockAllTooltip}">${locked ? "🔒" : "🔓"}</button><span class="section-title">${T.analysis}</span></div>
-    <div class="line-list">${rows.join("")}</div>
-    <div class="genius-hint">${T.footnote}</div>`;
+    <div class="row section-row"><button type="button" class="lock master-lock" title="${T.lockAllTooltip}">${locked ? "🔒" : "🔓"}</button><span class="section-title">${T.analysis}${hint(T.footnote)}</span></div>
+    <div class="line-list">${rows.join("")}</div>`;
   panel.querySelectorAll(".board-tab").forEach((b) => b.addEventListener("click", () => { activeBoard = b.dataset.board; drawBoard(); if (ownedMode === "individual") drawOwned(); }));
   panel.querySelector(".sync").addEventListener("change", (e) => { syncSameStat = e.target.checked; });
   panel.querySelector(".master-lock").addEventListener("click", () => {
@@ -478,7 +479,6 @@ function closePopup() {
 function drawTotal() {
   const panel = root.querySelector(".genius-panel.total");
   const sums = labelSums(currentState());
-  panel.innerHTML = `<div class="section-title">${T.totalTitle}</div><div class="genius-hint">${T.totalHint}</div>
-    <div class="total-grid">${Object.entries(sums).map(([label, [total, pct]]) => `<div class="row total-pair"><span class="owned-name grow">${esc(label)}</span><span class="owned-value">${formatTotal(total, pct)}</span></div>`).join("")}</div>
-    <div class="genius-hint">${T.totalFootnote}</div>`;
+  panel.innerHTML = `<div class="section-title">${T.totalTitle}${hint(`${T.totalHint}\n\n${T.totalFootnote}`)}</div>
+    <div class="total-grid">${Object.entries(sums).map(([label, [total, pct]]) => `<div class="row total-pair"><span class="owned-name grow">${esc(label)}</span><span class="owned-value">${formatTotal(total, pct)}</span></div>`).join("")}</div>`;
 }

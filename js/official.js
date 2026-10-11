@@ -8,6 +8,7 @@ import { data as skillsData, emptyBuildState, emptyLayout, ready as skillsReady,
 import { data as equipmentData, detailCache, loadData, rememberItem, rememberSheet } from "./pages/equipment_data.js";
 import * as O from "./engine/official.js";
 import { escapeHtml, navigate } from "./app.js";
+import { hint } from "./hint.js";
 
 const GAP_MS = 150;
 const RETRY_MS = [1500, 4000];
@@ -307,9 +308,8 @@ function summaryView(body, target, written, result) {
   body.innerHTML = `<div class="official-summary stack">
       <div class="row official-who">${classIcon(target.cls)}<div class="grow"><div class="name">${escapeHtml(target.name)}</div>
         <div class="muted small">${escapeHtml(O.className(target.cls) || target.cls)} · Level ${escapeHtml(String((result.info.profile || {}).characterLevel || "?"))} · ${escapeHtml(target.serverName || "")}</div></div>
-        <span class="tag success">${target.mode === "new" ? "Created" : "Updated"}</span></div>
+        <span class="tag success">${target.mode === "new" ? "Created" : "Updated"}</span>${hint("Skill layout, specializations, Arcana card skills, Genius Insight and Pantheon are not on the site and were left as they were.")}</div>
       <ul>${lines.map((l) => `<li>${l}</li>`).join("")}</ul>
-      <div class="muted small">Skill layout, specializations, Arcana card skills, Genius Insight and Pantheon are not on the site and were left as they were.</div>
       <div class="row official-actions"><span class="grow"></span><button type="button" class="close">Close</button><button type="button" class="primary open">Open character</button></div>
     </div>`;
   body.querySelector(".close").addEventListener("click", () => body.closest("dialog").close());
@@ -419,15 +419,15 @@ function searchView(shell, query, options) {
         <label class="stack small muted">Region<select name="region">${O.REGIONS.map((r) => `<option value="${r.id}" ${r.id === query.region ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}</select></label>
         <label class="stack small muted">Server<select name="server">${serverOptions(query.region, query.server)}</select></label>
       </div>
-      <label class="stack small muted">Character name<input name="keyword" type="text" maxlength="40" autocomplete="off" value="${escapeHtml(query.keyword)}" placeholder="Start of the name"></label>
+      <label class="stack small muted"><span>Character name${hint("Searches the official character pages. Equipment, skill levels and Daevanion boards are imported; the request goes through the relay set in Settings.")}</span><input name="keyword" type="text" maxlength="40" autocomplete="off" value="${escapeHtml(query.keyword)}" placeholder="Start of the name"></label>
       <div class="official-error" hidden></div>
-      <div class="muted small">Searches the official character pages. Equipment, skill levels and Daevanion boards are imported; the request goes through the relay set in Settings.</div>
       <div class="row official-actions"><span class="grow"></span><button type="button" class="cancel">Cancel</button><button type="submit" class="primary">Search</button></div>
     </form>`;
   const form = shell.body.querySelector("form");
   const error = form.querySelector(".official-error");
   form.region.addEventListener("change", () => { form.server.innerHTML = serverOptions(form.region.value, ""); });
   form.querySelector(".cancel").addEventListener("click", () => shell.dialog.close());
+  form.addEventListener("click", (e) => { if (e.target.closest(".info-hint")) e.preventDefault(); });
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const next = { region: form.region.value, server: form.server.value, keyword: form.keyword.value.trim() };
@@ -497,10 +497,10 @@ export function askSync(entry) {
   const dialog = document.createElement("dialog");
   dialog.className = "builds-dialog official-ask";
   dialog.innerHTML = `<form method="dialog" class="stack">
-      <h3>Sync from aion2.plaync.com</h3>
-      <label class="stack small muted">Preset to update<select class="official-preset">${presetSelect(entry, entry.preset)}</select></label>
+      <h3>Sync from aion2.plaync.com${hint("Equipment and skill levels are replaced with the site's; boards with open nodes are updated, planned boards are kept.")}</h3>
+      <label class="stack small muted">Preset to update<select class="official-preset" autofocus>${presetSelect(entry, entry.preset)}</select></label>
       <div class="muted small">${link ? escapeHtml(`Linked to ${entry.name} on ${link.serverName}; last sync ${new Date(link.importedAt).toLocaleString()}.`)
-        : "Not linked yet: search the character first."} Equipment and skill levels are replaced with the site's; boards with open nodes are updated, planned boards are kept.</div>
+        : "Not linked yet: search the character first."}</div>
       <div class="row builds-dialog-actions"><span class="grow"></span><button type="button" class="cancel">Cancel</button><button type="submit" class="primary">${link ? "Sync" : "Search…"}</button></div>
     </form>`;
   document.body.appendChild(dialog);

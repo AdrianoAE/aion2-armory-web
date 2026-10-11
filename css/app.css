@@ -208,3 +208,12 @@ dialog .list { max-height: 60vh; overflow-y: auto; display: flex; flex-direction
 .layout-list { display: flex; flex-direction: column; }
 .layout-list .row { padding: 6px 0; border-bottom: 1px solid var(--border-soft); }
 .layout-list .row:last-child { border-bottom: 0; }
+
+/* info icons that show an explanation on hover or focus (js/hint.js) */
+.info-hint { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 6px; vertical-align: middle; color: var(--muted); cursor: help; border-radius: 50%; flex: none; }
+.info-hint svg { width: 15px; height: 15px; }
+.info-hint:hover, .info-hint:focus-visible { color: var(--accent); outline: none; }
+.info-hint:focus-visible { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
+.hint-card { max-width: 340px; }
+.hint-card p { margin: 0; }
+.hint-card p + p { margin-top: 6px; }

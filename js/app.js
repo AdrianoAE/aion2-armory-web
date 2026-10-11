@@ -7,6 +7,7 @@ import { prefs, onPrefs } from "./ui.js";
 import { applyTheme } from "./theme.js";
 import { mountArea } from "./widgets.js";
 import "./notify.js";
+import { hint, installHints } from "./hint.js";
 
 // Pinned widgets of every area show on every page. The page's own area
 // renders its pins itself; the other areas get a pins-only mount here.
@@ -174,6 +175,7 @@ document.getElementById("import-file").addEventListener("change", async (e) => {
 });
 document.getElementById("open-settings").addEventListener("click", () => navigate("settings"));
 applyTheme(prefs().theme);
+installHints();
 onPrefs((p) => applyTheme(p.theme));
 window.addEventListener("hashchange", render);
 onChange(renderSidebar);

@@ -3,6 +3,7 @@
 // area; the layout lives in prefs().areas[areaId].
 
 import { prefs, setPref, onPrefs } from "./ui.js";
+import { hint } from "./hint.js";
 
 const registry = new Map();
 const registryListeners = new Set();
@@ -192,21 +193,22 @@ function fieldControl(field, value, options, onChange) {
   const wrap = document.createElement("div");
   wrap.className = "wa-field";
   const id = `wa-field-${++fieldSeq}`;
-  const label = esc(field.label || field.key);
-  const help = field.help ? `<div class="muted small">${esc(field.help)}</div>` : "";
+  const label = esc(field.label || field.key) + hint(field.help);
+  // The hint icon sits inside the <label>; clicking it must not toggle or focus the control.
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".info-hint")) e.preventDefault(); });
   if (field.type === "checkbox") {
-    wrap.innerHTML = `<label class="row wa-check"><input type="checkbox" id="${id}" ${value ? "checked" : ""}> ${label}</label>${help}`;
+    wrap.innerHTML = `<label class="row wa-check"><input type="checkbox" id="${id}" ${value ? "checked" : ""}> ${label}</label>`;
     wrap.querySelector("input").addEventListener("change", (e) => onChange(e.target.checked));
   } else if (field.type === "select") {
     const current = options.findIndex(([v]) => String(v) === String(value));
-    wrap.innerHTML = `<label for="${id}">${label}</label><select id="${id}">${options.map(([, text], i) => `<option value="${i}" ${i === current ? "selected" : ""}>${esc(text)}</option>`).join("")}</select>${help}`;
+    wrap.innerHTML = `<label for="${id}">${label}</label><select id="${id}">${options.map(([, text], i) => `<option value="${i}" ${i === current ? "selected" : ""}>${esc(text)}</option>`).join("")}</select>`;
     wrap.querySelector("select").addEventListener("change", (e) => onChange(options[Number(e.target.value)][0]));
   } else if (field.type === "multiselect") {
     const chosen = new Set((Array.isArray(value) ? value : []).map(String));
     wrap.innerHTML = `<div class="row"><span class="wa-label">${label}</span><span class="grow"></span>
         <button type="button" class="link" data-all>All</button><button type="button" class="link" data-none>None</button></div>
       ${options.length > 8 ? `<input type="text" class="wa-filter" placeholder="Filter">` : ""}
-      <div class="wa-multi">${options.map(([v, text], i) => `<label class="row wa-check" data-text="${esc(String(text).toLowerCase())}"><input type="checkbox" value="${i}" ${chosen.has(String(v)) ? "checked" : ""}> ${esc(text)}</label>`).join("") || '<span class="muted small">Nothing to choose from.</span>'}</div>${help}`;
+      <div class="wa-multi">${options.map(([v, text], i) => `<label class="row wa-check" data-text="${esc(String(text).toLowerCase())}"><input type="checkbox" value="${i}" ${chosen.has(String(v)) ? "checked" : ""}> ${esc(text)}</label>`).join("") || '<span class="muted small">Nothing to choose from.</span>'}</div>`;
     const boxes = [...wrap.querySelectorAll(".wa-multi input")];
     const emit = () => onChange(boxes.filter((b) => b.checked).map((b) => options[Number(b.value)][0]));
     boxes.forEach((b) => b.addEventListener("change", emit));
@@ -220,7 +222,7 @@ function fieldControl(field, value, options, onChange) {
     });
   } else if (field.type === "number") {
     const attrs = ["min", "max", "step"].filter((k) => field[k] != null).map((k) => `${k}="${Number(field[k])}"`).join(" ");
-    wrap.innerHTML = `<label for="${id}">${label}</label><input type="number" id="${id}" ${attrs} value="${esc(value ?? "")}">${help}`;
+    wrap.innerHTML = `<label for="${id}">${label}</label><input type="number" id="${id}" ${attrs} value="${esc(value ?? "")}">`;
     wrap.querySelector("input").addEventListener("change", (e) => {
       let n = Number(e.target.value);
       if (e.target.value === "" || Number.isNaN(n)) return;
@@ -230,7 +232,7 @@ function fieldControl(field, value, options, onChange) {
       onChange(n);
     });
   } else {
-    wrap.innerHTML = `<label for="${id}">${label}</label><input type="text" id="${id}" value="${esc(value ?? "")}" ${field.placeholder ? `placeholder="${esc(field.placeholder)}"` : ""}>${help}`;
+    wrap.innerHTML = `<label for="${id}">${label}</label><input type="text" id="${id}" value="${esc(value ?? "")}" ${field.placeholder ? `placeholder="${esc(field.placeholder)}"` : ""}>`;
     wrap.querySelector("input").addEventListener("change", (e) => onChange(e.target.value));
   }
   return wrap;

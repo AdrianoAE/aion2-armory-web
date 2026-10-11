@@ -11,7 +11,9 @@ function element() {
     card.setAttribute("role", "tooltip");
     card.hidden = true;
   }
-  if (!card.isConnected) document.body.appendChild(card);
+  // A modal dialog sits in the top layer above everything outside it.
+  const host = document.querySelector("dialog[open]") || document.body;
+  if (card.parentNode !== host) host.appendChild(card);
   return card;
 }
 

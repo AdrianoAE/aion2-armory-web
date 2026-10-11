@@ -2,6 +2,7 @@
 // the item browser with category/search/grade/Lord filters, and the Lord
 // Points panel. Account-wide state in bp().pantheon_slots.
 
+import { hint } from "../hint.js";
 import { bp, save } from "../state.js";
 import { lordBarHtml, GRADE_COLORS } from "./arcana.js";
 
@@ -144,12 +145,11 @@ function draw() {
   const totals = pantheonLordTotals();
   const activeHasItem = activeSlot && slots[activeSlot];
   root.innerHTML = `<div class="pantheon-page">
-    <div class="pantheon-title">${T.title}</div>
-    <div class="pantheon-hint">${T.hint}</div>
+    <div class="pantheon-title">${T.title}${hint(T.hint)}</div>
     <div class="pantheon-content">
       <div class="pantheon-panel inventory">
-        <div class="panel-title">${T.inventory}</div>
-        <div class="pantheon-hint inv-hint">${activeSlot ? esc(T.assigningTo(slotTitle(activeSlot))) : T.selectSlot}</div>
+        <div class="panel-title">${T.inventory}${hint(T.selectSlot)}</div>
+        ${activeSlot ? `<div class="pantheon-hint inv-hint">${esc(T.assigningTo(slotTitle(activeSlot)))}</div>` : ""}
         <button type="button" class="filter-btn clear-slot" ${activeHasItem ? "" : "hidden"}>${T.clearSlot}</button>
         <div class="row cat-row">${[["", T.all], ["Artwork: ", "Artwork"], ["Statue: ", "Statue"], ["Colossus: ", "Colossus"]].map(([prefix, label]) => `<button type="button" class="filter-btn${category === prefix ? " active" : ""}" data-prefix="${prefix}">${label}</button>`).join("")}</div>
         <input type="text" class="search" placeholder="${T.search}" value="${esc(query)}">

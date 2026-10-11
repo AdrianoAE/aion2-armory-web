@@ -2,6 +2,7 @@
 // Equipment Item panel, Stat Values, Quick Select, the Property
 // Priority editor, EQ Priority and Build Compare.
 
+import { hint } from "../hint.js";
 import { bp, currentCharacter, save } from "../state.js";
 import * as D from "./equipment_data.js";
 import {
@@ -261,12 +262,11 @@ function statValues() {
     body = statRows(D.GENIUS_BOARD_STAT_ROWS, 2, totals, s);
   }
   return `<div class="eq-stats">
-    <h2>${T.stat_values}</h2>
+    <h2>${T.stat_values}${hint(T.stat_sum_note)}</h2>
     <div class="eq-gearscore" data-gearscore title="${h(gearScoreTitle(gearParts))}">GearScore: ${fmt(gearscore)}${syncedItemLevelHtml()}</div>
     ${iconPanel}
     <div class="eq-tabs">${tabs.map(([key, label]) => `<button data-action="stat-tab" data-tab="${key}"${ui.statTab === key ? ' class="active"' : ""}>${label}</button>`).join("")}</div>
     <div class="eq-tab-body card">${body}</div>
-    <div class="eq-note">${T.stat_sum_note}</div>
   </div>`;
 }
 
@@ -316,13 +316,12 @@ function detailWidget(b, slotId, item) {
       <div class="eq-detail-info">
         <div class="eq-detail-header">${h(detail.name || item.name || "")}<br><span class="sub">${h(subHeader)}</span></div>
         <div class="eq-detail-lines">${info.map(h).join("<br>")}</div>
-        ${enchantable ? `<div class="row eq-enchant-row"><span>${T.simulate_enchant}</span><span class="grow"></span><span class="eq-enchant-value" data-enchant-value>+${level}</span></div>
+        ${enchantable ? `<div class="row eq-enchant-row"><span>${T.simulate_enchant}${hint(T.enchant_note)}</span><span class="grow"></span><span class="eq-enchant-value" data-enchant-value>+${level}</span></div>
         <input type="range" class="eq-enchant-slider" min="0" max="${Math.max(maxEnchant, 0)}" value="${level}" step="1" list="eq-enchant-ticks" data-action="enchant"><datalist id="eq-enchant-ticks">${ticks}</datalist>` : ""}
       </div>
     </div>
     <div class="eq-detail-stats" data-detail-stats>${detailStatsHtml(b, slotId, item, detail)}</div>
-    ${substatsHtml(b, slotId, item, detail)}
-    ${enchantable ? `<div class="eq-note">${T.enchant_note}</div>` : ""}`;
+    ${substatsHtml(b, slotId, item, detail)}`;
 }
 
 function detailStatsHtml(b, slotId, item, detail) {
@@ -853,8 +852,8 @@ function priorityPage() {
     const add = items.length < D.EQUIP_PRIORITY_MAX_ITEMS ? `<span class="eq-arrow">→</span><button class="eq-prio-add" data-action="priority-add" data-section="${key}"${items[items.length - 1] ? "" : " disabled"}>＋</button>` : "";
     return `<div class="eq-prio-section"><div class="eq-section-label">${label}</div><div class="eq-prio-row">${tiles}${add}</div></div>`;
   }).join("");
-  return `<div class="eq-page-head row"><button class="icon" data-action="priority-close" title="${T.back}">←</button><h2 class="grow">${T.eq_priority}</h2><button class="icon" data-action="priority-close" title="${T.close}">✕</button></div>
-    <div class="muted">${T.equip_priority_hint}</div><div class="eq-prio-grid">${columns}</div>`;
+  return `<div class="eq-page-head row"><button class="icon" data-action="priority-close" title="${T.back}">←</button><h2 class="grow">${T.eq_priority}${hint(T.equip_priority_hint)}</h2><button class="icon" data-action="priority-close" title="${T.close}">✕</button></div>
+    <div class="eq-prio-grid">${columns}</div>`;
 }
 
 // --- build compare -----------------------------------------------------------

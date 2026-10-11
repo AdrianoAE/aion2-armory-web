@@ -3,6 +3,7 @@
 // per-slot skill picking), the Arcana Calculator and the "Arcana Types"
 // footer.
 
+import { hint } from "../hint.js";
 import { bp, save } from "../state.js";
 import * as A from "../engine/arcana.js";
 
@@ -57,6 +58,7 @@ const T = {
   noCombination: "No combination of your available card types can reach any of your wished skill levels.",
   tooManyWishes: "No combination covers at least 70% of your wishlist — you've likely selected too many skills. Reduce a few purple wishes and try again.",
   applyCombination: "Use this combination",
+  leftoverTitle: "Leftover levels",
   leftoverHeader: "Every card always levels up fully (its slots don't stop just because your wish is met) — here's what happens to the rest of its levels:",
   leftoverLine: (type, need, total, filler, skills) => `${type} — ${need} / ${total} used for your wish → ${filler} more, best case on: ${skills}`,
   leftoverSkill: (name, value) => `${name} +${value}`,
@@ -658,7 +660,7 @@ function themeChoiceDialog() {
   return new Promise((resolve) => {
     let groupIdx = SEASON_GROUPS.findIndex(([, , themes]) => themes.some((t) => A.ACTIVE_THEMES.has(t)));
     if (groupIdx < 0) groupIdx = 0;
-    const dlg = openDialog(`<h2>${T.themeTitle}</h2><div class="muted">${T.themeHint}</div>
+    const dlg = openDialog(`<h2>${T.themeTitle}${hint(T.themeHint)}</h2>
       <div class="season-label">${T.seasonSet}</div><div class="row season-row"></div>
       <div class="theme-grid-wrap"></div>
       <div class="row"><span class="grow"></span><button type="button" class="cancel">${T.cancel}</button><button type="button" class="apply">${T.apply}</button></div>`, "wide");
@@ -764,7 +766,7 @@ function resultsDialog(allResults, wishes, skillNames, usableTypes, pools, typeT
           : displayIds.map((sid) => T.leftoverSkill(skillNames[sid] || skillName(sid, pools), a.skill_ids[sid])).join(", ");
         leftover.push(T.leftoverLine(a.type, needBudget, A.CARD_EXTRA_BUDGET, fillerBudget, skillsText));
       }
-      const leftoverHtml = leftover.length ? `<div class="leftover-header">${esc(T.leftoverHeader)}</div>${leftover.map((l) => `<div class="reason">${esc(l)}</div>`).join("")}` : "";
+      const leftoverHtml = leftover.length ? `<div class="leftover-header">${T.leftoverTitle}${hint(T.leftoverHeader)}</div>${leftover.map((l) => `<div class="reason">${esc(l)}</div>`).join("")}` : "";
       return `<details class="accordion" ${i === 0 ? "open" : ""}><summary>${T.combination(i + 1)}</summary><div class="accordion-body">
         <div class="result-tiles">${tiles}</div><hr>${lines}${leftoverHtml}
         <button type="button" class="apply-combo eq-priority" data-i="${i}">${T.applyCombination}</button></div></details>`;
@@ -792,7 +794,7 @@ function applyCombination(byType) {
   const builds = skillBuildsFor(cls);
   const current = currentSkillBuildName(cls);
   const others = Object.keys(builds).filter((n) => n !== current);
-  const dlg = openDialog(`<h2>${T.targetTitle}</h2><div>${T.targetHint}</div>
+  const dlg = openDialog(`<h2>${T.targetTitle}${hint(T.targetHint)}</h2>
     <button type="button" class="primary pick-current">${esc(T.applyCurrent(current))}</button>
     ${others.length ? `<div class="section-label">${T.applyOther}</div><div class="list arcana-list other-list">${others.map((n) => `<div class="card clickable option" data-name="${esc(n)}">${esc(n)}</div>`).join("")}</div><button type="button" class="pick-other">${T.select}</button>` : ""}
     <button type="button" class="pick-new">${T.applyNew}</button><button type="button" class="cancel">${T.cancel}</button>`, "narrow stack-dialog");

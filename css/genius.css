@@ -24,7 +24,6 @@
 .genius-panel.board { border-top: 3px solid var(--board, var(--accent)); }
 .genius-panel .section-title { font-size: 14px; font-weight: 700; }
 .genius-panel.owned > .section-title, .genius-panel.total > .section-title { padding-left: 8px; border-left: 3px solid var(--accent); }
-.genius-hint { color: var(--muted); font-size: 11px; }
 .genius-panel .seg-row { gap: 3px; flex-wrap: nowrap; }
 .genius-panel .seg { flex: 1; font-size: 12px; padding: 5px 0; border-radius: 6px; }
 .genius-panel .seg.active { box-shadow: inset 0 -2px 0 var(--accent); }
@@ -36,8 +35,6 @@
 .owned-name { color: var(--warn); font-size: 11px; font-weight: 600; }
 .owned-name.plain { color: var(--fg); }
 .owned-value { font-size: 13px; font-weight: 700; }
-.genius-panel .owned-total-note { color: var(--accent); font-size: 11px; }
-.genius-panel .disclaimer { color: var(--warn); font-size: 11px; font-style: italic; }
 .genius-panel .pet-title { font-size: 14px; font-weight: 600; }
 .genius-panel .pet-title.active { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .genius-panel .tabs-row { gap: 4px; }

@@ -9,6 +9,7 @@
 import { bp, onChange as onProfileChange, save } from "../state.js";
 import { builds as buildList, duplicateBuild, newBuild, presetsOfBuild } from "../builds.js";
 import { navigate } from "../app.js";
+import { hint } from "../hint.js";
 import * as D from "../engine/daevanion.js";
 
 const VARIANT = "s";
@@ -930,9 +931,8 @@ function compareDialog(className, current) {
   const dialog = document.createElement("dialog");
   dialog.className = "builds-dialog daev-compare";
   dialog.innerHTML = `<form method="dialog" class="stack">
-      <h3>Compare "${esc(current)}" with</h3>
-      <select class="daev-compare-pick">${others.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}</select>
-      <div class="muted small">The Diff page shows both sets board by board, with added nodes green and removed ones red, plus the points, stats and skill bonuses of each set.</div>
+      <h3>Compare "${esc(current)}" with${hint("The Diff page shows both sets board by board, with added nodes green and removed ones red, plus the points, stats and skill bonuses of each set.")}</h3>
+      <select class="daev-compare-pick" autofocus>${others.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}</select>
       <div class="row builds-dialog-actions"><span class="grow"></span><button type="button" class="cancel">Cancel</button><button type="submit" class="primary">Compare</button></div>
     </form>`;
   document.body.appendChild(dialog);

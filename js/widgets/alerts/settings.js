@@ -1,6 +1,7 @@
 // The Alerts card on the Settings page; every change saves at once.
 
 import { onPrefs } from "../../ui.js";
+import { hint } from "../../hint.js";
 import { NO_PUSH_RELAY, disablePush, enablePush, onPushStatus, pushStatus, relayOrigin, sendTestPush } from "../../push.js";
 import { ODYLE_MAX, SHOP_SPECIAL_TASK } from "../../engine/planner.js";
 import { REPEATS, customOccurrence, odyleTarget, relativeText } from "./core.js";
@@ -68,7 +69,7 @@ export function renderAlertSettings(el) {
   let lastWritten = JSON.stringify(s.customEvents);
   el.innerHTML = `<div class="al-form stack">
     <label class="al-master row"><input type="checkbox" data-k="enabled" ${s.enabled ? "checked" : ""}>
-      <span><b>Alerts on</b><br><span class="muted small">A sound and a notice in the corner while this page is open in a tab.</span></span></label>
+      <span><b>Alerts on</b>${hint("A sound and a notice in the corner while this page is open in a tab.")}</span></label>
     <div class="al-fields stack${s.enabled ? "" : " off"}">
       <div class="al-field"><span class="al-label">Sound</span><div class="row">
         <select data-k="sound">${[...Object.entries(SOUNDS).map(([key, def]) => [key, def.label]), ["custom", "Custom URL"]].map(([key, label]) => `<option value="${key}" ${key === s.sound ? "selected" : ""}>${label}</option>`).join("")}</select>
@@ -80,18 +81,17 @@ export function renderAlertSettings(el) {
       <div class="al-field"><span class="al-label">Browser notifications</span><div class="stack al-tight">
         <div class="row"><label class="row"><input type="checkbox" data-k="browser" ${s.browser ? "checked" : ""}> System notifications</label><span class="tag" data-permission></span></div>
         <label class="row small muted"><input type="checkbox" data-k="browserAlways" ${s.browserAlways ? "checked" : ""}> Also while this tab is in front (otherwise only when it is hidden)</label></div></div>
-      <h3>While the site is closed</h3>
+      <h3>While the site is closed${hint("Alert times are uploaded to your relay Worker; it sends the notification at the right minute.")}</h3>
       <div class="al-push stack al-tight">
         <div class="row"><label class="al-switch row"><input type="checkbox" role="switch" data-push-toggle>
           <span>Push notifications (works with the browser running, even with the Armory closed)</span></label><span class="tag" data-push-state></span></div>
         <div class="small muted al-push-note" data-push-note hidden></div>
         <div class="row"><button type="button" data-push-test disabled>Send test</button><span class="small muted al-push-msg" data-push-msg></span></div>
-        <div class="muted small">Alert times are uploaded to your relay Worker; it sends the notification at the right minute.</div>
       </div>
       <h3>Sources</h3>
       <div class="al-sources">
-        <div class="al-source" style="--al-accent: var(--warn)"><label class="row"><input type="checkbox" data-k="timers" ${s.timers ? "checked" : ""}><b>Event timers</b></label>
-          <div class="muted small">The next start of each event on the Timers page. <button type="button" class="link" data-events-toggle>Choose events</button></div>
+        <div class="al-source" style="--al-accent: var(--warn)"><label class="row"><input type="checkbox" data-k="timers" ${s.timers ? "checked" : ""}><b>Event timers</b>${hint("The next start of each event on the Timers page.")}</label>
+          <div class="muted small"><button type="button" class="link" data-events-toggle>Choose events</button>${hint("None ticked means every event.")}</div>
           <div class="al-event-picks" hidden></div></div>
         <div class="al-source" style="--al-accent: var(--elyos)"><label class="row"><input type="checkbox" data-k="trackedBosses" ${s.trackedBosses ? "checked" : ""}><b>Tracked bosses</b></label>
           <div class="muted small" data-tracked></div></div>
@@ -100,9 +100,9 @@ export function renderAlertSettings(el) {
         <div class="al-source" style="--al-accent: var(--weekly)"><label class="row"><input type="checkbox" data-k="weekly.enabled" ${s.weekly.enabled ? "checked" : ""}><b>Weekly shop</b></label>
           <div class="small muted al-inline"><input type="number" data-k="weekly.hoursBefore" min="0" max="168" value="${s.weekly.hoursBefore}" aria-label="Hours before the weekly reset"> h before the Wednesday reset while ${esc(SHOP_SPECIAL_TASK)} is unchecked</div></div>
       </div>
-      <h3>Custom events</h3>
+      <h3>Custom events${hint('Leave "min before" empty to use the lead time above.')}</h3>
       <div class="al-events stack al-tight"></div>
-      <div class="row"><button type="button" data-add-event>Add event</button><span class="muted small">Leave "min before" empty to use the lead time above.</span></div>
+      <div class="row"><button type="button" data-add-event>Add event</button></div>
     </div>
   </div>`;
 
@@ -138,7 +138,7 @@ export function renderAlertSettings(el) {
     const events = await eventList();
     if (!events.length) { picks.innerHTML = `<div class="muted small">The event schedule could not be loaded.</div>`; return; }
     const chosen = new Set(s.timerEvents);
-    picks.innerHTML = `<div class="muted small">None ticked means every event.</div><div class="al-pick-grid">${events.map((e) => `<label class="row small"><input type="checkbox" data-pick="${esc(e.id)}" ${chosen.has(e.id) ? "checked" : ""}>${esc(e.name)}</label>`).join("")}</div>`;
+    picks.innerHTML = `<div class="al-pick-grid">${events.map((e) => `<label class="row small"><input type="checkbox" data-pick="${esc(e.id)}" ${chosen.has(e.id) ? "checked" : ""}>${esc(e.name)}</label>`).join("")}</div>`;
   };
 
   const readField = (input) => {
@@ -196,6 +196,7 @@ export function renderAlertSettings(el) {
   el.addEventListener("input", (e) => { if (e.target.type !== "checkbox" && e.target.tagName !== "SELECT") handle(e, false); });
   el.addEventListener("change", (e) => handle(e, true));
   el.addEventListener("click", (e) => {
+    if (e.target.closest(".info-hint")) { e.preventDefault(); return; }
     const button = e.target.closest("button");
     if (!button) return;
     if (button.hasAttribute("data-test")) playSound(s.sound);

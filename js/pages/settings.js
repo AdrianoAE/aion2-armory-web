@@ -5,6 +5,7 @@ import { prefs, setPref } from "../ui.js";
 import { exportProfile } from "../state.js";
 import { escapeHtml, pickProfile } from "../app.js";
 import { DEFAULT_RELAY, searchUrl } from "../engine/official.js";
+import { hint } from "../hint.js";
 
 const THEMES = [["system", "System", "Follows your device"], ["dark", "Dark", "Always dark"], ["light", "Light", "Always light"]];
 const AREA_NAMES = { dashboard: "Dashboard", timers: "Timers", character: "Character", characters: "Character" };
@@ -42,8 +43,8 @@ function drawLayouts() {
     ? `<div class="layout-list">${areas.map(([id, area]) => `<div class="row"><b>${escapeHtml(areaName(id))}</b>
         <span class="muted small">${area.items.length} widget${area.items.length === 1 ? "" : "s"}${area.items.some((i) => i.pinned) ? ", some pinned" : ""}</span>
         <span class="grow"></span><button type="button" data-reset-area="${escapeHtml(id)}">Reset</button></div>`).join("")}</div>
-      <div class="row"><button type="button" id="reset-layouts">Reset widget layouts</button><span class="muted small">Every page goes back to its first-run widgets; the Dashboard starts empty.</span></div>`
-    : `<div class="muted small">Every page shows its standard widgets. Rearranged, resized or pinned widgets are listed here so you can reset them.</div>`;
+      <div class="row"><button type="button" id="reset-layouts">Reset widget layouts</button>${hint("Every page goes back to its first-run widgets; the Dashboard starts empty.")}</div>`
+    : `<div class="muted small">Every page shows its standard widgets.</div>`;
   box.querySelectorAll("[data-reset-area]").forEach((button) => armed(button, "Click again to reset", () => {
     const areas = { ...(prefs().areas || {}) };
     delete areas[button.dataset.resetArea];
@@ -103,26 +104,25 @@ export async function mount(main) {
   const seq = ++mounted;
   root = main;
   const theme = prefs().theme || "system";
-  main.innerHTML = `<div class="row page-head"><h1>Settings</h1><span class="muted small">Kept in this browser, separate from your profile.</span></div>
+  main.innerHTML = `<div class="row page-head"><h1>Settings${hint("Kept in this browser, separate from your profile.")}</h1></div>
     <div class="settings stack">
       <section class="card">
         <h2>Theme</h2>
-        <div class="choice-row" role="radiogroup" aria-label="Theme">${THEMES.map(([value, label, hint]) => `<label class="choice">
+        <div class="choice-row" role="radiogroup" aria-label="Theme">${THEMES.map(([value, label, note]) => `<label class="choice">
           <input type="radio" name="theme" value="${value}" ${value === theme ? "checked" : ""}><span class="swatch ${value}"></span>
-          <span><b>${label}</b><br><span class="muted small">${hint}</span></span></label>`).join("")}</div>
+          <span><b>${label}</b><br><span class="muted small">${note}</span></span></label>`).join("")}</div>
       </section>
       <section class="card" style="--section-color: var(--warn)">
-        <h2>Widget layouts</h2>
+        <h2>Widget layouts${hint("Rearranged, resized or pinned widgets are listed here so you can reset them.")}</h2>
         <div id="layouts" class="stack"></div>
       </section>
       <section class="card" style="--section-color: var(--daily)">
-        <h2>Profile</h2>
-        <div class="muted small">Your characters, builds and checklist live in this browser. Export the profile to keep a copy or to move it to another browser; importing replaces the profile here.</div>
+        <h2>Profile${hint("Your characters, builds and checklist live in this browser. Export the profile to keep a copy or to move it to another browser; importing replaces the profile here.")}</h2>
         <div class="row"><button type="button" id="settings-export">Export profile</button><button type="button" id="settings-import">Import profile</button></div>
       </section>
       <section class="card official-settings" style="--section-color: var(--info)">
-        <h2>Official site</h2>
-        <div class="muted small">Character imports from aion2.plaync.com go through a CORS relay; to run your own, deploy <a href="docs/relay-worker.js" target="_blank" rel="noopener">docs/relay-worker.js</a> as a free Cloudflare Worker and paste its URL ending in <code>?url=</code>.</div>
+        <h2>Official site${hint("Character imports from aion2.plaync.com go through a CORS relay; to run your own, deploy docs/relay-worker.js as a free Cloudflare Worker and paste its URL ending in ?url=.")}</h2>
+        <div class="muted small">Your own relay: <a href="docs/relay-worker.js" target="_blank" rel="noopener">relay-worker.js</a></div>
         <label class="stack small muted">Relay URL<input type="url" id="official-relay" spellcheck="false" placeholder="${escapeHtml(DEFAULT_RELAY)}" value="${escapeHtml(relaySetting())}"></label>
         <div class="row"><button type="button" id="official-relay-reset">Reset</button><button type="button" id="official-relay-test">Test</button><span class="muted small" id="official-relay-status"></span></div>
       </section>
