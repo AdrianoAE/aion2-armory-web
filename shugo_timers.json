@@ -1,0 +1,730 @@
+{
+  "updatedAt": "2026-10-09",
+  "regions": [
+    {
+      "id": "global-nae",
+      "label": "NA East",
+      "timeZone": "America/New_York",
+      "note": "NA East servers run on New York time, and every event below follows that clock (the local hour stays the same when the clocks go back on November 1). Daily and weekly resets happen at one moment on every Global server, 16:00 Korean time (07:00 UTC): 03:00 New York time, 02:00 from November 1. NCSOFT has not published the Global event times; if one is off on your server, tell us on Discord."
+    },
+    {
+      "id": "global-naw",
+      "label": "NA West",
+      "timeZone": "America/Los_Angeles",
+      "note": "NA West servers run on Los Angeles (Pacific) time, and every event below follows that clock (the local hour stays the same when the clocks go back on November 1). Daily and weekly resets happen at one moment on every Global server, 16:00 Korean time (07:00 UTC): 00:00 Los Angeles time, then 23:00 the evening before from November 1 (the weekly reset falls on Tuesday night). NCSOFT has not published the Global event times; if one is off on your server, tell us on Discord."
+    },
+    {
+      "id": "global-eu",
+      "label": "Europe",
+      "timeZone": "Europe/Berlin",
+      "note": "Europe servers run on Central European time (Berlin, same as Paris), and every event below follows that clock (the local hour stays the same when the clocks go back on October 25). Daily and weekly resets happen at one moment on every Global server, 16:00 Korean time (07:00 UTC): 09:00 in Europe, 08:00 from October 25. NCSOFT has not published the Global event times; if one is off on your server, tell us on Discord."
+    },
+    {
+      "id": "global-sa",
+      "label": "S. America",
+      "timeZone": "America/Sao_Paulo",
+      "note": "South America servers run on Sao Paulo time (no daylight saving), and every event below follows that clock. Daily and weekly resets happen at one moment on every Global server, 16:00 Korean time (07:00 UTC): 04:00 Sao Paulo time. NCSOFT has not published the Global event times; if one is off on your server, tell us on Discord."
+    },
+    {
+      "id": "global-as",
+      "label": "Asia",
+      "timeZone": "Asia/Seoul",
+      "note": "Asia servers run on Korea and Japan time (UTC+9), and every event below follows that clock. Daily and weekly resets happen at one moment on every Global server, 16:00 Korean time (07:00 UTC). NCSOFT has not published the Global event times; if one is off on your server, tell us on Discord."
+    },
+    {
+      "id": "kr",
+      "label": "Korea",
+      "timeZone": "Asia/Seoul",
+      "note": "Server time KST. Artifact Siege, Siege Bosses and Nahma depend on your server's matching group (three start times since the September 30 update)."
+    },
+    {
+      "id": "tw",
+      "label": "Taiwan",
+      "timeZone": "Asia/Taipei",
+      "note": "Server time GMT+8. Rift, Shugo Festival, Dimensional Invasion and Watcher Kaira run on the same clock as Korea; since the September 30 update Taiwan has a single Artifact Siege at 21:30 (bosses at 21:45) and Nahma at 22:00."
+    }
+  ],
+  "events": [
+    {
+      "id": "rift",
+      "name": "Spacetime Rift",
+      "icon": "🌀",
+      "kind": "pvp",
+      "description": "The portal only stays open for the first 10 minutes; once inside the event runs for a full hour: cross-faction PvP, Sealed Dungeons, special quests and Abyss Points.",
+      "durationMinutes": 60,
+      "portalMinutes": 10,
+      "schedules": {
+        "kr": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "tw": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "global-nae": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "global-naw": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "global-eu": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "global-sa": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        },
+        "global-as": {
+          "type": "daily",
+          "times": [
+            "02:00",
+            "05:00",
+            "08:00",
+            "11:00",
+            "14:00",
+            "17:00",
+            "20:00",
+            "23:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "shugo-festival",
+      "name": "Shugo Festival",
+      "icon": "🎪",
+      "kind": "event",
+      "description": "4-9 player minigames every hour on the hour, 10 minutes long: one random game from the pool (Jump Jump, Nyerk Shooter, Hidden Lugi, Goldrin's Treasure…). Rewards include gear, Abyss Points, Wisdom Stones and Daevanion Crystals.",
+      "durationMinutes": 10,
+      "schedules": {
+        "kr": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "tw": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "global-nae": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "global-naw": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "global-eu": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "global-sa": {
+          "type": "hourly",
+          "minute": 0
+        },
+        "global-as": {
+          "type": "hourly",
+          "minute": 0
+        }
+      }
+    },
+    {
+      "id": "dimensional-invasion",
+      "name": "Dimensional Invasion",
+      "icon": "🛡️",
+      "kind": "event",
+      "description": "Field defense event every hour at :30.",
+      "durationMinutes": 15,
+      "schedules": {
+        "kr": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "tw": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "global-nae": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "global-naw": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "global-eu": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "global-sa": {
+          "type": "hourly",
+          "minute": 30
+        },
+        "global-as": {
+          "type": "hourly",
+          "minute": 30
+        }
+      }
+    },
+    {
+      "id": "artifact-siege",
+      "name": "Artifact Siege",
+      "icon": "🏰",
+      "kind": "abyss",
+      "description": "Lower and Middle Abyss artifact battle; the winning faction gains access to the Abyss Corridor. Since the September 30 Korea patch the Dimensional Core gets the Decline of Power debuff after 8 minutes.",
+      "durationMinutes": 30,
+      "schedules": {
+        "kr": {
+          "type": "weekly",
+          "days": [
+            "wed",
+            "sat"
+          ],
+          "times": [
+            "21:20",
+            "21:50",
+            "22:20"
+          ],
+          "timeLabels": [
+            "Group 1",
+            "Group 2",
+            "Group 3"
+          ]
+        },
+        "tw": {
+          "type": "weekly",
+          "days": [
+            "wed",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        },
+        "global-nae": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-naw": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-eu": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-sa": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-as": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "siege-bosses",
+      "name": "Siege Bosses",
+      "icon": "👹",
+      "kind": "boss",
+      "description": "Right after the Artifact Siege, in the Lower Abyss: Executor Tamasa, Executor Argo and Executor Kaira.",
+      "durationMinutes": 30,
+      "schedules": {
+        "kr": {
+          "type": "weekly",
+          "days": [
+            "wed",
+            "sat"
+          ],
+          "times": [
+            "21:45",
+            "22:15",
+            "22:45"
+          ],
+          "timeLabels": [
+            "Group 1",
+            "Group 2",
+            "Group 3"
+          ]
+        },
+        "tw": {
+          "type": "weekly",
+          "days": [
+            "wed",
+            "sat"
+          ],
+          "times": [
+            "21:45"
+          ]
+        },
+        "global-nae": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        },
+        "global-naw": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        },
+        "global-eu": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        },
+        "global-sa": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        },
+        "global-as": {
+          "type": "weekly",
+          "days": [
+            "mon",
+            "thu",
+            "sat"
+          ],
+          "times": [
+            "21:30"
+          ]
+        }
+      }
+    },
+    {
+      "id": "guardian-nahma",
+      "name": "Guardian Lord Nahma",
+      "icon": "🐉",
+      "kind": "boss",
+      "description": "Guardian Lord Nahma and Enraged Guardian Lord Nahma spawn in the Abyss.",
+      "durationMinutes": 30,
+      "schedules": {
+        "kr": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "22:00",
+            "22:30",
+            "23:00"
+          ],
+          "timeLabels": [
+            "Group 1",
+            "Group 2",
+            "Group 3"
+          ]
+        },
+        "tw": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "22:00"
+          ]
+        },
+        "global-nae": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-naw": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-eu": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-sa": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "21:00"
+          ]
+        },
+        "global-as": {
+          "type": "weekly",
+          "days": [
+            "fri",
+            "sun"
+          ],
+          "times": [
+            "21:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "watcher-kaira",
+      "name": "Watcher Kaira",
+      "icon": "👁️",
+      "kind": "boss",
+      "description": "Lower Abyss field boss that appears at a random spot on a fixed cycle (every 4 hours on Korea and Taiwan, every 3 hours on Global) and leaves 30 minutes later.",
+      "durationMinutes": 30,
+      "schedules": {
+        "kr": {
+          "type": "daily",
+          "times": [
+            "00:00",
+            "04:00",
+            "08:00",
+            "12:00",
+            "16:00",
+            "20:00"
+          ]
+        },
+        "tw": {
+          "type": "daily",
+          "times": [
+            "00:00",
+            "04:00",
+            "08:00",
+            "12:00",
+            "16:00",
+            "20:00"
+          ]
+        },
+        "global-nae": {
+          "type": "daily",
+          "times": [
+            "01:00",
+            "04:00",
+            "07:00",
+            "10:00",
+            "13:00",
+            "16:00",
+            "19:00",
+            "22:00"
+          ]
+        },
+        "global-naw": {
+          "type": "daily",
+          "times": [
+            "01:00",
+            "04:00",
+            "07:00",
+            "10:00",
+            "13:00",
+            "16:00",
+            "19:00",
+            "22:00"
+          ]
+        },
+        "global-eu": {
+          "type": "daily",
+          "times": [
+            "01:00",
+            "04:00",
+            "07:00",
+            "10:00",
+            "13:00",
+            "16:00",
+            "19:00",
+            "22:00"
+          ]
+        },
+        "global-sa": {
+          "type": "daily",
+          "times": [
+            "01:00",
+            "04:00",
+            "07:00",
+            "10:00",
+            "13:00",
+            "16:00",
+            "19:00",
+            "22:00"
+          ]
+        },
+        "global-as": {
+          "type": "daily",
+          "times": [
+            "01:00",
+            "04:00",
+            "07:00",
+            "10:00",
+            "13:00",
+            "16:00",
+            "19:00",
+            "22:00"
+          ]
+        }
+      }
+    },
+    {
+      "id": "daily-reset",
+      "name": "Daily reset",
+      "icon": "🔄",
+      "kind": "reset",
+      "description": "Daily quests, dungeon entries, Transcendence charges and Shugo Festival keys refresh.",
+      "durationMinutes": 0,
+      "schedules": {
+        "kr": {
+          "type": "daily",
+          "times": [
+            "05:00"
+          ]
+        },
+        "tw": {
+          "type": "daily",
+          "times": [
+            "05:00"
+          ]
+        },
+        "global-nae": {
+          "type": "daily",
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-naw": {
+          "type": "daily",
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-eu": {
+          "type": "daily",
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-sa": {
+          "type": "daily",
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-as": {
+          "type": "daily",
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        }
+      }
+    },
+    {
+      "id": "weekly-reset",
+      "name": "Weekly reset",
+      "icon": "📅",
+      "kind": "reset",
+      "description": "Weekly activities and raids refresh together with the daily reset of that day (Wednesday).",
+      "durationMinutes": 0,
+      "schedules": {
+        "kr": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "05:00"
+          ]
+        },
+        "tw": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "05:00"
+          ]
+        },
+        "global-nae": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-naw": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-eu": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-sa": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        },
+        "global-as": {
+          "type": "weekly",
+          "days": [
+            "wed"
+          ],
+          "times": [
+            "16:00"
+          ],
+          "timeZone": "Asia/Seoul"
+        }
+      }
+    }
+  ]
+}
