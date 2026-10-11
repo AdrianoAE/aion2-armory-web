@@ -141,3 +141,6 @@
 :is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
 :is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"]::-webkit-inner-spin-button,
 :is(.cl-chars, .cl-plan, .cl-server, .cl-dialog) input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.cl-plan-share { padding: 1px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); border-radius: 999px; cursor: help; }
+.cl-plan-share.low { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }

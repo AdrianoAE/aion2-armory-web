@@ -11,7 +11,7 @@ import { isExcluded, setExcluded,
 } from "../engine/planner.js";
 import {
   CONQUEST_TIERS, ENERGY_PER_ITEM, RUN_COST, KINA_CUTS, ROLES, ROLE_TITLES, TRANSCENDENCE_STAGES, WEEKLY_CUBES,
-  kinaPercent, planWeek, purchaseLimit, purchasesThisWeek,
+  ALT_MIN_SHARE, kinaPercent, planWeek, purchaseLimit, purchasesThisWeek,
 } from "../engine/odyleplan.js";
 import { localClock } from "../engine/timers.js";
 import { escapeHtml } from "../app.js";
@@ -323,8 +323,9 @@ function planCharacters(planner, columns, now) {
 function planChips(row, rank) {
   const chips = [];
   if (!row.fullUse && !row.cubes) {
-    if (row.baseLost >= ODYLE_PER_TICK) return `<span class="muted small">No run possible: needs item level ${number(CONQUEST_TIERS[0].itemLevel)}</span>`;
-    return `<span class="muted small" title="Stays under the cap of ${ODYLE_MAX} by the reset, so nothing has to be spent">Nothing needed · ${number(row.baseAtReset)} at the reset</span>`;
+    if (!row.tier) return `<span class="muted small">No run possible: needs item level ${number(CONQUEST_TIERS[0].itemLevel)}</span>`;
+    if (!row.energyRuns) return `<span class="muted small">Not enough energy for a run</span>`;
+    return `<span class="muted small" title="Every run left this week would pay less than ${ALT_MIN_SHARE}% Kina, and the base energy stays under the cap of ${ODYLE_MAX} by the reset">No run at ${ALT_MIN_SHARE}% or more left · ${number(row.baseAtReset)} at the reset</span>`;
   }
   if (row.transcendence) chips.push(`<span class="cl-plan-chip transcendence" title="Transcendence stage ${row.stage.stage} (item level ${number(row.stage.itemLevel)}+)">Transcendence ★${row.stage.stage} × ${row.transcendence}</span>`);
   if (row.conquest) chips.push(`<span class="cl-plan-chip expedition" title="Expedition, Conquest: ${escapeHtml(row.tier.dungeons.join(" or "))} (item level ${number(row.tier.itemLevel)}+)">Conquest ★${row.tier.tier} × ${row.conquest}</span>`);
@@ -332,10 +333,15 @@ function planChips(row, rank) {
     if (!row.tier) return `<span class="muted small">Needs item level ${number(CONQUEST_TIERS[0].itemLevel)} for Conquest</span>`;
     return `<span class="muted small">Not enough energy for a run</span>`;
   }
-  if (row.fromExtra) chips.push(`<span class="muted small" title="Cubes paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
+  const reduced = Object.entries(row.shares || {}).filter(([share]) => Number(share) < 100).sort((a, b) => b[0] - a[0]);
+  for (const [share, count] of reduced) {
+    const low = Number(share) < ALT_MIN_SHARE;
+    chips.push(`<span class="cl-plan-share${low ? " low" : ""}" title="${low ? "Runs below the alt line, done only so the base energy does not overflow the cap" : "Runs paid at a reduced Kina share by the server's weekly count"}">${count} at ${share}%</span>`);
+  }
+  if (row.fromExtra) chips.push(`<span class="muted small" title="Runs paid with additional energy once the base energy is used up">${row.fromExtra} from additional</span>`);
   if (row.main) return `<span class="cl-plan-counted" title="The main does what it needs; the plan counts it at full use, every run its energy pays for, and the others adapt">Counted at full use</span>${chips.join("")}`;
   if (row.fullUse) return `<span class="cl-plan-counted priority" title="Does every run its energy pays for, after the main and the priority characters above it">#${rank} · as much as possible</span>${chips.join("")}`;
-  return `<span class="cl-plan-counted alt" title="Only the runs that keep its base energy under the cap of ${ODYLE_MAX} by the reset">Only the overflow</span>${chips.join("")}`;
+  return `<span class="cl-plan-counted alt" title="Uses its energy, additional included, while runs pay at least ${ALT_MIN_SHARE}% Kina after the main and the priority characters, and always enough to stay under the cap of ${ODYLE_MAX}">Down to ${ALT_MIN_SHARE}% Kina</span>${chips.join("")}`;
 }
 
 function keptText(row) {
@@ -353,7 +359,7 @@ function cutText(mode, after) {
 }
 
 function planHint() {
-  return hint(`The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), do every run their base and additional energy pay for. The other alts only do the runs that keep their base energy under the cap of ${ODYLE_MAX} by the reset; their additional energy (+N) never expires and waits.
+  return hint(`The main does what it needs and is counted at full use. Then the Priority characters, in their order (▲▼), do every run their base and additional energy pay for. The other alts then use their energy, additional included, while runs still pay at least ${ALT_MIN_SHARE}% Kina, and always enough to keep their base energy under the cap of ${ODYLE_MAX}; runs at a reduced share are marked.
 
 Each character's runs go to Expedition or Transcendence, whichever pays more Kina after the runs counted before it. Always buy and craft the full ${purchaseLimit("main")} on the main and ${purchaseLimit("alt")} on each alt.
 
