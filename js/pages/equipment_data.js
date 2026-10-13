@@ -3,8 +3,6 @@
 
 import { GEAR_STAT_ID_ALIASES, RUNE_PVE_ITEM_ID, RUNE_PVP_ITEM_ID } from "../engine/enchant.js";
 import { computeGearscore, computeStatTotalsDetailed } from "../engine/stats.js";
-import { gameconstItemUrl, relayUrl, DEFAULT_RELAY } from "../engine/official.js";
-import { prefs } from "../ui.js";
 
 // --- texts ------------------------------------------------------------------
 export const T = {
@@ -499,14 +497,6 @@ export function rememberSheet(itemId, detail) {
 }
 for (const [id, detail] of Object.entries(storedSheets())) { detailCache.set(Number(id), detail); detailCache.set(id, detail); }
 
-export async function fetchSheetFromSite(itemId) {
-  const relay = (prefs().official && prefs().official.relay) || DEFAULT_RELAY;
-  const response = await fetch(relayUrl(relay, gameconstItemUrl(itemId)));
-  if (!response.ok) return null;
-  const detail = await response.json();
-  return detail && detail.id ? detail : null;
-}
-
 // An item list entry for an id the list lacks, added at runtime.
 export function rememberItem(item) {
   if (!item || !item.id || !data.loaded) return;
@@ -520,7 +510,6 @@ export function requestDetail(itemId) {
   fetch(`data/details/${itemId}.json`, { cache: "force-cache" })
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null)
-    .then((detail) => detail || fetchSheetFromSite(itemId).then((sheet) => { if (sheet) rememberSheet(itemId, sheet); return sheet; }).catch(() => null))
     .then((detail) => {
       pending.delete(itemId);
       detailCache.set(itemId, detail && typeof detail === "object" ? detail : null);

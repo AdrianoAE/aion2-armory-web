@@ -64,9 +64,6 @@ export const equipmentUrl = (who) => `${SITE}/api/character/equipment?${characte
 export const itemUrl = (who, { itemId, enchantLevel = 0, slotPos }) =>
   `${SITE}/api/character/equipment/item?${characterQuery(who, { id: itemId, enchantLevel, slotPos })}`;
 export const daevanionUrl = (who, boardId) => `${SITE}/api/character/daevanion/detail?${characterQuery(who, { boardId })}`;
-// The site's own item sheet: the same shape as data/details/<id>.json.
-export const gameconstItemUrl = (itemId, region = DEFAULT_REGION) =>
-  `${SITE}/en-us/api/gameconst/item?${new URLSearchParams({ id: String(itemId), enchantLevel: "0", lang: LANG, region })}`;
 
 const statLine = (stat) => `${stat.name || stat.id || ""} ${stat.value || stat.minValue || ""}`.trim();
 
@@ -126,7 +123,7 @@ export function isNotFound(json) {
 // equipped/enchant in the equip set's shapes; `rolls` lists what to ask the
 // item endpoint for each slot's rolled substats.
 export function mapEquipment(json, itemsById, wingsById = {}, itemsByName = {}) {
-  const equipped = {}, enchant = {}, skipped = [], rolls = [], missing = [];
+  const equipped = {}, enchant = {}, skipped = [], rolls = [], missing = [], unresolved = [];
   const find = (id, name) => itemsById[id] || itemsById[String(id)] || wingsById[id] || wingsById[String(id)] || itemsByName[name] || null;
   const place = (slotId, entry, roll) => {
     const item = find(entry.id, entry.name);
@@ -144,12 +141,17 @@ export function mapEquipment(json, itemsById, wingsById = {}, itemsByName = {}) 
   }
   const wing = ((json && json.petwing) || {}).wing;
   if (wing && wing.id) place("Wings1", wing, false);
-  return { equipped, enchant, skipped, rolls, missing };
+  return { equipped, enchant, skipped, rolls, missing, unresolved };
 }
 
-// Places an item the list lacked once its sheet arrived (or records the skip).
+// Places an item the list lacked once its sheet arrived. Without a sheet the
+// slot is unresolved and the merge keeps the preset's previous item there.
 export function placeMissing(mapped, miss, item) {
-  if (!item) { mapped.skipped.push(`${miss.entry.name || miss.entry.id} (not in the Armory's item list)`); return; }
+  if (!item) {
+    mapped.skipped.push(`${miss.entry.name || miss.entry.id} (item sheet not readable, previous item kept)`);
+    mapped.unresolved.push(miss.slotId);
+    return;
+  }
   mapped.equipped[miss.slotId] = item;
   const level = (Number(miss.entry.enchantLevel) || 0) + (Number(miss.entry.exceedLevel) || 0);
   if (level > 0) mapped.enchant[miss.slotId] = level;
@@ -178,16 +180,23 @@ export function matchSubstats(apiSubStats, ourOptions) {
 
 // Writes an import into an equip set. A slot whose item stayed keeps its
 // substats unless new ones matched; a changed or emptied slot loses them.
+// An unresolved slot keeps its previous item, enchant and substats.
 export function mergeEquipSet(set, mapped, substatsBySlot = {}, manastonesBySlot = {}) {
   const before = set.equipped || {};
+  const enchantBefore = set.enchant || {};
   set.equipped = { ...mapped.equipped };
   set.enchant = { ...mapped.enchant };
+  for (const slotId of mapped.unresolved || []) {
+    if (!before[slotId]) continue;
+    set.equipped[slotId] = before[slotId];
+    if (enchantBefore[slotId]) set.enchant[slotId] = enchantBefore[slotId];
+  }
   set.substats = set.substats || {};
   set.philosopher_stone = set.philosopher_stone || {};
   set.manastones = {};
   for (const [slotId, grades] of Object.entries(manastonesBySlot)) if (grades && grades.length) set.manastones[slotId] = [...grades];
-  for (const slotId of new Set([...Object.keys(set.substats), ...Object.keys(set.philosopher_stone), ...Object.keys(mapped.equipped)])) {
-    const item = mapped.equipped[slotId];
+  for (const slotId of new Set([...Object.keys(set.substats), ...Object.keys(set.philosopher_stone), ...Object.keys(set.equipped)])) {
+    const item = set.equipped[slotId];
     const same = !!item && !!before[slotId] && String(before[slotId].id) === String(item.id);
     const matched = substatsBySlot[slotId];
     if (matched && matched.length) set.substats[slotId] = [...matched];

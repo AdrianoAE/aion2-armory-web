@@ -94,7 +94,8 @@ test("equipment maps slots (Cape is the Cloak, Belt is a slot), keeps unknown it
   const ring = mapped.missing.find((m) => m.slotId === "Ring2");
   assert.equal(ring.entry.name, "Mystery Ring");
   O.placeMissing(mapped, ring, null);
-  assert.deepEqual(mapped.skipped, ["Mystery Ring (not in the Armory's item list)"]);
+  assert.deepEqual(mapped.skipped, ["Mystery Ring (item sheet not readable, previous item kept)"]);
+  assert.deepEqual(mapped.unresolved, ["Ring2"]);
   const sheet = { id: 5, name: "Mystery Ring", grade: "Unique", icon: "x.png", categoryName: "Ring", classNames: [], mainStats: [{ id: "Attack", name: "Attack", value: "16" }], subStats: [{ id: "STR", name: "Might", value: "10" }] };
   const built = O.itemFromDetail(sheet);
   assert.deepEqual([built.id, built.name, built.image, built.options], [5, "Mystery Ring", "x.png", ["Attack 16", "Might 10"]]);
@@ -102,7 +103,6 @@ test("equipment maps slots (Cape is the Cloak, Belt is a slot), keeps unknown it
   O.placeMissing(again, again.missing.find((m) => m.slotId === "Ring2"), built);
   assert.equal(again.equipped.Ring2.id, 5);
   assert.ok(again.rolls.some((r) => r.slotId === "Ring2"));
-  assert.ok(O.gameconstItemUrl(5).includes("/en-us/api/gameconst/item?id=5&enchantLevel=0"));
   assert.deepEqual(mapped.rolls.map((r) => [r.slotId, r.itemId, r.slotPos, r.enchantLevel]),
     [["MainHand", 110150026, 1, 3], ["Cloak", 210750027, 19, 0], ["Ring1", 310360005, 13, 10]]);
   assert.equal(O.mapEquipment(EQUIPMENT, {}, {}, { "Mystery Ring": { id: 5, name: "Mystery Ring" } }).equipped.Ring2.id, 5);
@@ -137,6 +137,21 @@ test("merging an import keeps substats of unchanged items and drops those of rep
   assert.deepEqual(set.substats, { MainHand: [0, 2], Helmet: [0, 1], Boots: [2] });
   assert.deepEqual(set.philosopher_stone, { MainHand: true });
   assert.deepEqual(set.priority, { keep: 1 });
+});
+
+test("merging an import keeps the previous item, enchant and substats of a slot whose sheet could not be read", () => {
+  const set = {
+    equipped: { SubHand: { id: 7, name: "Old Guard" }, Ring1: { id: 2 } },
+    enchant: { SubHand: 10 },
+    substats: { SubHand: [0, 1] },
+    philosopher_stone: { SubHand: true },
+  };
+  const mapped = { equipped: { Ring1: { id: 2 } }, enchant: {}, unresolved: ["SubHand", "Belt"] };
+  O.mergeEquipSet(set, mapped);
+  assert.deepEqual(set.equipped, { Ring1: { id: 2 }, SubHand: { id: 7, name: "Old Guard" } });
+  assert.deepEqual(set.enchant, { SubHand: 10 });
+  assert.deepEqual(set.substats, { SubHand: [0, 1] });
+  assert.deepEqual(set.philosopher_stone, { SubHand: true });
 });
 
 test("skills: acquired skills keep their level minus the bonus levels, the rest are cleared", () => {

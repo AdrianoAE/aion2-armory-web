@@ -101,12 +101,14 @@ async function collect(who, info, progress, isCancelled) {
   if (!info) info = await ask("Fetching profile…", O.infoUrl(who));
   const equipment = await ask("Fetching equipment…", O.equipmentUrl(who));
   const mapped = O.mapEquipment(equipment, equipmentData.itemsById, {}, equipmentData.nameToItem);
+  const sheets = {};
   for (const miss of mapped.missing) {
     let item = null;
     try {
-      const sheet = await ask(`Item sheet: ${miss.entry.name || miss.entry.id}`, O.gameconstItemUrl(miss.entry.id, who.region));
+      const sheet = await ask(`Item sheet: ${miss.entry.name || miss.entry.id}`,
+        O.itemUrl(who, { itemId: miss.entry.id, enchantLevel: Number(miss.entry.enchantLevel) || 0, slotPos: miss.entry.slotPos }));
       item = O.itemFromDetail(sheet);
-      if (item) { rememberSheet(item.id, sheet); rememberItem(item); }
+      if (item) { rememberSheet(item.id, sheet); rememberItem(item); sheets[miss.slotId] = sheet; }
     } catch (err) {
       if (isCancelled()) throw err;
     }
@@ -119,7 +121,7 @@ async function collect(who, info, progress, isCancelled) {
   for (const [index, roll] of mapped.rolls.entries()) {
     if (failedInARow >= 2) { unread.push(roll.name); continue; }
     try {
-      const rolled = await ask(`Item ${index + 1}/${mapped.rolls.length}: ${roll.name}`, O.itemUrl(who, roll));
+      const rolled = sheets[roll.slotId] || await ask(`Item ${index + 1}/${mapped.rolls.length}: ${roll.name}`, O.itemUrl(who, roll));
       const detail = await itemDetail(mapped.equipped[roll.slotId].id);
       const matched = O.matchSubstats(rolled.subStats, detail && detail.subStats);
       if (matched.length) substats[roll.slotId] = matched;
