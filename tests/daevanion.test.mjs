@@ -21,8 +21,8 @@ function lineBoard(prefix, costs) {
   return [D.makeGrid(nodes), D.makeNodeIndex(nodes)];
 }
 
-function board(key, grid, enabled = true, active = []) {
-  return { key, grid, start_id: D.startIdOf(grid), enabled, active: new Set(active) };
+function board(key, grid, enabled = true, active = [], pool = undefined) {
+  return { key, grid, start_id: D.startIdOf(grid), enabled, active: new Set(active), pool };
 }
 
 function merge(...indexes) {
@@ -106,6 +106,45 @@ test("required nodes over the budget are flagged", () => {
   const result = D.planRoute([board("A", gridA)], byA, groups, undefined, 3);
   assert.equal(result.over_budget, true);
   assert.equal(result.required_cost, 4);
+});
+
+test("each board spends from its own pool's budget", () => {
+  const [gridA, byA] = lineBoard("a", [1, 1, 1, 1]);
+  const [gridB, byB] = lineBoard("b", [1, 1, 1, 1]);
+  const boards = [board("A", gridA, true, [], "daevanion"), board("B", gridB, true, [], "conquest")];
+  const preferred = { A: new Set(["a1", "a2", "a3", "a4"]), B: new Set(["b1", "b2", "b3", "b4"]) };
+  const result = D.planRoute(boards, merge(byA, byB), [], preferred, { daevanion: 2, conquest: 3 });
+  assert.deepEqual(trees(result), { A: ["a0", "a1", "a2"], B: ["b0", "b1", "b2", "b3"] });
+  assert.deepEqual(result.pool_cost, { daevanion: 2, conquest: 3 });
+  assert.equal(result.cost, 5);
+});
+
+test("a pool without a budget has no limit", () => {
+  const [gridA, byA] = lineBoard("a", [1, 1]);
+  const result = D.planRoute([board("A", gridA, true, [], "battle")], byA, [], { A: new Set(["a1", "a2"]) }, { daevanion: 1 });
+  assert.deepEqual(sorted(result.trees.A), ["a0", "a1", "a2"]);
+});
+
+test("required nodes over one pool's budget name that pool", () => {
+  const [gridA, byA] = lineBoard("a", [1]);
+  const [gridB, byB] = lineBoard("b", [2, 2]);
+  const groups = [{ key: "g", count: null, nodes: { A: new Set(["a1"]), B: new Set(["b2"]) } }];
+  const boards = [board("A", gridA, true, [], "daevanion"), board("B", gridB, true, [], "battle")];
+  const result = D.planRoute(boards, merge(byA, byB), groups, undefined, { daevanion: 10, battle: 3 });
+  assert.equal(result.over_budget, true);
+  assert.deepEqual(result.over_pools, ["battle"]);
+  assert.deepEqual(result.pool_cost, { daevanion: 1, battle: 4 });
+});
+
+test("Ariel and Azphel have their own currency", () => {
+  assert.equal(D.boardPool({ order: 2, points: "daevanion" }), "daevanion");
+  assert.equal(D.boardPool({ order: 5, points: "conquest" }), "conquest");
+  assert.equal(D.boardPool({ order: 1 }), "daevanion");
+  const data = JSON.parse(readFileSync(new URL("../data/daevanion_boards_s.json", import.meta.url)));
+  const byOrder = {};
+  for (const b of data.boards) (byOrder[b.order] ||= new Set()).add(D.boardPool(b));
+  assert.deepEqual(Object.fromEntries(Object.entries(byOrder).map(([o, s]) => [o, [...s]])),
+    { 1: ["daevanion"], 2: ["daevanion"], 3: ["daevanion"], 4: ["daevanion"], 5: ["conquest"], 6: ["battle"] });
 });
 
 function connected(grid, byId, nodes) {
@@ -330,11 +369,13 @@ test("pruning drops the branch cut off from start, not just the clicked node", (
 });
 
 test("route settings and saved sets keep the desktop's JSON shapes", () => {
+  const none = { daevanion: null, conquest: null, battle: null };
   assert.deepEqual(D.routeSettingsFromJson({ budget: 0, disabled_boards: ["s:2", "s:1"], skip: { "s:1": ["substats|HP"] } }),
-    { budget: null, disabled_boards: ["s:1", "s:2"], skip: { "s:1": ["substats|HP"] } });
-  assert.deepEqual(D.routeSettingsFromJson({ budget: 120.0 }).budget, 120);
-  assert.deepEqual(D.routeSettingsToJson({ budget: 5, disabled_boards: new Set(["b", "a"]), skip: { x: [], y: new Set(["k"]) } }),
-    { budget: 5, disabled_boards: ["a", "b"], skip: { y: ["k"] } });
+    { budgets: none, disabled_boards: ["s:1", "s:2"], skip: { "s:1": ["substats|HP"] } });
+  assert.deepEqual(D.routeSettingsFromJson({ budget: 120.0 }).budgets, { ...none, daevanion: 120 });
+  assert.deepEqual(D.routeSettingsFromJson({ budgets: { daevanion: 300, battle: 40.0, conquest: 0 } }).budgets, { daevanion: 300, conquest: null, battle: 40 });
+  assert.deepEqual(D.routeSettingsToJson({ budgets: { daevanion: 5, battle: 2 }, disabled_boards: new Set(["b", "a"]), skip: { x: [], y: new Set(["k"]) } }),
+    { budgets: { daevanion: 5, conquest: null, battle: 2 }, disabled_boards: ["a", "b"], skip: { y: ["k"] } });
   const variant = D.variantIndex({ boards: [{ id: "1", classId: "ranger", order: 1 }], nodes: [{ id: "s1", b: "1", r: 8, c: 8, g: "start", cost: 0, e: [] }, { id: "n1", b: "1", r: 8, c: 9, g: "common", cost: 1, e: [] }] });
   assert.deepEqual(D.savedSets({ "s:1": new Set(["s1"]), "s:2": new Set(["n1", "s1"]) }, () => variant), { "s:2": ["n1", "s1"] });
 });

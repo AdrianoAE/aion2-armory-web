@@ -105,6 +105,14 @@ export function spentCost(active, nodeById) {
   return sum;
 }
 
+// Each board pays with its own currency: Nezekan to Triniel Daevanion
+// Crystals, Ariel Conquest Crystals, Azphel Battle Crystals.
+export const POINT_POOLS = ["daevanion", "conquest", "battle"];
+
+export function boardPool(board) {
+  return (board && board.points) || "daevanion";
+}
+
 export const MP_NAMES = new Set(["mpmax", "Max MP"]);
 
 export function nodeMpCount(node) {
@@ -446,8 +454,9 @@ function intersect(a, b) {
   return out;
 }
 
-// boards: [{key, grid, start_id, enabled, active}], groups: [{key, count,
-// nodes: {boardKey: Set}}], preferred: {boardKey: Set}, budget: number.
+// boards: [{key, grid, start_id, enabled, active, pool}], groups: [{key, count,
+// nodes: {boardKey: Set}}], preferred: {boardKey: Set}, budget: one number
+// shared by every board, or {pool: points} (a pool left out has no limit).
 export function planRoute(boards, nodeById, groups, preferred = {}, budget = Infinity) {
   preferred = preferred || {};
   const order = new Map();
@@ -555,15 +564,27 @@ export function planRoute(boards, nodeById, groups, preferred = {}, budget = Inf
     if (missing) unmet[g.key] = (unmet[g.key] || 0) + missing;
   }
 
-  const points = () => Object.values(trees).reduce((sum, t) => sum + routeCost(t, nodeById)[0], 0);
+  const shared = typeof budget === "number";
+  const poolOf = {};
+  for (const b of enabled) poolOf[b.key] = shared ? "" : b.pool || "daevanion";
+  const limit = (pool) => (shared ? budget : budget[pool] ?? Infinity);
+  const poolPoints = () => {
+    const totals = {};
+    for (const [k, t] of Object.entries(trees)) totals[poolOf[k]] = (totals[poolOf[k]] || 0) + routeCost(t, nodeById)[0];
+    return totals;
+  };
+  const sum = (totals) => Object.values(totals).reduce((a, b) => a + b, 0);
 
-  const requiredCost = points();
-  const preferredTotal = Object.values(pref).reduce((sum, ids) => sum + ids.size, 0);
-  if (requiredCost > budget) {
-    return { trees, cost: requiredCost, required_cost: requiredCost, over_budget: true, unmet, preferred_taken: 0, preferred_total: preferredTotal };
+  const requiredByPool = poolPoints();
+  const requiredCost = sum(requiredByPool);
+  const preferredTotal = Object.values(pref).reduce((total, ids) => total + ids.size, 0);
+  const overPools = Object.keys(requiredByPool).filter((p) => requiredByPool[p] > limit(p)).sort();
+  if (overPools.length) {
+    return { trees, cost: requiredCost, required_cost: requiredCost, pool_cost: requiredByPool, over_budget: true, over_pools: overPools, unmet, preferred_taken: 0, preferred_total: preferredTotal };
   }
 
-  let left = budget - requiredCost;
+  const left = {};
+  for (const [p, spent] of Object.entries(requiredByPool)) left[p] = limit(p) - spent;
   for (;;) {
     let best = null;
     for (const k of enabledKeys) {
@@ -571,7 +592,7 @@ export function planRoute(boards, nodeById, groups, preferred = {}, budget = Inf
       if (!wanted.length) continue;
       const { dist, prev } = dijkstra(k);
       for (const nid of wanted) {
-        if (!dist.has(nid) || dist.get(nid)[0] > left) continue;
+        if (!dist.has(nid) || dist.get(nid)[0] > left[poolOf[k]]) continue;
         const path = routePath(prev, nid, trees[k]);
         const gained = path.filter((p) => pref[k].has(p)).length;
         const cost = dist.get(nid)[0];
@@ -583,14 +604,17 @@ export function planRoute(boards, nodeById, groups, preferred = {}, budget = Inf
     const [, k, path, cost] = best;
     for (const id of path) trees[k].add(id);
     cache.delete(k);
-    left -= cost;
+    left[poolOf[k]] -= cost;
   }
 
+  const poolCost = poolPoints();
   return {
     trees,
-    cost: points(),
+    cost: sum(poolCost),
     required_cost: requiredCost,
+    pool_cost: poolCost,
     over_budget: false,
+    over_pools: [],
     unmet,
     preferred_taken: enabledKeys.reduce((sum, k) => sum + intersect(pref[k], trees[k]).size, 0),
     preferred_total: preferredTotal,
@@ -908,17 +932,28 @@ export function entryAccentGrade(grades) {
 
 // ── profile shapes (app.py route settings / saved sets) ─────────────────────
 
-export function defaultRouteSettings() {
-  return { budget: null, disabled_boards: [], skip: {} };
+function noBudgets() {
+  return Object.fromEntries(POINT_POOLS.map((p) => [p, null]));
 }
 
+function positiveBudget(value) {
+  return typeof value === "number" && value > 0 ? Math.trunc(value) : null;
+}
+
+export function defaultRouteSettings() {
+  return { budgets: noBudgets(), disabled_boards: [], skip: {} };
+}
+
+// A save from before the per-pool budgets has one "budget": the Daevanion one.
 export function routeSettingsFromJson(saved) {
   saved = saved || {};
-  const budget = saved.budget;
+  const budgets = noBudgets();
+  if (saved.budgets) for (const p of POINT_POOLS) budgets[p] = positiveBudget(saved.budgets[p]);
+  else budgets.daevanion = positiveBudget(saved.budget);
   const skip = {};
   for (const [key, keys] of Object.entries(saved.skip || {})) skip[key] = [...new Set(keys)];
   return {
-    budget: typeof budget === "number" && budget > 0 ? Math.trunc(budget) : null,
+    budgets,
     disabled_boards: [...new Set(saved.disabled_boards || [])].sort(),
     skip,
   };
@@ -928,7 +963,7 @@ export function routeSettingsToJson(settings) {
   const skip = {};
   for (const [key, keys] of Object.entries(settings.skip || {})) if (keys && (keys.length || keys.size)) skip[key] = [...keys].sort();
   return {
-    budget: settings.budget ?? null,
+    budgets: { ...noBudgets(), ...(settings.budgets || {}) },
     disabled_boards: [...(settings.disabled_boards || [])].sort(),
     skip,
   };

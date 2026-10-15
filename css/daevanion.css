@@ -6,7 +6,7 @@
 .daev-sets .icon-btn { width: 40px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .daev-sets .icon-btn:disabled { opacity: 0.4; cursor: default; }
 .daev-header { gap: 6px; }
-.daev-points { white-space: nowrap; margin-right: 8px; }
+.daev-points { min-width: 0; margin-right: 8px; }
 .daev-zoom { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 600; margin-right: 6px; }
 .daev-zoom input[type="range"] { width: 120px; accent-color: var(--accent); }
 .daev-zoom .val { min-width: 38px; text-align: right; color: var(--fg); }
@@ -31,7 +31,9 @@
 .daev-widget { display: flex; flex-direction: column; gap: 8px; max-width: 100%; }
 .daev-widget .daev-canvas-frame { overflow: hidden; }
 .daev-widget .daev-canvas-frame canvas { cursor: default; }
-.daev-budget { gap: 6px; flex-wrap: nowrap; }
+.daev-budgets { display: flex; flex-direction: column; gap: 4px; }
+.daev-budget { gap: 6px; flex-wrap: nowrap; font-size: 13px; }
+.daev-budget span { flex: 0 0 130px; }
 .daev-budget input { flex: 1; width: auto; text-align: left; }
 .daev-use { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .daev-route { font-size: 15px; font-weight: 700; padding: 8px 20px; border-radius: 9px; }

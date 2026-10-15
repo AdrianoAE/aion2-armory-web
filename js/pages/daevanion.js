@@ -28,24 +28,25 @@ const T = {
   show_labels: "Show labels",
   reset_board: "Reset board",
   find_route: "Find best route",
-  find_route_tooltip: "Plans every board in use at once, sharing the point budget.",
+  find_route_tooltip: "Plans every board in use at once, each within its own point budget.",
   stat_summary_title: "Stats Gained",
   stat_summary_empty: "No stats active yet.",
   no_board_for_class: "There's no Daevanion Board for this class yet.",
   status_start: "Always active",
   status_active: "Active — click to refund",
   status_locked: "Locked — connect an adjacent node first",
-  status_no_points: "Not enough Daevanion Points",
+  status_no_points: "Not enough points for this board",
   status_available: "Available — click to activate",
   route_pick_value: "Check at least one value in the list first.",
-  route_ok: (v) => `Route takes every required node on ${v.boards} boards, plus ${v.taken} of ${v.total} wanted plain nodes (${v.spent}/${v.budget} points).`,
-  route_over_budget: (v) => `The required (coloured) nodes need ${v.needed} points, but the budget is ${v.budget}. Nothing was changed.`,
-  route_unmet: (v) => `Route applied (${v.spent}/${v.budget} points), but these could not all be reached: ${v.items}.`,
+  route_ok: (v) => `Route takes every required node on ${v.boards} boards, plus ${v.taken} of ${v.total} wanted plain nodes (${v.points}).`,
+  route_over_budget: (v) => `The required (coloured) nodes need more than the budget: ${v.points}. Nothing was changed.`,
+  route_unmet: (v) => `Route applied (${v.points}), but these could not all be reached: ${v.items}.`,
+  pool_points: (v) => `${v.name} ${v.spent}/${v.budget}`,
   count_all: "All",
   count_tooltip: "How many of this entry's coloured nodes to take across all boards in the route (All = every one). Plain 1-point nodes are never required.",
-  points_total_label: (v) => `Daevanion Points: ${v.total} / ${v.budget} (this board: ${v.board})`,
-  budget_label: "Point budget:",
-  budget_tooltip: "How many Daevanion Points this set may spend across all boards together (0 = no limit).",
+  points_total_label: (v) => `Points: ${v.pools} (this board: ${v.board})`,
+  budget_label: "Point budgets:",
+  budget_tooltip: (name) => `How many points this set may spend on ${name} together (empty or 0 = no limit). Each of these has its own currency in the game.`,
   use_board: "Use this board in the route",
   use_board_tooltip: "Off: the route leaves this board as it is — its nodes still count toward the budget.",
   board_off: (name) => `${name} (off)`,
@@ -267,6 +268,10 @@ function routeSettings() {
   const s = cls[name];
   if (!Array.isArray(s.disabled_boards)) s.disabled_boards = [...(s.disabled_boards || [])];
   if (!s.skip) s.skip = {};
+  if (!s.budgets) {
+    s.budgets = D.routeSettingsFromJson(s).budgets;
+    delete s.budget;
+  }
   return s;
 }
 
@@ -293,16 +298,39 @@ function view() {
 
 function classBoardsHere() { return D.classBoards(variant, classKey()); }
 
-function totalSpent() {
+function poolsHere() {
+  const boards = classBoardsHere();
+  return D.POINT_POOLS.filter((pool) => boards.some((b) => D.boardPool(b) === pool));
+}
+
+function poolName(pool) {
+  const names = classBoardsHere().filter((b) => D.boardPool(b) === pool).map((b) => b.name);
+  return names.length > 1 ? `${names[0]}–${names[names.length - 1]}` : names[0] || pool;
+}
+
+function poolSpent(pool) {
   const set = currentSet();
   let total = 0;
-  for (const b of classBoardsHere()) total += D.spentCost(activeOf(set, b), variant.node_by_id);
+  for (const b of classBoardsHere()) if (D.boardPool(b) === pool) total += D.spentCost(activeOf(set, b), variant.node_by_id);
   return total;
 }
 
-function pointsLeft() {
-  const budget = routeSettings().budget;
-  return budget === null || budget === undefined ? Infinity : budget - totalSpent();
+function poolBudget(pool) {
+  return routeSettings().budgets[pool] ?? null;
+}
+
+function poolPointsText(spentOf) {
+  return poolsHere().map((pool) => {
+    const budget = poolBudget(pool);
+    return T.pool_points({ name: poolName(pool), spent: spentOf(pool), budget: budget === null ? "∞" : budget });
+  }).join(" · ");
+}
+
+function pointsLeft(board) {
+  if (!board) return Infinity;
+  const pool = D.boardPool(board);
+  const budget = poolBudget(pool);
+  return budget === null ? Infinity : budget - poolSpent(pool);
 }
 
 let order = null;
@@ -872,7 +900,7 @@ function onCanvasMove(e) {
   const rc = node ? D.gridKey(node.r, node.c) : null;
   if (rc !== hovered) { hovered = rc; drawCanvas(); }
   if (!node || node.g === "empty") { hideTooltip(); return; }
-  showTooltip(node, { board: currentBoard(), activeSet: activeSet(currentBoard()), pointsLeft: pointsLeft(), x: e.clientX, y: e.clientY });
+  showTooltip(node, { board: currentBoard(), activeSet: activeSet(currentBoard()), pointsLeft: pointsLeft(currentBoard()), x: e.clientX, y: e.clientY });
 }
 
 function onCanvasLeave() {
@@ -890,13 +918,13 @@ function onCanvasClick(e) {
     active.delete(node.id);
     D.pruneUnreachable(grid, active, variant.node_by_id);
   } else if (D.isReachable(node, grid, active)) {
-    if (node.cost <= pointsLeft()) active.add(node.id);
+    if (node.cost <= pointsLeft(board)) active.add(node.id);
     else statusSet(T.status_no_points);
   }
   storeActive(board, active);
   persist();
   draw();
-  showTooltip(node, { board, activeSet: activeSet(board), pointsLeft: pointsLeft(), x: e.clientX, y: e.clientY });
+  showTooltip(node, { board, activeSet: activeSet(board), pointsLeft: pointsLeft(board), x: e.clientX, y: e.clientY });
 }
 
 function setButtonsHtml() {
@@ -1119,7 +1147,7 @@ function onRoute() {
   const skillsById = classSkillsById(classKey());
   const set = currentSet();
   const boards = [];
-  let offSpent = 0;
+  const offSpent = {};
   const groupNodes = {};
   for (const fk of checked) groupNodes[fk] = {};
   const groupLabels = {};
@@ -1129,8 +1157,9 @@ function onRoute() {
     const grid = gridOf(board);
     const active = activeOf(set, board);
     const enabled = !settings.disabled_boards.includes(key);
-    if (!enabled) offSpent += D.spentCost(active, nodeById);
-    boards.push({ key, grid, start_id: D.startIdOf(grid), enabled, active });
+    const pool = D.boardPool(board);
+    if (!enabled) offSpent[pool] = (offSpent[pool] || 0) + D.spentCost(active, nodeById);
+    boards.push({ key, grid, start_id: D.startIdOf(grid), enabled, active, pool });
     const skipped = new Set(settings.skip[key] || []);
     const boardGroups = D.buildFilterGroups(grid, skillsById);
     for (const fullKey of checked) {
@@ -1148,25 +1177,27 @@ function onRoute() {
   }
   const groups = Object.entries(groupNodes).filter(([, nodes]) => Object.keys(nodes).length)
     .map(([fk, nodes]) => ({ key: fk, count: counts[fk] || null, nodes }));
-  const budget = settings.budget ?? null;
-  const points = budget === null ? Infinity : Math.max(0, budget - offSpent);
-  const result = D.planRoute(boards, nodeById, groups, preferred, points);
+  const budgets = {};
+  for (const pool of poolsHere()) {
+    const budget = poolBudget(pool);
+    budgets[pool] = budget === null ? Infinity : Math.max(0, budget - (offSpent[pool] || 0));
+  }
+  const result = D.planRoute(boards, nodeById, groups, preferred, budgets);
+  const spentText = () => poolPointsText((pool) => (result.pool_cost[pool] || 0) + (offSpent[pool] || 0));
   if (result.over_budget) {
-    statusSet(T.route_over_budget({ needed: result.required_cost + offSpent, budget }));
+    statusSet(T.route_over_budget({ points: spentText() }));
     return;
   }
-  const needed = result.cost + offSpent;
   for (const [key, tree] of Object.entries(result.trees)) {
     const board = classBoardsHere().find((b) => boardKey(b) === key);
     if (board) storeActive(board, tree);
   }
-  const budgetText = budget === null ? "∞" : budget;
   const routed = boards.filter((b) => b.enabled).length;
   if (Object.keys(result.unmet).length) {
     const items = Object.entries(result.unmet).sort().map(([fk, missing]) => `${groupLabels[fk] || fk} (${missing})`).join(", ");
-    statusSet(T.route_unmet({ spent: needed, budget: budgetText, items }));
+    statusSet(T.route_unmet({ points: spentText(), items }));
   } else {
-    statusSet(T.route_ok({ boards: routed, spent: needed, budget: budgetText, taken: result.preferred_taken, total: result.preferred_total }));
+    statusSet(T.route_ok({ boards: routed, points: spentText(), taken: result.preferred_taken, total: result.preferred_total }));
   }
   persist();
   draw();
@@ -1179,13 +1210,12 @@ export function draw() {
   const board = currentBoard();
   const v = view();
   const settings = board ? routeSettings() : null;
-  const budget = settings ? settings.budget ?? null : null;
   const boards = board ? classBoardsHere() : [];
   const deityTabs = board ? boardTabsHtml(boards, currentSet(), order, settings.disabled_boards) : "";
   if (!pageSide) pageSide = storedSide("page") || defaultPageSide();
   const zoomPercent = Math.round(userZoom * 100);
   const pointsLabel = board
-    ? T.points_total_label({ total: totalSpent(), budget: budget === null ? "∞" : budget, board: D.spentCost(activeSet(board), variant.node_by_id) })
+    ? T.points_total_label({ pools: poolPointsText(poolSpent), board: D.spentCost(activeSet(board), variant.node_by_id) })
     : T.no_board_for_class;
 
   root.innerHTML = `<div class="daev">
@@ -1202,8 +1232,9 @@ export function draw() {
     <div class="daev-body" style="--daev-side: ${pageSide}px">
       <div class="daev-board-box"><div class="daev-canvas-frame"><canvas></canvas></div>${board ? resizeHandleHtml() : ""}</div>
       <aside class="daev-side">
-        <div class="row daev-budget"><span class="section-label">${T.budget_label}</span>
-          <input type="number" id="daev-budget" min="0" max="9999" value="${budget ?? ""}" placeholder="∞" title="${esc(T.budget_tooltip)}"></div>
+        <div class="daev-budgets"><span class="section-label">${T.budget_label}</span>
+          ${board ? poolsHere().map((pool) => `<label class="row daev-budget" title="${esc(T.budget_tooltip(poolName(pool)))}"><span>${esc(poolName(pool))}</span>
+            <input type="number" data-budget="${pool}" min="0" max="9999" value="${poolBudget(pool) ?? ""}" placeholder="∞"></label>`).join("") : ""}</div>
         <label class="daev-use"><input type="checkbox" id="daev-use-board" ${board && !settings.disabled_boards.includes(boardKey(board)) ? "checked" : ""} title="${esc(T.use_board_tooltip)}">${T.use_board}</label>
         <button class="daev-route" title="${esc(T.find_route_tooltip)}">${T.find_route}</button>
         <div class="daev-status">${esc(statusText)}</div>
@@ -1230,12 +1261,12 @@ export function draw() {
     draw();
   }));
   root.querySelector("#daev-reset").addEventListener("click", onReset);
-  root.querySelector("#daev-budget").addEventListener("change", (e) => {
+  root.querySelectorAll("[data-budget]").forEach((input) => input.addEventListener("change", (e) => {
     const value = Math.max(0, Math.min(9999, parseInt(e.target.value, 10) || 0));
-    routeSettings().budget = value || null;
+    routeSettings().budgets[input.dataset.budget] = value || null;
     persist();
     draw();
-  });
+  }));
   root.querySelector("#daev-use-board").addEventListener("change", (e) => {
     if (!board) return;
     const key = boardKey(board);
